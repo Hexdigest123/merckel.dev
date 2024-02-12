@@ -15,8 +15,8 @@
 	];
 </script>
 
-<div class="h-[100vh]">
-	<div class="flex flex-col h-3/4 w-full justify-center">
+<div class="h-[100vh] md:flex md:justify-center">
+	<div class="flex flex-col h-3/4 w-full justify-center md:max-w-[50%]">
 		<p class="text-xl text-orange-600">
 			{descriptions[Math.floor(Math.random() * descriptions.length)]}
 		</p>
@@ -31,7 +31,7 @@
 		</div>
 	</div>
 </div>
-<div>
+<div class="md:flex md:items-center md:flex-col">
 	<div class="flex gap-2">
 		<h1 class="text-6xl font-indie-flower" id="hello">Hello</h1>
 		<p class=" text-3xl self-end font-indie-flower text-orange-600">i'm Pierre</p>
@@ -41,15 +41,10 @@
 		I'm a 19-year-old software engineer specializing in web development. I primarily build front-end
 		applications and also assist with back-end tasks.
 		<br />
-		<br />
 		My programming journey began with Java, giving me a strong foundation in coding principles.
-
-		<br />
 		<br />
 		Through C, I deepened that understanding, and later discovered a passion for creating websites for
 		clients.
-
-		<br />
 		<br />
 		Feel free to contact me – I'm always happy to connect!
 	</p>
