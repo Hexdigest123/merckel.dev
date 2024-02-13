@@ -1,23 +1,51 @@
 <script lang="ts">
 	import BaseButton from '$lib/components/BaseButton.svelte';
+	import Toast from '$lib/components/Toast.svelte';
+
+	let loading: boolean = false;
+	$: loading = false;
+
+	let show: boolean = false;
+	$: show = false;
+
+	let ToastMessage: string = '';
+	$: ToastMessage;
+
+	let ToastColor: string = 'bg-green-500';
+	$: ToastColor;
 
 	async function handleSubmit($event: Event) {
+		loading = true;
 		if ($event === undefined) return;
 		$event.preventDefault();
 		if ($event.target === null) {
 			return;
 		}
 
-		let name = ($event.target as HTMLFormElement).name;
-		let email = ($event.target as HTMLFormElement).email;
-		let message = ($event.target as HTMLFormElement).message;
+		let name = ($event.target as HTMLFormElement).name.value;
+		let email = ($event.target as HTMLFormElement).email.value;
+		let message = ($event.target as HTMLFormElement).message.value;
 		if (name === null || email === null || message === null) return;
 
 		const response = await fetch('/contact', {
 			method: 'POST',
 			body: JSON.stringify({ name, email, message })
 		});
-		console.log(response.status, await response.text());
+		loading = false;
+		if (response.status === 200) {
+			ToastMessage = 'E-Mail sent!';
+			show = true;
+			setTimeout(() => {
+				show = false;
+			}, 5000);
+		} else {
+			ToastMessage = await response.text();
+			ToastColor = 'bg-red-500';
+			show = true;
+			setTimeout(() => {
+				show = false;
+			}, 5000);
+		}
 	}
 </script>
 
@@ -75,9 +103,8 @@
 				>How can i help you?</label
 			>
 		</div>
-		<BaseButton text="Absenden" id="submit" />
-		<p id="status" class="mx-auto font-bold text-xl text-green-700 hidden"></p>
-		<p id="error" class="mx-auto font-bold text-xl text-red-700 hidden"></p>
+		<BaseButton text="Absenden" id="submit" {loading} />
+		<Toast color={ToastColor} message={ToastMessage} loading={show} />
 	</form>
 </div>
 
