@@ -39,8 +39,12 @@
 		<div class="flex flex-col gap-2 mb-4">
 			{#if pageOptions.length > 0}
 				{#each pageOptions as option}
-					<a href={option.href} class="hover:underline underline-offset-4 text-2xl"
-						>{option.label}</a
+					<a
+						href={option.href}
+						class="hover:underline underline-offset-4 text-2xl"
+						on:click={() => {
+							menuOpen = !menuOpen;
+						}}>{option.label}</a
 					>
 				{/each}
 			{:else}
@@ -50,7 +54,13 @@
 		<h2 class="font-bold text-2xl border-b-2 border-black mb-4">Tools</h2>
 		{#if toolOptions.length > 0}
 			{#each toolOptions as option}
-				<a href={option.href} class="hover:underline underline-offset-4 text-2xl">{option.label}</a>
+				<a
+					href={option.href}
+					class="hover:underline underline-offset-4 text-2xl"
+					on:click={() => {
+						menuOpen = !menuOpen;
+					}}>{option.label}</a
+				>
 			{/each}
 		{:else}
 			<h2 class="text-xl font-bold">Coming soon...</h2>
@@ -86,7 +96,9 @@
 	</div>
 </header>
 <main class="p-6 min-h-screen">
-	<slot />
+	{#if !menuOpen}
+		<slot />
+	{/if}
 </main>
 <footer class="flex justify-between p-6">
 	<p class="my-auto">@Copyright 2024</p>
