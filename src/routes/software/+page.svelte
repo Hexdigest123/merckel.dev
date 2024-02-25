@@ -5,6 +5,7 @@
 		client: string;
 		description: string;
 		imageURL: string;
+		websiteURL: string;
 	}
 	const software: ISoftware[] = [
 		{
@@ -12,14 +13,16 @@
 			client: 'Merckel & Witzdam GbR',
 			description:
 				'We developed the LogiQ IT website to present our innovative approach to software development, highlight our client-centric philosophy, and secure new leads  through a dynamic online presence.',
-			imageURL: 'logiqit.webp'
+			imageURL: 'logiqit.webp',
+			websiteURL: 'https://logiqit.de'
 		},
 		{
 			name: 'Landhaus Pantförder',
 			client: 'Martin Hilbolt',
 			description:
 				"The redesigned website successfully conveys Med Mobil's dedication to quality care. The improved user experience is likely to attract potential patients.",
-			imageURL: 'medmobil.webp'
+			imageURL: 'medmobil.webp',
+			websiteURL: 'https://med-mobil.de'
 		}
 	];
 </script>
@@ -37,7 +40,10 @@
 			<li class="mx-auto border-b-gray-400 border-b-2 mb-6 md:max-w-5xl">
 				<h2 class="text-bold text-2xl">{item.name}</h2>
 				<h3 class="opacity-75 text-xl">{item.client}</h3>
-				<p>{item.description}</p>
+				<p class="mb-4">{item.description}</p>
+				<BaseButton>
+					<a href={item.websiteURL}>Visit {item.name}</a>
+				</BaseButton>
 				<img src={item.imageURL} alt={`${item.client} website picture`} />
 			</li>
 		{/each}
