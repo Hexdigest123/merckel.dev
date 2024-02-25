@@ -103,7 +103,7 @@
 				>How can i help you?</label
 			>
 		</div>
-		<BaseButton text="Absenden" id="submit" {loading} />
+		<BaseButton id="submit" {loading}>Send</BaseButton>
 		<Toast color={ToastColor} message={ToastMessage} loading={show} />
 	</form>
 </div>

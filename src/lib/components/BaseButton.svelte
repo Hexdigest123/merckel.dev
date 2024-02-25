@@ -1,5 +1,4 @@
 <script lang="ts">
-	export let text: string;
 	export let id: string = '';
 	export let loading: boolean = false;
 </script>
@@ -10,7 +9,7 @@
 	disabled={loading}
 >
 	{#if !loading}
-		<span>{text}</span>
+		<slot />
 	{:else}
 		<span>
 			<svg

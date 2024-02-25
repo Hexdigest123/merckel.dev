@@ -14,7 +14,7 @@
 	let pageOptions: IMenuOption[] = [
 		{ label: 'Homepage', href: '/' },
 		{ label: 'Skills', href: '/skills' },
-		{ label: 'Tools', href: '/tools' },
+		{ label: 'Software', href: '/software' },
 		{ label: 'Contact', href: '/contact' }
 	];
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BaseButton from '$lib/components/BaseButton.svelte';
 	interface ISoftware {
 		name: string;
 		client: string;
@@ -27,11 +28,13 @@
 	<h1 class="md:text-6xl text-5xl font-indie-flower">Software</h1>
 	<p class="text-2xl md:text-3xl self-end font-indie-flower text-orange-600">i work on</p>
 </div>
-
 <div>
+	<div class="mx-auto max-w-fit">
+		<BaseButton><a href="/software/tools">Visit Tools</a></BaseButton>
+	</div>
 	<ul>
 		{#each software as item}
-			<li class="border-b-gray-400 border-b-2 mb-6">
+			<li class="mx-auto border-b-gray-400 border-b-2 mb-6 md:max-w-5xl">
 				<h2 class="text-bold text-2xl">{item.name}</h2>
 				<h3 class="opacity-75 text-xl">{item.client}</h3>
 				<p>{item.description}</p>
