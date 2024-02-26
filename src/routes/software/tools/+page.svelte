@@ -43,6 +43,7 @@
 			{#each filtered_software as item}
 				<button
 					id={`${item.name.toLowerCase()}`}
+					aria-label={`${item.name.toLowerCase()} Button`}
 					class=" mb-6 md:max-w-1/2 shadow-[0_0_2px_0_black] rounded-xl p-4"
 					on:click={() => {
 						goto(item.toolURL);

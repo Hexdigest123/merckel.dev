@@ -29,6 +29,7 @@
 		<div class="flex justify-end">
 			<button
 				id="toggle_menu"
+				aria-label="Toggle side menu"
 				on:click={() => {
 					menuOpen = !menuOpen;
 				}}
@@ -90,6 +91,7 @@
 	</a>
 	<button
 		id="burger_menu_btn"
+		aria-label="Burger menu button"
 		on:click={() => {
 			menuOpen = !menuOpen;
 		}}
