@@ -7,6 +7,7 @@
 	{id}
 	class="px-10 py-3 bg-primary rounded-xl text-white font-bold text-lg transition-transform hover:scale-[1.02] duration-150 bg-orange-600 flex justify-center"
 	disabled={loading}
+	aria-label={`${id ? id : Math.floor(Math.random() * 1000).toString()} Button`}
 >
 	{#if !loading}
 		<slot />

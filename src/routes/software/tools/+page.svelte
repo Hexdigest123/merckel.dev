@@ -42,6 +42,7 @@
 		<div class="md:grid md:grid-cols-2 xl:grid-cols-3 md:grid-rows-4 md:gap-4">
 			{#each filtered_software as item}
 				<button
+					id={`${item.name.toLowerCase()}`}
 					class=" mb-6 md:max-w-1/2 shadow-[0_0_2px_0_black] rounded-xl p-4"
 					on:click={() => {
 						goto(item.toolURL);

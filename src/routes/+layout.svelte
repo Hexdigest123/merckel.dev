@@ -28,6 +28,7 @@
 	<div class="absolute w-screen h-screen bg-white p-4">
 		<div class="flex justify-end">
 			<button
+				id="toggle_menu"
 				on:click={() => {
 					menuOpen = !menuOpen;
 				}}
@@ -66,13 +67,17 @@
 			<h2 class="text-xl font-bold">Coming soon...</h2>
 		{/if}
 		<div class="mt-8 flex justify-center gap-x-8">
-			<a href="https://twitter.com/MerckelPierre" class="bg-gray-300 p-2 rounded-xl"
-				><Twitter width={32} height={32}></Twitter></a
+			<a
+				href="https://twitter.com/MerckelPierre"
+				class="bg-gray-300 p-2 rounded-xl"
+				aria-label="Link to Twitter"><Twitter width={32} height={32}></Twitter></a
 			>
-			<a href="https://github.com/Hexdigest123" class="bg-gray-300 p-2 rounded-xl"
-				><GitHub width={32} height={32}></GitHub></a
+			<a
+				href="https://github.com/Hexdigest123"
+				class="bg-gray-300 p-2 rounded-xl"
+				aria-label="Link to GitHub"><GitHub width={32} height={32}></GitHub></a
 			>
-			<a href="mailto:pierre@merckel.dev" class="bg-gray-300 p-2 rounded-xl"
+			<a href="mailto:pierre@merckel.dev" class="bg-gray-300 p-2 rounded-xl" aria-label="Mail to me"
 				><Mail width={32} height={32}></Mail></a
 			>
 		</div>
@@ -80,10 +85,11 @@
 {/if}
 
 <header id="header" class="flex justify-between p-4">
-	<a href="/contact" class="md:hidden">
+	<a href="/contact" class="md:hidden" aria-label="Mail to me">
 		<Mail></Mail>
 	</a>
 	<button
+		id="burger_menu_btn"
 		on:click={() => {
 			menuOpen = !menuOpen;
 		}}
@@ -103,6 +109,6 @@
 <footer class="flex justify-between p-6">
 	<p class="my-auto">@Copyright 2024</p>
 	<div class="bg-gray-300 p-2 w-min h-min rounded-xl">
-		<a href="#header"><Arrow></Arrow></a>
+		<a href="#header" aria-label="jump to top"><Arrow></Arrow></a>
 	</div>
 </footer>

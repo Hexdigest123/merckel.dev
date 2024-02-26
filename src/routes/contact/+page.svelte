@@ -22,7 +22,7 @@
 			return;
 		}
 
-		let name = ($event.target as HTMLFormElement).name.value;
+		let name = ($event.target as HTMLFormElement).realname.value;
 		let email = ($event.target as HTMLFormElement).email.value;
 		let message = ($event.target as HTMLFormElement).message.value;
 		if (name === null || email === null || message === null) return;
@@ -64,13 +64,13 @@
 		<div class="relative float-label-input group">
 			<input
 				type="text"
-				id="name"
+				id="realname"
 				placeholder=" "
 				class="w-full bg-white focus:outline-none focus:shadow-outline border-2 border-gray-300 rounded-md py-3 px-4 appearance-none leading-normal focus:border-primary"
 				required
 			/>
 			<label
-				for="name"
+				for="realname"
 				class="absolute top-3 left-0 opacity-60 pointer-events-none transition duration-200 px-4 group-focus-within:text-primary"
 				>Your Name</label
 			>

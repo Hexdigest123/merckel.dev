@@ -26,7 +26,8 @@
 		</p>
 		<div class="flex justify-center mt-12 animate-bounce">
 			<div class="rotate-180">
-				<a href="#hello"><Arrow width={36} height={36}></Arrow></a>
+				<a href="#hello" aria-label="jump to introduction"><Arrow width={36} height={36}></Arrow></a
+				>
 			</div>
 		</div>
 	</div>
@@ -50,13 +51,17 @@
 	</p>
 
 	<div class="mt-6 flex gap-x-8">
-		<a href="https://twitter.com/MerckelPierre" class="bg-gray-300 p-2 rounded-xl"
-			><Twitter width={32} height={32}></Twitter></a
+		<a
+			href="https://twitter.com/MerckelPierre"
+			class="bg-gray-300 p-2 rounded-xl"
+			aria-label="Link to Twitter"><Twitter width={32} height={32}></Twitter></a
 		>
-		<a href="https://github.com/Hexdigest123" class="bg-gray-300 p-2 rounded-xl"
-			><GitHub width={32} height={32}></GitHub></a
+		<a
+			href="https://github.com/Hexdigest123"
+			class="bg-gray-300 p-2 rounded-xl"
+			aria-label="Link to GitHub"><GitHub width={32} height={32}></GitHub></a
 		>
-		<a href="mailto:pierre@merckel.dev" class="bg-gray-300 p-2 rounded-xl"
+		<a href="mailto:pierre@merckel.dev" class="bg-gray-300 p-2 rounded-xl" aria-label="Mail to me"
 			><Mail width={32} height={32}></Mail></a
 		>
 	</div>

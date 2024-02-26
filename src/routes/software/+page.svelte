@@ -33,7 +33,9 @@
 </div>
 <div>
 	<div class="mx-auto max-w-fit">
-		<BaseButton><a href="/software/tools">Visit Tools</a></BaseButton>
+		<BaseButton id="visit_tools"
+			><a href="/software/tools" aria-label="Visit Tools Link">Visit Tools</a></BaseButton
+		>
 	</div>
 	<ul>
 		{#each software as item}
@@ -41,8 +43,8 @@
 				<h2 class="text-bold text-2xl">{item.name}</h2>
 				<h3 class="opacity-75 text-xl">{item.client}</h3>
 				<p class="mb-4">{item.description}</p>
-				<BaseButton>
-					<a href={item.websiteURL}>Visit {item.name}</a>
+				<BaseButton id={`${item.name.toLowerCase()}`}>
+					<a href={item.websiteURL} aria-label={`${item.name} visit`}>Visit {item.name}</a>
 				</BaseButton>
 				<img src={item.imageURL} alt={`${item.client} website picture`} />
 			</li>
