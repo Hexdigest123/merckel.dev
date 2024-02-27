@@ -39,7 +39,8 @@
 				show = false;
 			}, 5000);
 		} else {
-			ToastMessage = await response.text();
+			const message = await response.json();
+			ToastMessage = message.status;
 			ToastColor = 'bg-red-500';
 			show = true;
 			setTimeout(() => {
