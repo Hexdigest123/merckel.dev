@@ -34,6 +34,7 @@
 		loading = false;
 		if (response.status === 200) {
 			ToastMessage = 'E-Mail sent!';
+			ToastColor = 'bg-green-500';
 			show = true;
 			setTimeout(() => {
 				show = false;
