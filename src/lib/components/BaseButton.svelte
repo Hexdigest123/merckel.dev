@@ -1,13 +1,20 @@
 <script lang="ts">
 	export let id: string = '';
 	export let loading: boolean = false;
+	export let onClick: () => void = () => {};
+	export let fullWidth: boolean = false;
+	export let type: 'button' | 'submit' | null | undefined = 'button';
 </script>
 
 <button
 	{id}
-	class="px-10 py-3 bg-primary rounded-xl text-white font-bold text-lg transition-transform hover:scale-[1.02] duration-150 bg-orange-600 flex justify-center"
+	on:click={onClick}
+	class={fullWidth
+		? 'w-full px-10 py-3 bg-primary rounded-xl text-white font-bold text-lg transition-transform hover:scale-[1.02] duration-150 bg-orange-600 flex justify-center'
+		: 'px-10 py-3 bg-primary rounded-xl text-white font-bold text-lg transition-transform hover:scale-[1.02] duration-150 bg-orange-600 flex justify-center'}
 	disabled={loading}
 	aria-label={`${id ? id : Math.floor(Math.random() * 1000).toString()} Button`}
+	{type}
 >
 	{#if !loading}
 		<slot />

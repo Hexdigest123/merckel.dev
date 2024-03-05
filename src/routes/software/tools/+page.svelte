@@ -6,7 +6,9 @@
 		available: boolean;
 		toolURL: string;
 	}
-	const software: ITools[] = [];
+	const software: ITools[] = [
+		{ name: 'URL Shortner', categories: ['Tools', 'URL'], available: true, toolURL: '/shortner' }
+	];
 	const filtered_software: ITools[] = software;
 
 	const handleChange = (e: Event) => {
@@ -46,7 +48,7 @@
 					aria-label={`${item.name.toLowerCase()} Button`}
 					class=" mb-6 md:max-w-1/2 shadow-[0_0_2px_0_black] rounded-xl p-4"
 					on:click={() => {
-						goto(item.toolURL);
+						goto(`/software/tools${item.toolURL}`);
 					}}
 				>
 					<div class="flex items-center">

@@ -27,7 +27,7 @@
 		let message = ($event.target as HTMLFormElement).message.value;
 		if (name === null || email === null || message === null) return;
 
-		const response = await fetch('/contact', {
+		const response = await fetch('contact', {
 			method: 'POST',
 			body: JSON.stringify({ name, email, message })
 		});
@@ -39,9 +39,12 @@
 			setTimeout(() => {
 				show = false;
 			}, 5000);
+			name = '';
+			email = '';
+			message = '';
 		} else {
-			const message = await response.json();
-			ToastMessage = message.status;
+			const message = await response.text();
+			ToastMessage = message;
 			ToastColor = 'bg-red-500';
 			show = true;
 			setTimeout(() => {
