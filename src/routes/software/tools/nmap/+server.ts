@@ -2,6 +2,7 @@ import { exec } from 'child_process';
 import util from 'util';
 
 const execPromise = util.promisify(exec);
+const commandWhitelist = ['-sV', '-sP', '-sT'];
 
 export async function POST({ request }: { request: Request }) {
 	const { host, command } = await request.json();
@@ -10,6 +11,12 @@ export async function POST({ request }: { request: Request }) {
 	}
 	if (host.includes('merckel.dev')) {
 		return new Response('Illegal content', { status: 500 });
+	}
+
+	for (const cmd of command.split(' ')) {
+		if (!commandWhitelist.includes(cmd)) {
+			return new Response('Illegal content', { status: 500 });
+		}
 	}
 
 	try {
