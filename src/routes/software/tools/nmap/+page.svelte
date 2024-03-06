@@ -22,24 +22,24 @@
 	const submitForm = async (event: Event) => {
 		let command: string = '';
 		event.preventDefault();
-		const host = (event.target as HTMLFormElement).host.value;
-		const service = (event.target as HTMLFormElement).service.checked;
-		const ping = (event.target as HTMLFormElement).ping.checked;
-		const tcpconnect = (event.target as HTMLFormElement).tcpconnect.checked;
+		let values = event.target as HTMLFormElement;
+		let host: string = '';
+		for (const value of values) {
+			switch (value.id) {
+				case 'host':
+					host = (value as HTMLInputElement).value;
+					break;
+				case '':
+					break;
+				default:
+					if ((value as HTMLInputElement).checked) {
+						command += `${getKey(value.id)} `;
+					}
+					break;
+			}
+		}
 
-		if (host === '') {
-			content = 'Please provide a valid IP/Hostname!';
-			return;
-		}
-		if (service) {
-			command += `${getKey('service')} `;
-		}
-		if (ping) {
-			command += `${getKey('ping')} `;
-		}
-		if (tcpconnect) {
-			command += `${getKey('tcpconnect')} `;
-		}
+		if (host === '') content = 'Please enter a host!';
 
 		content = '';
 		const response = await fetch('/software/tools/nmap', {
