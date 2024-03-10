@@ -85,7 +85,7 @@
 				>IP/Hostname</label
 			>
 		</div>
-		<BaseButton fullWidth type="submit">Scan</BaseButton>
+		<BaseButton fullWidth type="submit" loading={content === '' ? true : false}>Scan</BaseButton>
 	</form>
 
 	<div class="mt-8">

@@ -46,7 +46,7 @@
 				<BaseButton id={`${item.name.toLowerCase()}`}>
 					<a href={item.websiteURL} aria-label={`${item.name} visit`}>Visit {item.name}</a>
 				</BaseButton>
-				<img src={item.imageURL} alt={`${item.client} website picture`} />
+				<img src={item.imageURL} alt={`${item.client} website picture`} width="1024" height="567" />
 			</li>
 		{/each}
 	</ul>

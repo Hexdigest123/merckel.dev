@@ -3,6 +3,7 @@ import util from 'util';
 
 const execPromise = util.promisify(exec);
 const commandWhitelist = ['-sV', '-sP', '-sT', '', '-p-', '-v'];
+const urlBlackList = ['.gov', '.mil'];
 
 export async function POST({ request }: { request: Request }) {
 	const { host, command } = await request.json();
@@ -11,6 +12,9 @@ export async function POST({ request }: { request: Request }) {
 	}
 	if (host.includes('merckel.dev')) {
 		return new Response('Illegal content', { status: 500 });
+	}
+	if (urlBlackList.some((url) => host.includes(url))) {
+		return new Response('Illegal remote host', { status: 500 });
 	}
 	for (const cmd of command.split(' ')) {
 		if (!commandWhitelist.includes(cmd)) {
