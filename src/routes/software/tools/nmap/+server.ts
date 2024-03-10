@@ -10,8 +10,8 @@ import {
 const execPromise = util.promisify(exec);
 const commandWhitelist = ['-sV', '-sP', '-sT', '', '-v'];
 const urlBlackList = ['.gov', '.mil'];
-const referer = 'http://localhost:5173/software/tools/nmap';
-const origin = 'http://localhost:5173';
+const referer = 'https://merckel.dev/software/tools/nmap'; // change in testing to localhost
+const origin = 'https://merckel.dev';
 
 import pkg from 'pg';
 import crypto from 'crypto';
