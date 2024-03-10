@@ -10,7 +10,6 @@
 		{ name: 'Service scan', key: '-sV', id: 'service' },
 		{ name: 'Ping scan', key: '-sP', id: 'ping' },
 		{ name: 'TCP Connect', key: '-sT', id: 'tcpconnect' },
-		{ name: 'Scan all TCP Ports', key: '-p-', id: 'allports' },
 		{ name: 'Verbose output', key: '-v', id: 'verbose' }
 	];
 

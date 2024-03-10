@@ -22,7 +22,6 @@ const pool = new Pool({
 export const load: ServerLoad = async (request) => {
 	const id = request.params.id;
 	let response;
-	console.log(id);
 	try {
 		response = await pool.query('select url from url where short = $1', [id]);
 	} catch (err) {
