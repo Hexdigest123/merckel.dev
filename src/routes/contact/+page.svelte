@@ -59,7 +59,7 @@
 	<p class="text-2xl md:text-3xl self-end font-indie-flower text-orange-600">me directly!</p>
 </div>
 
-<div>
+<div class="md:max-w-5xl mx-auto">
 	<form
 		method="POST"
 		class="flex flex-col justify-center gap-6"
