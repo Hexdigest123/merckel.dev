@@ -23,6 +23,14 @@
 				"The redesigned website successfully conveys Med Mobil's dedication to quality care. The improved user experience is likely to attract potential patients.",
 			imageURL: 'medmobil.webp',
 			websiteURL: 'https://med-mobil.de'
+		},
+		{
+			name: 'Bündnis Recklinghausen',
+			client: 'Peter Gerwinat',
+			description:
+				'The website we created for Mr. Gerwinat should represent his ideas in a futuristic-looking manner to attract the youth and deliver his messages.',
+			imageURL: 'buendnis.webp',
+			websiteURL: 'https://buendnis-recklinghausen.de'
 		}
 	];
 </script>
