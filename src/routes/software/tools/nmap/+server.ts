@@ -10,7 +10,8 @@ import {
 const execPromise = util.promisify(exec);
 const commandWhitelist = ['-sV', '-sP', '-sT', '', '-v'];
 const urlBlackList = ['.gov', '.mil'];
-const referer = 'https://merckel.dev/software/tools/nmap'; // change in testing to localhost
+const urlRegex = /^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([a-zA-Z0-9]*)$/;
+const referer = 'https://merckel.dev/software/tools/nmap';
 const origin = 'https://merckel.dev';
 
 import pkg from 'pg';
@@ -49,16 +50,33 @@ export async function POST({
 	getClientAddress(): string;
 }) {
 	const { host, command } = await request.json();
-	const clientIpAddress =
-		request.headers.get('cf-connecting-ip') ||
-		request.headers.get('x-forwarded-for') ||
-		getClientAddress();
+	let clientIpAddress;
+	try {
+		clientIpAddress =
+			request.headers.get('cf-connecting-ip') ||
+			request.headers.get('x-forwarded-for') ||
+			getClientAddress();
+	} catch (err) {
+		console.error(err);
+		return new Response('Invalid request', { status: 500 });
+	}
 
 	if (host === undefined || command === undefined) {
 		return new Response('Invalid request', { status: 500 });
 	}
 	if (host.includes('merckel.dev')) {
 		return new Response('Illegal content', { status: 500 });
+	}
+	if (!clientIpAddress) {
+		return new Response('Invalid request', { status: 500 });
+	}
+	if (!urlRegex.test(host)) {
+		return new Response(
+			'Illegal content has been detected. If necessary, this incident will be reported to the authorities.',
+			{ status: 500 }
+		);
+	} else {
+		console.log('its good');
 	}
 	if (urlBlackList.some((url) => host.includes(url))) {
 		return new Response('Illegal remote host', { status: 500 });
@@ -88,7 +106,7 @@ export async function POST({
 		const { stdout, stderr } = await execPromise(`nmap -T4 ${host} ${command} -oN -`);
 		if (stderr) {
 			console.log('stderr:', stderr);
-			return new Response(stderr.replace(/(\n|\r\n)/g, '<br>'), { status: 500 });
+			return new Response('Your request failed!', { status: 500 });
 		}
 		return new Response(stdout.replace(/(\n|\r\n)/g, '<br>'), { status: 200 });
 	} catch (err) {

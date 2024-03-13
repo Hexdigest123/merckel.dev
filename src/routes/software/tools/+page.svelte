@@ -7,7 +7,7 @@
 		toolURL: string;
 	}
 	const software: ITools[] = [
-		{ name: 'URL Shortner', categories: ['Tools', 'URL'], available: true, toolURL: '/shortner' },
+		{ name: 'URL Shortener', categories: ['Tools', 'URL'], available: true, toolURL: '/shortner' },
 		{
 			name: 'NMAP Interface',
 			categories: ['Tools', 'Networking'],
