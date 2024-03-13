@@ -8,10 +8,12 @@
 		'Software Engineer',
 		'Web Developer',
 		'Backend Developer',
+		'Chief Executive Officer',
 		'Rust Developer',
 		'C/C++ Developer',
 		'Python Developer',
-		'Project Managment'
+		'Project Managment',
+		'Student'
 	];
 </script>
 

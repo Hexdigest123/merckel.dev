@@ -65,12 +65,22 @@
 	<h1 class="md:text-6xl text-5xl font-indie-flower">Knowledge</h1>
 	<p class="text-2xl md:text-3xl self-end font-indie-flower text-orange-600">i gathered</p>
 </div>
-
+<div class="md:flex md:flex-col md:items-center md:max-w-1/2 mb-6">
+	<h2 class="md:text-4xl text-3xl font-indie-flower">Skills</h2>
+	<ul>
+		{#each Skills as item}
+			<li class="my-4">
+				<h3 class="font-bold">{item.name}</h3>
+				<p class="md:text-pretty md:max-w-96">{item.description}</p>
+			</li>
+		{/each}
+	</ul>
+</div>
 <div class="md:flex md:flex-col md:items-center md:max-w-1/2 mb-6">
 	<h2 class="md:text-4xl text-3xl font-indie-flower">Experience</h2>
 	<ul>
 		{#each Knowledge as item}
-			<li class="border-b-gray-400 border-b-4 my-4">
+			<li class="my-4">
 				<h3 class="font-bold">{item.name}</h3>
 				<p>{item.date}</p>
 				<p>{item.job}</p>
@@ -80,21 +90,10 @@
 	</ul>
 </div>
 <div class="md:flex md:flex-col md:items-center md:max-w-1/2 mb-6">
-	<h2 class="md:text-4xl text-3xl font-indie-flower">Skills</h2>
-	<ul>
-		{#each Skills as item}
-			<li class="border-b-gray-400 border-b-4 my-4">
-				<h3 class="font-bold">{item.name}</h3>
-				<p class="md:text-pretty md:max-w-96">{item.description}</p>
-			</li>
-		{/each}
-	</ul>
-</div>
-<div class="md:flex md:flex-col md:items-center md:max-w-1/2 mb-6">
 	<h2 class="md:text-4xl text-3xl font-indie-flower">Education</h2>
 	<ul>
 		{#each Education as item}
-			<li class="border-b-gray-400 border-b-4 my-4">
+			<li class="my-4">
 				<h3 class="font-bold">{item.name}</h3>
 				<p>{item.course}</p>
 			</li>

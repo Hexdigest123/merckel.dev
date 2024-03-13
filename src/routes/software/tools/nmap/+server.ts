@@ -57,7 +57,6 @@ export async function POST({
 			request.headers.get('x-forwarded-for') ||
 			getClientAddress();
 	} catch (err) {
-		console.error(err);
 		return new Response('Invalid request', { status: 500 });
 	}
 
@@ -75,8 +74,6 @@ export async function POST({
 			'Illegal content has been detected. If necessary, this incident will be reported to the authorities.',
 			{ status: 500 }
 		);
-	} else {
-		console.log('its good');
 	}
 	if (urlBlackList.some((url) => host.includes(url))) {
 		return new Response('Illegal remote host', { status: 500 });

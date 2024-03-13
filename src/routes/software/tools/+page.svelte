@@ -15,11 +15,11 @@
 			toolURL: '/nmap'
 		}
 	];
-	const filtered_software: ITools[] = software;
+	let filtered_software: ITools[] = software;
 
 	const handleChange = (e: Event) => {
 		let searchTerm = (e.target as HTMLInputElement).value;
-		software.filter((item) => {
+		filtered_software = software.filter((item) => {
 			return item.name.includes(searchTerm);
 		});
 	};
