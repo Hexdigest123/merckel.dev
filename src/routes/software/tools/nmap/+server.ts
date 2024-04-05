@@ -42,6 +42,22 @@ async function randomBigInt(): Promise<bigint | undefined> {
 	return BigInt(`0x${hex}`);
 }
 
+interface IHtmlSpecialCharsMap {
+	[key: string]: string;
+}
+
+const htmlSpecialCharsMap: IHtmlSpecialCharsMap = {
+	'&': '&amp;',
+	'<': '&lt;',
+	'>': '&gt;',
+	'"': '&quot;',
+	"'": '&#39;'
+};
+
+function replaceSpecialHtmlCharacters(text: string): string {
+	return text.replace(/[&<>"']/g, (char) => htmlSpecialCharsMap[char]);
+}
+
 export async function POST({
 	request,
 	getClientAddress
@@ -105,7 +121,8 @@ export async function POST({
 			console.log('stderr:', stderr);
 			return new Response('Your request failed!', { status: 500 });
 		}
-		return new Response(stdout.replace(/(\n|\r\n)/g, '<br>'), { status: 200 });
+		let specialCharsRemoved = replaceSpecialHtmlCharacters(stdout);
+		return new Response(specialCharsRemoved.replace(/(\n|\r\n)/g, '<br>'), { status: 200 });
 	} catch (err) {
 		console.error(err);
 	}
