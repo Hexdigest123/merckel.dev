@@ -12,6 +12,7 @@
 	import TestimonialsSection from '$lib/components/sections/TestimonialsSection.svelte';
 	import ToolsSection from '$lib/components/sections/ToolsSection.svelte';
 	import { siteConfig } from '$lib/data/site-config';
+	import type { WebToolWithUsage } from '$lib/types/content';
 	import { ensureScrollTriggerRefreshOnNavigate } from '$lib/utils/gsap';
 	import { createKonamiDetector } from '$lib/utils/konami';
 	import { revealSecret, getSecretsState } from '$lib/utils/secrets-tracker';
@@ -39,8 +40,9 @@
 		contributions: []
 	};
 
-	let { data = {} as { openSource?: OpenSourceData } }: { data: { openSource?: OpenSourceData } } =
-		$props();
+	let {
+		data = {} as { openSource?: OpenSourceData; topTools?: WebToolWithUsage[] }
+	}: { data: { openSource?: OpenSourceData; topTools?: WebToolWithUsage[] } } = $props();
 	let openSourceData = $derived(data.openSource ?? defaultOpenSourceData);
 
 	const sections = [
@@ -136,7 +138,7 @@
 					<AboutSection />
 				</AnimateOnScroll>
 				<AnimateOnScroll>
-					<ToolsSection onSecretRevealed={handleSecretRevealed} />
+					<ToolsSection tools={data.topTools ?? []} />
 				</AnimateOnScroll>
 				<AnimateOnScroll>
 					<ProjectsSection onSecretRevealed={handleSecretRevealed} />

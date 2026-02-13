@@ -1,16 +1,15 @@
-// Type exports
 export type {
 	Project,
 	Experience,
-	Tool,
+	WebTool,
+	WebToolWithUsage,
 	Testimonial,
 	SocialLink,
 	SiteConfig
 } from './types/content';
 
-// Data exports
 export { projects } from './data/projects';
 export { experience } from './data/experience';
-export { tools } from './data/tools';
+export { webTools } from './data/web-tools';
 export { testimonials } from './data/testimonials';
 export { siteConfig } from './data/site-config';

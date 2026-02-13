@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { projects } from '$lib/data/projects';
 import { siteConfig } from '$lib/data/site-config';
+import { getTopTools } from '$lib/server/services/usage';
 
 interface OpenSourceContribution {
 	id: string;
@@ -125,9 +126,10 @@ async function fetchGitHubOpenSourceData(username: string): Promise<OpenSourceDa
 }
 
 export const load = async () => {
+	const topTools = await getTopTools(3);
 	const now = Date.now();
 	if (openSourceCache && openSourceCache.expiresAt > now) {
-		return { openSource: openSourceCache.data };
+		return { openSource: openSourceCache.data, topTools };
 	}
 
 	const githubProfileUrl = siteConfig.socials.find((social) => social.platform === 'GitHub')?.url;
@@ -138,7 +140,7 @@ export const load = async () => {
 			'GitHub profile is not configured yet, so this section uses local portfolio highlights.'
 		);
 		openSourceCache = { expiresAt: now + OPEN_SOURCE_CACHE_TTL_MS, data: fallbackData };
-		return { openSource: fallbackData };
+		return { openSource: fallbackData, topTools };
 	}
 
 	try {
@@ -150,13 +152,13 @@ export const load = async () => {
 			);
 
 		openSourceCache = { expiresAt: now + OPEN_SOURCE_CACHE_TTL_MS, data: openSource };
-		return { openSource };
+		return { openSource, topTools };
 	} catch {
 		const fallbackData = createFallbackData(
 			'GitHub data request failed, so local highlights are shown instead.'
 		);
 		openSourceCache = { expiresAt: now + OPEN_SOURCE_CACHE_TTL_MS, data: fallbackData };
-		return { openSource: fallbackData };
+		return { openSource: fallbackData, topTools };
 	}
 };
 

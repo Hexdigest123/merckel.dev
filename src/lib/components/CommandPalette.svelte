@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
 	import {
 		createCommandList,
 		executeCommand,
@@ -118,12 +119,19 @@
 
 		const result = executeCommand(command) as {
 			navigateToHash?: string;
+			navigateToUrl?: string;
 			message?: string;
 			secretId?: string;
 		};
 
 		if (result.secretId && onSecretRevealed) {
 			onSecretRevealed(result.secretId);
+		}
+
+		if (result.navigateToUrl) {
+			closePalette();
+			void goto(result.navigateToUrl);
+			return;
 		}
 
 		if (result.navigateToHash) {
@@ -216,7 +224,7 @@
 							>
 								<span>{command.label}</span>
 								<span class="font-mono text-xs tracking-wide text-slate-500 uppercase">
-									{command.type === 'navigate' ? 'Section' : 'Hidden'}
+									{{ navigate: 'Section', 'navigate-url': 'Tool', hidden: 'Hidden' }[command.type]}
 								</span>
 							</button>
 						</li>

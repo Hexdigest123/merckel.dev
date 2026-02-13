@@ -7,8 +7,9 @@ export interface CommandPaletteCommand {
 	id: string;
 	label: string;
 	keywords: string[];
-	type: 'navigate' | 'hidden';
+	type: 'navigate' | 'navigate-url' | 'hidden';
 	hash?: string;
+	url?: string;
 	output?: string;
 	secretId?: string;
 	visibleByDefault: boolean;
@@ -16,9 +17,53 @@ export interface CommandPaletteCommand {
 
 export interface CommandExecutionResult {
 	navigateToHash?: string;
+	navigateToUrl?: string;
 	message?: string;
 	secretId?: string;
 }
+
+const TOOL_COMMANDS: CommandPaletteCommand[] = [
+	{
+		id: 'tool-url-shortener',
+		label: 'URL Shortener',
+		keywords: ['shorten', 'link', 'url', 'short', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/url-shortener',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-cron-generator',
+		label: 'Cron Expression Generator',
+		keywords: ['cron', 'schedule', 'crontab', 'timer', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/cron-generator',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-text-diff',
+		label: 'Text Diff Checker',
+		keywords: ['diff', 'compare', 'text', 'difference', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/text-diff',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-image-converter',
+		label: 'Image Format Converter',
+		keywords: ['image', 'convert', 'png', 'jpg', 'webp', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/image-converter',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-qr-generator',
+		label: 'QR Code Generator',
+		keywords: ['qr', 'qrcode', 'barcode', 'scan', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/qr-generator',
+		visibleByDefault: true
+	}
+];
 
 const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
 	{
@@ -27,7 +72,7 @@ const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
 		keywords: ['commands', 'palette', 'assist'],
 		type: 'hidden',
 		output:
-			'Commands: about, tools, projects, experience, open source, testimonials, contact. Hidden: secret, matrix, sudo hire me.',
+			'Sections: about, tools, projects, experience, open source, testimonials, contact. Tools: url shortener, cron, diff, image converter, qr. Hidden: secret, matrix, sudo hire me.',
 		visibleByDefault: false
 	},
 	{
@@ -75,7 +120,7 @@ export function createCommandList(
 		visibleByDefault: true
 	}));
 
-	return [...navigationCommands, ...HIDDEN_COMMANDS];
+	return [...navigationCommands, ...TOOL_COMMANDS, ...HIDDEN_COMMANDS];
 }
 
 export function filterCommands(
@@ -118,6 +163,12 @@ export function executeCommand(command: CommandPaletteCommand): CommandExecution
 	if (command.type === 'navigate' && command.hash) {
 		return {
 			navigateToHash: command.hash
+		};
+	}
+
+	if (command.type === 'navigate-url' && command.url) {
+		return {
+			navigateToUrl: command.url
 		};
 	}
 

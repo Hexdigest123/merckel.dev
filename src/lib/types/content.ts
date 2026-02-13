@@ -25,13 +25,18 @@ export interface Experience {
 	tags: string[];
 }
 
-export interface Tool {
+export interface WebTool {
 	id: string;
 	name: string;
+	slug: string;
+	description: string;
 	icon: string;
-	category: 'language' | 'framework' | 'tool' | 'platform';
-	proficiency: 'expert' | 'proficient' | 'familiar';
-	url?: string;
+	category: 'utility' | 'developer';
+	path: string;
+}
+
+export interface WebToolWithUsage extends WebTool {
+	usageCount: number;
 }
 
 export interface Testimonial {
