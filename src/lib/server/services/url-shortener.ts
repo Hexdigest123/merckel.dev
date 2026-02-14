@@ -114,3 +114,26 @@ export async function resolveShortCode(
 		return { found: false };
 	}
 }
+
+export async function getShortCodeStats(code: string): Promise<{
+	found: boolean;
+	originalUrl?: string;
+	shortCode?: string;
+	clicks?: number;
+	createdAt?: Date;
+}> {
+	if (!db) return { found: false };
+	try {
+		const [row] = await db.select().from(urls).where(eq(urls.shortCode, code)).limit(1);
+		if (!row) return { found: false };
+		return {
+			found: true,
+			originalUrl: row.originalUrl,
+			shortCode: row.shortCode,
+			clicks: row.clicks,
+			createdAt: row.createdAt
+		};
+	} catch {
+		return { found: false };
+	}
+}
