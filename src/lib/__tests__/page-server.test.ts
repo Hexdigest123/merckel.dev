@@ -22,6 +22,10 @@ describe('page server load - open source data', () => {
 	});
 
 	it('returns fallback data without calling GitHub API when profile is not configured', async () => {
+		if (githubSocial) {
+			githubSocial.url = 'https://github.com';
+		}
+
 		const fetchMock = vi.fn();
 		vi.stubGlobal('fetch', fetchMock);
 
