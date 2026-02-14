@@ -5,7 +5,7 @@
 	let hoveredTestimonialId = $state('');
 </script>
 
-<Section id="testimonials" title="Testimonials" description="Social proof and collaborator quotes.">
+<Section id="testimonials" title="Referenzen" description="Kundenstimmen und Empfehlungen.">
 	<div
 		class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1"
 		data-testid="testimonials-list"
@@ -28,9 +28,9 @@
 				<p class="text-sm leading-7 text-slate-200 sm:text-base">"{quote.quote}"</p>
 				<footer class="mt-4 border-t border-slate-700/70 pt-4">
 					<p class="font-semibold text-slate-100">{quote.author}</p>
-					<p class="text-sm text-slate-400">{quote.role} at {quote.company}</p>
+					<p class="text-sm text-slate-400">{quote.role} bei {quote.company}</p>
 					<p class="mt-2 font-mono text-[11px] tracking-[0.2em] text-purple-300/70 uppercase">
-						Client voice {index + 1}
+						Kundenmeinung {index + 1}
 					</p>
 				</footer>
 			</blockquote>

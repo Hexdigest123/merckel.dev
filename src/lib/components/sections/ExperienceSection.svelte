@@ -13,7 +13,7 @@
 	function formatPeriod(startDate: string, endDate?: string) {
 		const [startYear] = startDate.split('-');
 		const [endYear] = endDate?.split('-') ?? [];
-		return `${startYear} — ${endYear ?? 'Present'}`;
+		return `${startYear} — ${endYear ?? 'Heute'}`;
 	}
 
 	function setHoveredExperience(entryId: string) {
@@ -40,11 +40,7 @@
 	}
 </script>
 
-<Section
-	id="experience"
-	title="Experience"
-	description="Timeline entries, accomplishments, and impact."
->
+<Section id="experience" title="Erfahrung" description="Zeitstrahl, Erfolge und Wirkung.">
 	<ol class="relative space-y-3" data-testid="experience-timeline" data-reveal-group>
 		{#each experience as entry (entry.id)}
 			<li class="group relative pl-6 sm:pl-0" data-reveal-item>
@@ -100,16 +96,4 @@
 			</li>
 		{/each}
 	</ol>
-
-	<div class="pt-3" data-reveal>
-		<a
-			href={linkedInProfile}
-			target="_blank"
-			rel="noreferrer"
-			class="inline-flex items-center gap-2 rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-200 transition-colors duration-200 hover:border-purple-400 hover:text-purple-300 focus-visible:border-purple-400 focus-visible:text-purple-300 focus-visible:outline-none"
-		>
-			<span>View Full Resume</span>
-			<span aria-hidden="true">↗</span>
-		</a>
-	</div>
 </Section>

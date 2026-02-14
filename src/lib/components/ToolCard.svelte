@@ -19,7 +19,7 @@
 	};
 
 	let iconSymbol = $derived(iconMap[icon] ?? '🧰');
-	let categoryLabel = $derived(category === 'utility' ? 'Utility' : 'Developer');
+	let categoryLabel = $derived(category === 'utility' ? 'Nützlich' : 'Entwickler');
 </script>
 
 <a

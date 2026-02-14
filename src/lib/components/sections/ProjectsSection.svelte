@@ -56,11 +56,7 @@
 	}
 </script>
 
-<Section
-	id="projects"
-	title="Projects"
-	description="Featured work cards and implementation details."
->
+<Section id="projects" title="Projekte" description="Ausgewählte Projekte und Umsetzungsdetails.">
 	<div class="space-y-4" data-testid="projects-list" data-reveal-group>
 		{#each projects as project (project.id)}
 			<article
@@ -88,7 +84,7 @@
 						<span
 							class="rounded-full border border-purple-400/50 bg-purple-500/15 px-3 py-1 font-mono text-xs tracking-wide text-purple-200 uppercase"
 						>
-							Featured
+							Highlight
 						</span>
 					{/if}
 				</div>
@@ -110,10 +106,10 @@
 							href={project.url}
 							target="_blank"
 							rel="noreferrer"
-							aria-label={`Open live demo for ${project.title}`}
+							aria-label={`Live-Demo öffnen für ${project.title}`}
 							class="rounded-full border border-slate-600 px-3.5 py-1.5 text-slate-200 transition-colors duration-200 hover:border-purple-400 hover:text-purple-300 focus-visible:border-purple-400 focus-visible:text-purple-300 focus-visible:outline-none"
 						>
-							Live demo
+							Live-Demo
 						</a>
 					{/if}
 					{#if project.github}
@@ -121,10 +117,10 @@
 							href={project.github}
 							target="_blank"
 							rel="noreferrer"
-							aria-label={`Open source code for ${project.title}`}
+							aria-label={`Quellcode öffnen für ${project.title}`}
 							class="rounded-full border border-slate-600 px-3.5 py-1.5 text-slate-200 transition-colors duration-200 hover:border-purple-400 hover:text-purple-300 focus-visible:border-purple-400 focus-visible:text-purple-300 focus-visible:outline-none"
 						>
-							Source code
+							Quellcode
 						</a>
 					{/if}
 				</div>

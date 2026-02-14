@@ -24,12 +24,12 @@
 <Section
 	id="opensource"
 	title="Open Source"
-	description="Community contributions and public activity."
+	description="Community-Beiträge und öffentliche Aktivität."
 >
 	<div class="grid gap-4 lg:grid-cols-[1fr,1.2fr] lg:gap-5">
 		<div class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-5 sm:p-6" data-reveal>
 			<div class="flex flex-wrap items-center justify-between gap-3">
-				<h3 class="font-sans text-lg font-semibold text-slate-100">Community snapshot</h3>
+				<h3 class="font-sans text-lg font-semibold text-slate-100">Community-Überblick</h3>
 				<span
 					class={`rounded-full border px-2.5 py-1 font-mono text-[0.7rem] tracking-wider uppercase ${
 						data.source === 'github'
@@ -37,7 +37,7 @@
 							: 'border-slate-600/80 bg-slate-700/35 text-slate-300'
 					}`}
 				>
-					{data.source === 'github' ? 'Live data' : 'Fallback'}
+					{data.source === 'github' ? 'Live-Daten' : 'Lokale Daten'}
 				</span>
 			</div>
 			<ul class="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
@@ -106,10 +106,10 @@
 					class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-5"
 				>
 					<p class="font-sans text-base font-semibold text-slate-100 sm:text-lg">
-						Open-source activity will appear here
+						Open-Source-Aktivität wird hier angezeigt
 					</p>
 					<p class="mt-2 text-sm text-slate-300">
-						Add a GitHub username and token to unlock live repository insights.
+						GitHub-Benutzername und Token hinzufügen, um Live-Repository-Einblicke freizuschalten.
 					</p>
 				</article>
 			{/if}

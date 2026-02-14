@@ -9,21 +9,21 @@
 		.map((sentence) => (sentence.endsWith('.') ? sentence : `${sentence}.`));
 </script>
 
-<Section id="about" title="About" description="Background, values, and narrative context.">
+<Section id="about" title="Über mich" description="Hintergrund, Werte und persönliche Geschichte.">
 	<div class="grid gap-5 lg:grid-cols-[1.3fr,1fr] lg:gap-8">
 		<article
 			data-reveal
 			class="rounded-2xl border border-slate-700/60 bg-gradient-to-br from-slate-800/55 to-slate-900/70 p-5 shadow-lg shadow-slate-950/20 sm:p-6"
 		>
-			<p class="font-mono text-xs tracking-[0.18em] text-purple-300 uppercase">Narrative</p>
-			<h3 class="mt-3 font-sans text-xl font-semibold text-slate-100 sm:text-2xl">Who Am I</h3>
+			<p class="font-mono text-xs tracking-[0.18em] text-purple-300 uppercase">Geschichte</p>
+			<h3 class="mt-3 font-sans text-xl font-semibold text-slate-100 sm:text-2xl">Wer bin ich</h3>
 			<div class="mt-4 space-y-3 text-sm leading-7 text-slate-300 sm:text-base">
 				{#each bioParagraphs as paragraph}
 					<p>{paragraph}</p>
 				{/each}
 			</div>
 			<p class="mt-5 text-sm text-slate-400 sm:text-base">
-				Open to collaboration via
+				Offen für Zusammenarbeit via
 				<a
 					href={`mailto:${siteConfig.email}`}
 					class="font-medium text-purple-300 underline decoration-purple-400/60 underline-offset-4 transition-colors duration-200 hover:text-purple-200"
@@ -34,7 +34,7 @@
 		</article>
 
 		<aside data-reveal class="rounded-2xl border border-slate-700/60 bg-slate-900/55 p-5 sm:p-6">
-			<h3 class="font-sans text-lg font-semibold text-slate-100">Connect points</h3>
+			<h3 class="font-sans text-lg font-semibold text-slate-100">Kontaktpunkte</h3>
 			<ul class="mt-4 space-y-3" data-reveal-group>
 				{#each siteConfig.socials as social (social.platform)}
 					<li data-reveal-item>
@@ -51,7 +51,7 @@
 							<span
 								class="font-mono text-xs tracking-wider text-slate-500 transition-colors duration-200 group-hover:text-purple-200"
 							>
-								Visit
+								Besuchen
 							</span>
 						</a>
 					</li>
