@@ -12,7 +12,7 @@
 
 	let {
 		sections,
-		placeholder = 'Type a command or section...',
+		placeholder = 'Befehl oder Sektion eingeben...',
 		onSecretRevealed
 	}: {
 		sections: readonly CommandPaletteSection[];
@@ -113,7 +113,7 @@
 
 	function runCommand(command = selectedCommand) {
 		if (!command || !browser) {
-			feedback = 'No matching command.';
+			feedback = 'Kein passender Befehl.';
 			return;
 		}
 
@@ -146,11 +146,11 @@
 				return;
 			}
 
-			feedback = `Section #${result.navigateToHash} is unavailable.`;
+			feedback = `Sektion #${result.navigateToHash} ist nicht verfügbar.`;
 			return;
 		}
 
-		feedback = result.message ?? 'Done.';
+		feedback = result.message ?? 'Fertig.';
 	}
 
 	function keyboardHint(): string {
@@ -163,9 +163,9 @@
 	data-cursor="link"
 	class="fixed top-4 right-4 z-30 hidden items-center gap-2 rounded-full border border-slate-600/70 bg-slate-900/75 px-3 py-1.5 font-mono text-xs tracking-wide text-slate-300 shadow-[0_8px_24px_rgba(15,23,42,0.55)] backdrop-blur focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 sm:inline-flex"
 	onclick={openPalette}
-	aria-label="Open command palette"
+	aria-label="Befehlspalette öffnen"
 >
-	<span>Command</span>
+	<span>Befehl</span>
 	<kbd class="rounded border border-slate-500/80 px-1.5 py-0.5 text-[11px] text-slate-200"
 		>{keyboardHint()}</kbd
 	>
@@ -180,22 +180,22 @@
 			type="button"
 			class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
 			onclick={closePalette}
-			aria-label="Close command palette"
+			aria-label="Befehlspalette schließen"
 		></button>
 		<div
 			role="dialog"
 			aria-modal="true"
-			aria-label="Command palette"
+			aria-label="Befehlspalette"
 			class="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-purple-400/30 bg-slate-900/95 shadow-[0_28px_80px_rgba(6,11,28,0.9)]"
 		>
 			<div class="border-b border-slate-700/70 px-4 py-3 sm:px-5">
-				<label for="command-palette-input" class="sr-only">Command input</label>
+				<label for="command-palette-input" class="sr-only">Befehlseingabe</label>
 				<input
 					bind:this={inputElement}
 					id="command-palette-input"
 					type="text"
 					value={query}
-					aria-label="Command input"
+					aria-label="Befehlseingabe"
 					{placeholder}
 					autocomplete="off"
 					class="w-full border-0 bg-transparent px-1 py-2 text-base text-slate-100 outline-none placeholder:text-slate-500"
@@ -204,9 +204,9 @@
 				/>
 			</div>
 
-			<ul role="listbox" aria-label="Command results" class="max-h-80 overflow-y-auto py-2">
+			<ul role="listbox" aria-label="Befehlsergebnisse" class="max-h-80 overflow-y-auto py-2">
 				{#if filteredCommands.length === 0}
-					<li class="px-5 py-3 text-sm text-slate-500">No commands match your input.</li>
+					<li class="px-5 py-3 text-sm text-slate-500">Keine Befehle gefunden.</li>
 				{:else}
 					{#each filteredCommands as command, index (command.id)}
 						<li>
@@ -224,7 +224,9 @@
 							>
 								<span>{command.label}</span>
 								<span class="font-mono text-xs tracking-wide text-slate-500 uppercase">
-									{{ navigate: 'Section', 'navigate-url': 'Tool', hidden: 'Hidden' }[command.type]}
+									{{ navigate: 'Sektion', 'navigate-url': 'Tool', hidden: 'Versteckt' }[
+										command.type
+									]}
 								</span>
 							</button>
 						</li>
@@ -233,8 +235,8 @@
 			</ul>
 
 			<div class="border-t border-slate-700/60 px-5 py-2 text-xs text-slate-500">
-				Press <span class="font-mono text-slate-400">Enter</span> to run,
-				<span class="font-mono text-slate-400">Esc</span> to close.
+				<span class="font-mono text-slate-400">Enter</span> zum Ausführen,
+				<span class="font-mono text-slate-400">Esc</span> zum Schließen.
 			</div>
 
 			{#if feedback}

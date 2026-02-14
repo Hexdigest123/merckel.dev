@@ -1,4 +1,4 @@
 export const secretNotes: Record<string, string> = {
-	'hover-project': 'You found a hidden project note!',
-	'hover-tool': 'Mastery unlocked: You discovered a tool secret.'
+	'hover-project': 'Du hast eine versteckte Projektnotiz gefunden!',
+	'hover-tool': 'Meisterschaft freigeschaltet: Du hast ein Werkzeug-Geheimnis entdeckt.'
 };

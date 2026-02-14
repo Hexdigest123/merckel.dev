@@ -72,7 +72,7 @@ const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
 		keywords: ['commands', 'palette', 'assist'],
 		type: 'hidden',
 		output:
-			'Sections: about, tools, projects, experience, open source, testimonials, contact. Tools: url shortener, cron, diff, image converter, qr. Hidden: secret, matrix, sudo hire me.',
+			'Sektionen: über mich, werkzeuge, projekte, erfahrung, open source, referenzen, kontakt. Tools: url shortener, cron, diff, bildkonverter, qr. Versteckt: secret, matrix, sudo hire me.',
 		visibleByDefault: false
 	},
 	{
@@ -80,7 +80,7 @@ const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
 		label: 'secret',
 		keywords: ['hidden', 'easter', 'vault'],
 		type: 'hidden',
-		output: 'No classified intel here. But curiosity looks great on you.',
+		output: 'Keine geheimen Informationen hier. Aber Neugier steht dir gut.',
 		secretId: 'terminal-secret',
 		visibleByDefault: false
 	},
@@ -89,7 +89,7 @@ const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
 		label: 'matrix',
 		keywords: ['neo', 'red pill', 'wake up'],
 		type: 'hidden',
-		output: 'Wake up, Neo. The portfolio has you.',
+		output: 'Wach auf, Neo. Das Portfolio hat dich.',
 		secretId: 'terminal-secret',
 		visibleByDefault: false
 	},
@@ -98,7 +98,7 @@ const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
 		label: 'sudo hire me',
 		keywords: ['sudo', 'hire', 'career'],
 		type: 'hidden',
-		output: 'Permission granted. Drafting the offer letter... done.',
+		output: 'Zugriff gewährt. Angebotsschreiben wird erstellt... fertig.',
 		secretId: 'terminal-secret',
 		visibleByDefault: false
 	}
@@ -180,6 +180,6 @@ export function executeCommand(command: CommandPaletteCommand): CommandExecution
 	}
 
 	return {
-		message: 'Command recognized, but no action is configured.'
+		message: 'Befehl erkannt, aber keine Aktion konfiguriert.'
 	};
 }
