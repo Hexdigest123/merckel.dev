@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import LinkStats from '$lib/components/tools/LinkStats.svelte';
 
 	type OutputFormat = 'svg' | 'png';
 	type ErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H';
@@ -119,7 +120,7 @@
 					const shortenPayload: ShortenResponse = await shortenResponse.json();
 
 					if (!shortenResponse.ok || !shortenPayload.success || !shortenPayload.shortCode) {
-						throw new Error(shortenPayload.error ?? 'Unable to shorten this URL.');
+						throw new Error(shortenPayload.error ?? 'Diese URL konnte nicht gekürzt werden.');
 					}
 
 					generatedShortUrl = `${window.location.origin}/s/${shortenPayload.shortCode}`;
@@ -133,7 +134,7 @@
 				const toDataURLFn = qrModule.toDataURL ?? qrModule.default?.toDataURL;
 
 				if (!toStringFn || !toDataURLFn) {
-					throw new Error('QR code module failed to load.');
+					throw new Error('QR-Code-Modul konnte nicht geladen werden.');
 				}
 
 				if (currentFormat === 'svg') {
@@ -158,8 +159,8 @@
 				encodedValue = valueToEncode;
 				shortUrl = generatedShortUrl;
 				statusMessage = generatedShortUrl
-					? 'Trackable short URL encoded'
-					: 'Plain text - not trackable';
+					? 'Nachverfolgbare Kurz-URL kodiert'
+					: 'Klartext — nicht nachverfolgbar';
 
 				if (!trackedUsage) {
 					trackedUsage = true;
@@ -172,7 +173,8 @@
 				}
 			} catch (error) {
 				if (myToken !== tokenCounter) return;
-				errorMessage = error instanceof Error ? error.message : 'Unable to generate QR code.';
+				errorMessage =
+					error instanceof Error ? error.message : 'QR-Code konnte nicht generiert werden.';
 				svgString = '';
 				pngDataUrl = '';
 				encodedValue = '';
@@ -228,7 +230,8 @@
 				copyTimeoutId = null;
 			}, 2000);
 		} catch {
-			errorMessage = 'Clipboard access failed. Copy manually from the preview source.';
+			errorMessage =
+				'Zwischenablage-Zugriff fehlgeschlagen. Kopieren Sie manuell aus der Vorschauquelle.';
 		}
 	}
 </script>
@@ -240,19 +243,20 @@
 		class="inline-flex items-center gap-2 text-sm text-slate-300 transition-colors duration-200 hover:text-purple-300"
 	>
 		<span aria-hidden="true">←</span>
-		<span>Back to Tools</span>
+		<span>Zurück zu Werkzeugen</span>
 	</a>
 
 	<div class="mt-6 rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
 		<h1 class="text-3xl font-bold text-slate-100">{data.title}</h1>
 		<p class="mt-2 text-base text-slate-300">
-			Generate QR codes for URLs or text. URLs are shortened first so scans can be tracked.
+			QR-Codes für URLs oder Text generieren. URLs werden zuerst gekürzt, damit Scans nachverfolgt
+			werden können.
 		</p>
 
 		<div class="mt-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
 			<div class="space-y-5 rounded-xl border border-slate-700/60 bg-slate-800/30 p-5">
 				<label for="qr-input" class="block space-y-2 text-sm text-slate-300">
-					<span>Text or URL</span>
+					<span>Text oder URL</span>
 					<input
 						id="qr-input"
 						type="text"
@@ -283,7 +287,7 @@
 					</div>
 
 					<div>
-						<p class="text-sm text-slate-300">Size</p>
+						<p class="text-sm text-slate-300">Größe</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each sizeOptions as option (option.value)}
 								<button
@@ -302,7 +306,7 @@
 					</div>
 
 					<div>
-						<p class="text-sm text-slate-300">Error correction</p>
+						<p class="text-sm text-slate-300">Fehlerkorrektur</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each levelOptions as option (option)}
 								<button
@@ -323,14 +327,14 @@
 			</div>
 
 			<div class="rounded-xl border border-slate-700/60 bg-slate-800/30 p-5">
-				<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Live Preview</p>
+				<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Live-Vorschau</p>
 				<div
 					class="mt-3 flex min-h-80 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/70 p-4"
 				>
 					{#if !trimmedText}
-						<p class="text-sm text-slate-400">Enter text to generate a QR code</p>
+						<p class="text-sm text-slate-400">Text eingeben, um einen QR-Code zu generieren</p>
 					{:else if isGenerating}
-						<p class="text-sm text-slate-400">Generating...</p>
+						<p class="text-sm text-slate-400">Wird generiert...</p>
 					{:else if outputFormat === 'svg' && svgString}
 						<div class="max-w-full" style={`width: ${size}px; height: ${size}px;`}>
 							{@html svgString}
@@ -338,14 +342,14 @@
 					{:else if outputFormat === 'png' && pngDataUrl}
 						<img
 							src={pngDataUrl}
-							alt="Generated QR code"
+							alt="Generierter QR-Code"
 							class="h-auto max-w-full"
 							style={`width: ${size}px;`}
 						/>
 					{:else if errorMessage}
 						<p class="text-sm text-rose-300">{errorMessage}</p>
 					{:else}
-						<p class="text-sm text-slate-400">No preview available</p>
+						<p class="text-sm text-slate-400">Keine Vorschau verfügbar</p>
 					{/if}
 				</div>
 
@@ -366,7 +370,7 @@
 							disabled={!svgString}
 							class="inline-flex rounded-full border border-slate-700 bg-slate-800 px-5 py-2.5 text-sm font-semibold text-slate-200 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							{isCopied ? 'Copied SVG' : 'Copy SVG to Clipboard'}
+							{isCopied ? 'SVG kopiert' : 'SVG in Zwischenablage kopieren'}
 						</button>
 					{/if}
 				</div>
@@ -379,7 +383,7 @@
 						{#if shortUrl}
 							<p class="font-mono text-xs break-all text-purple-200">{shortUrl}</p>
 						{:else}
-							<p class="text-slate-400">Plain text - not trackable</p>
+							<p class="text-slate-400">Klartext — nicht nachverfolgbar</p>
 						{/if}
 					</div>
 				{/if}
@@ -389,5 +393,9 @@
 		{#if errorMessage}
 			<p role="alert" class="mt-4 text-sm text-rose-300">{errorMessage}</p>
 		{/if}
+	</div>
+
+	<div class="mt-6">
+		<LinkStats />
 	</div>
 </section>

@@ -139,14 +139,16 @@
 			class="inline-flex w-fit items-center gap-2 text-sm text-purple-300 transition hover:text-purple-200"
 		>
 			<span aria-hidden="true">&larr;</span>
-			Back to Tools
+			Zurück zu Werkzeugen
 		</a>
 
 		<header class="space-y-3">
 			<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
-				Text Diff Checker
+				Text-Vergleich
 			</h1>
-			<p class="text-slate-400">Compare two texts side-by-side with highlighted differences.</p>
+			<p class="text-slate-400">
+				Zwei Texte nebeneinander vergleichen mit hervorgehobenen Unterschieden.
+			</p>
 		</header>
 
 		<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
@@ -158,18 +160,18 @@
 						rows="12"
 						bind:value={originalText}
 						class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-						placeholder="Paste original text..."
+						placeholder="Originaltext einfügen..."
 					></textarea>
 				</div>
 
 				<div class="space-y-2">
-					<label class="text-sm font-medium text-slate-200" for="modified-text">Modified</label>
+					<label class="text-sm font-medium text-slate-200" for="modified-text">Geändert</label>
 					<textarea
 						id="modified-text"
 						rows="12"
 						bind:value={modifiedText}
 						class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-						placeholder="Paste modified text..."
+						placeholder="Geänderten Text einfügen..."
 					></textarea>
 				</div>
 			</div>
@@ -180,7 +182,7 @@
 					onclick={clearAll}
 					class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500"
 				>
-					Clear
+					Löschen
 				</button>
 				<button
 					type="button"
@@ -188,7 +190,7 @@
 					disabled={diffOutput.length === 0}
 					class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition enabled:hover:border-purple-400 enabled:hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
 				>
-					{isCopied ? 'Copied' : 'Copy diff output'}
+					{isCopied ? 'Kopiert' : 'Diff-Ausgabe kopieren'}
 				</button>
 			</div>
 		</section>
@@ -199,12 +201,12 @@
 					<span
 						class="rounded-full border border-emerald-400/50 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300"
 					>
-						{additions} additions
+						{additions} Hinzufügungen
 					</span>
 					<span
 						class="rounded-full border border-rose-400/50 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-300"
 					>
-						{deletions} deletions
+						{deletions} Löschungen
 					</span>
 				</div>
 			{/if}
@@ -214,10 +216,10 @@
 			>
 				{#if !originalText.trim() || !modifiedText.trim()}
 					<p class="px-4 py-3 font-mono text-sm text-slate-400">
-						Paste text into both panels to see a live diff.
+						Text in beide Felder einfügen, um einen Live-Vergleich zu sehen.
 					</p>
 				{:else if lines.length === 0}
-					<p class="px-4 py-3 font-mono text-sm text-slate-400">No differences.</p>
+					<p class="px-4 py-3 font-mono text-sm text-slate-400">Keine Unterschiede.</p>
 				{:else}
 					{#each lines as line (line.key)}
 						<div

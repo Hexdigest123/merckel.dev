@@ -64,7 +64,7 @@
 
 	function setSource(file: File) {
 		if (!formatOptions.some((option) => option.mime === file.type)) {
-			errorMessage = 'Please upload a PNG, JPEG, or WebP image.';
+			errorMessage = 'Bitte laden Sie ein PNG-, JPEG- oder WebP-Bild hoch.';
 			return;
 		}
 
@@ -172,7 +172,7 @@
 				body: JSON.stringify({ toolId: 'image-converter' })
 			}).catch(() => null);
 		} catch {
-			errorMessage = 'Conversion failed. Please try another image.';
+			errorMessage = 'Konvertierung fehlgeschlagen. Bitte versuchen Sie ein anderes Bild.';
 		} finally {
 			URL.revokeObjectURL(sourceObjectUrl);
 			isConverting = false;
@@ -191,7 +191,7 @@
 	<section class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
 		<h1 class="text-3xl font-bold text-slate-100">{data.title}</h1>
 		<p class="mt-2 text-base text-slate-300">
-			Convert images between PNG, JPG, and WebP — entirely in your browser.
+			Bilder zwischen PNG, JPG und WebP konvertieren — komplett im Browser.
 		</p>
 
 		<div class="mt-6 space-y-6">
@@ -213,7 +213,7 @@
 					onchange={handleFileInput}
 					class="sr-only"
 				/>
-				<p class="text-sm text-slate-300">Drop an image here or click to upload</p>
+				<p class="text-sm text-slate-300">Bild hierher ziehen oder klicken zum Hochladen</p>
 				<p class="mt-1 font-mono text-xs tracking-wide text-slate-400 uppercase">PNG, JPEG, WebP</p>
 			</label>
 
@@ -223,7 +223,7 @@
 						<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Original</p>
 						<img
 							src={sourcePreviewUrl}
-							alt="Uploaded preview"
+							alt="Vorschau des Uploads"
 							class="mt-3 max-h-64 w-full rounded-lg border border-slate-700 object-contain"
 						/>
 						<p class="mt-3 text-sm text-slate-300">Format: {getFormatLabel(sourceFormat)}</p>
@@ -231,11 +231,11 @@
 					</div>
 
 					<div class="rounded-xl border border-slate-700 bg-slate-900/55 p-4">
-						<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Converted</p>
+						<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Konvertiert</p>
 						{#if convertedPreviewUrl}
 							<img
 								src={convertedPreviewUrl}
-								alt="Converted preview"
+								alt="Vorschau der Konvertierung"
 								class="mt-3 max-h-64 w-full rounded-lg border border-slate-700 object-contain"
 							/>
 							<p class="mt-3 text-sm text-slate-300">Format: {getFormatLabel(targetFormat)}</p>
@@ -246,13 +246,13 @@
 								data-cursor="link"
 								class="mt-4 inline-flex rounded-full bg-purple-500 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors duration-200 hover:bg-purple-400"
 							>
-								Download Converted Image
+								Konvertiertes Bild herunterladen
 							</a>
 						{:else}
 							<div
 								class="mt-3 flex h-64 items-center justify-center rounded-lg border border-slate-700 text-sm text-slate-400"
 							>
-								Converted preview appears here
+								Konvertierte Vorschau erscheint hier
 							</div>
 						{/if}
 					</div>
@@ -260,7 +260,7 @@
 
 				<div class="space-y-4 rounded-xl border border-slate-700 bg-slate-900/55 p-4">
 					<div>
-						<p class="text-sm text-slate-300">Target format</p>
+						<p class="text-sm text-slate-300">Zielformat</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each formatOptions as option (option.mime)}
 								<button
@@ -282,7 +282,7 @@
 
 					{#if isQualityVisible}
 						<label class="block space-y-2" for="quality-slider">
-							<span class="text-sm text-slate-300">Quality: {quality.toFixed(1)}</span>
+							<span class="text-sm text-slate-300">Qualität: {quality.toFixed(1)}</span>
 							<input
 								id="quality-slider"
 								type="range"
@@ -302,7 +302,7 @@
 						data-cursor="link"
 						class="inline-flex rounded-full bg-purple-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors duration-200 hover:bg-purple-400 disabled:cursor-not-allowed disabled:bg-purple-400/50"
 					>
-						{isConverting ? 'Converting...' : 'Convert'}
+						{isConverting ? 'Konvertiere...' : 'Konvertieren'}
 					</button>
 				</div>
 			{/if}

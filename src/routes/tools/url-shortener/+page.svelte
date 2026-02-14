@@ -1,4 +1,6 @@
 <script lang="ts">
+	import LinkStats from '$lib/components/tools/LinkStats.svelte';
+
 	let { data }: { data: { title: string } } = $props();
 
 	let url = $state('');
@@ -25,7 +27,7 @@
 		shortUrl = '';
 
 		if (!trimmedUrl) {
-			errorMessage = 'Enter a URL to shorten.';
+			errorMessage = 'Geben Sie eine URL zum Kürzen ein.';
 			return;
 		}
 
@@ -45,13 +47,13 @@
 			} | null;
 
 			if (!response.ok || !body?.success || !body.shortCode) {
-				errorMessage = body?.error ?? 'Unable to shorten this URL right now.';
+				errorMessage = body?.error ?? 'Diese URL kann derzeit nicht gekürzt werden.';
 				return;
 			}
 
 			shortUrl = `${globalThis.location.origin}/s/${body.shortCode}`;
 		} catch {
-			errorMessage = 'Network issue detected. Please try again.';
+			errorMessage = 'Netzwerkproblem erkannt. Bitte versuchen Sie es erneut.';
 		} finally {
 			isSubmitting = false;
 		}
@@ -71,7 +73,7 @@
 				copyTimeoutId = null;
 			}, 2000);
 		} catch {
-			errorMessage = 'Clipboard access failed. Copy the link manually.';
+			errorMessage = 'Zwischenablage-Zugriff fehlgeschlagen. Kopieren Sie den Link manuell.';
 		}
 	}
 </script>
@@ -79,11 +81,11 @@
 <section class="mx-auto w-full max-w-2xl">
 	<section class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
 		<h1 class="text-3xl font-bold text-slate-100">{data.title}</h1>
-		<p class="mt-2 text-base text-slate-300">Shorten long URLs into clean, shareable links.</p>
+		<p class="mt-2 text-base text-slate-300">Lange URLs in kurze, teilbare Links umwandeln.</p>
 
 		<form class="mt-6 space-y-4" onsubmit={handleSubmit} novalidate>
 			<label class="block space-y-2 text-sm text-slate-300" for="url-input">
-				<span>Long URL</span>
+				<span>Lange URL</span>
 				<input
 					id="url-input"
 					data-cursor="input"
@@ -122,9 +124,9 @@
 								d="M12 2a10 10 0 0 1 10 10h-3a7 7 0 0 0-7-7z"
 							></path>
 						</svg>
-						<span>Shortening...</span>
+						<span>Wird gekürzt...</span>
 					{:else}
-						<span>Shorten</span>
+						<span>Kürzen</span>
 					{/if}
 				</button>
 			</div>
@@ -136,7 +138,7 @@
 
 		{#if shortUrl}
 			<div class="mt-6 rounded-xl border border-slate-700 bg-slate-900/55 p-4">
-				<p class="text-xs tracking-wide text-slate-400 uppercase">Short URL</p>
+				<p class="text-xs tracking-wide text-slate-400 uppercase">Kurze URL</p>
 				<div class="mt-2 flex flex-wrap items-center gap-3">
 					<a
 						href={shortUrl}
@@ -153,10 +155,14 @@
 						data-cursor="link"
 						class="rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-200"
 					>
-						{isCopied ? 'Copied!' : 'Copy'}
+						{isCopied ? 'Kopiert!' : 'Kopieren'}
 					</button>
 				</div>
 			</div>
 		{/if}
 	</section>
+
+	<div class="mt-6">
+		<LinkStats />
+	</div>
 </section>

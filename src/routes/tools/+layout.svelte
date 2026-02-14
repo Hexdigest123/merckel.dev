@@ -12,7 +12,7 @@
 				data-sveltekit-preload-data
 				class="text-sm text-slate-400 transition-colors hover:text-purple-300"
 			>
-				← Home
+				← Startseite
 			</a>
 			<span class="text-slate-600">/</span>
 			<a
@@ -20,7 +20,7 @@
 				data-sveltekit-preload-data
 				class="text-sm text-slate-400 transition-colors hover:text-purple-300"
 			>
-				Tools
+				Werkzeuge
 			</a>
 		</nav>
 		{@render children()}

@@ -5,7 +5,7 @@ export const webTools: WebTool[] = [
 		id: 'url-shortener',
 		name: 'URL Shortener',
 		slug: 'url-shortener',
-		description: 'Shorten long URLs into clean, shareable links.',
+		description: 'Lange URLs in kurze, teilbare Links umwandeln.',
 		icon: 'link',
 		category: 'utility',
 		path: '/tools/url-shortener'
@@ -14,7 +14,7 @@ export const webTools: WebTool[] = [
 		id: 'cron-generator',
 		name: 'Cron Expression Generator',
 		slug: 'cron-generator',
-		description: 'Build cron schedules visually with human-readable output.',
+		description: 'Cron-Zeitpläne visuell erstellen mit lesbarer Ausgabe.',
 		icon: 'clock',
 		category: 'developer',
 		path: '/tools/cron-generator'
@@ -23,7 +23,7 @@ export const webTools: WebTool[] = [
 		id: 'text-diff',
 		name: 'Text Diff Checker',
 		slug: 'text-diff',
-		description: 'Compare two texts side-by-side with highlighted differences.',
+		description: 'Zwei Texte nebeneinander vergleichen mit hervorgehobenen Unterschieden.',
 		icon: 'diff',
 		category: 'developer',
 		path: '/tools/text-diff'
@@ -32,7 +32,7 @@ export const webTools: WebTool[] = [
 		id: 'image-converter',
 		name: 'Image Format Converter',
 		slug: 'image-converter',
-		description: 'Convert images between PNG, JPG, and WebP — entirely in your browser.',
+		description: 'Bilder zwischen PNG, JPG und WebP konvertieren — komplett im Browser.',
 		icon: 'image',
 		category: 'utility',
 		path: '/tools/image-converter'
@@ -41,7 +41,7 @@ export const webTools: WebTool[] = [
 		id: 'qr-generator',
 		name: 'QR Code Generator',
 		slug: 'qr-generator',
-		description: 'Generate scalable SVG or PNG QR codes for any URL.',
+		description: 'Skalierbare SVG- oder PNG-QR-Codes für jede URL generieren.',
 		icon: 'qrcode',
 		category: 'utility',
 		path: '/tools/qr-generator'

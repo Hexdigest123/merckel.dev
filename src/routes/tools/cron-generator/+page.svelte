@@ -28,20 +28,20 @@
 
 	const FIELD_CONFIG: Array<{ key: FieldKey; label: string }> = [
 		{ key: 'minute', label: 'Minute' },
-		{ key: 'hour', label: 'Hour' },
-		{ key: 'dayOfMonth', label: 'Day of month' },
-		{ key: 'month', label: 'Month' },
-		{ key: 'dayOfWeek', label: 'Day of week' }
+		{ key: 'hour', label: 'Stunde' },
+		{ key: 'dayOfMonth', label: 'Tag des Monats' },
+		{ key: 'month', label: 'Monat' },
+		{ key: 'dayOfWeek', label: 'Wochentag' }
 	];
 
 	const FIELD_ORDER: FieldKey[] = ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'];
 
 	const presets: Array<{ label: string; parts: [string, string, string, string, string] }> = [
-		{ label: 'Every minute', parts: ['*', '*', '*', '*', '*'] },
-		{ label: 'Every hour', parts: ['0', '*', '*', '*', '*'] },
-		{ label: 'Daily at midnight', parts: ['0', '0', '*', '*', '*'] },
-		{ label: 'Weekly on Monday', parts: ['0', '0', '*', '*', '1'] },
-		{ label: 'Monthly on 1st', parts: ['0', '0', '1', '*', '*'] }
+		{ label: 'Jede Minute', parts: ['*', '*', '*', '*', '*'] },
+		{ label: 'Jede Stunde', parts: ['0', '*', '*', '*', '*'] },
+		{ label: 'Täglich um Mitternacht', parts: ['0', '0', '*', '*', '*'] },
+		{ label: 'Wöchentlich am Montag', parts: ['0', '0', '*', '*', '1'] },
+		{ label: 'Monatlich am 1.', parts: ['0', '0', '1', '*', '*'] }
 	];
 
 	let fields = $state<Record<FieldKey, CronFieldState>>({
@@ -167,7 +167,7 @@
 		try {
 			return cronstrue.toString(expression);
 		} catch {
-			return 'Invalid expression';
+			return 'Ungültiger Ausdruck';
 		}
 	});
 
@@ -208,14 +208,14 @@
 			class="inline-flex w-fit items-center gap-2 text-sm text-purple-300 transition hover:text-purple-200"
 		>
 			<span aria-hidden="true">&larr;</span>
-			Back to Tools
+			Zurück zu Werkzeugen
 		</a>
 
 		<header class="space-y-3">
 			<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
-				Cron Expression Generator
+				Cron-Ausdruck Generator
 			</h1>
-			<p class="text-slate-400">Build cron schedules visually with human-readable output.</p>
+			<p class="text-slate-400">Cron-Zeitpläne visuell erstellen mit lesbarer Ausgabe.</p>
 		</header>
 
 		<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
@@ -231,10 +231,10 @@
 								bind:value={fields[field.key].mode}
 								class="w-full rounded-lg border border-slate-700 bg-slate-900/60 text-slate-200"
 							>
-								<option value="every">Every (*)</option>
-								<option value="specific">Specific value</option>
-								<option value="range">Range</option>
-								<option value="interval">Interval (*/n)</option>
+								<option value="every">Jeder (*)</option>
+								<option value="specific">Bestimmter Wert</option>
+								<option value="range">Bereich</option>
+								<option value="interval">Intervall (*/n)</option>
 							</select>
 
 							{#if fields[field.key].mode === 'specific'}
@@ -254,7 +254,7 @@
 										bind:value={fields[field.key].rangeStart}
 										class="w-full rounded-lg border border-slate-700 bg-slate-900/60 text-slate-200"
 									/>
-									<span class="text-center text-slate-500">to</span>
+									<span class="text-center text-slate-500">bis</span>
 									<input
 										type="number"
 										min={FIELD_BOUNDS[field.key].min}
@@ -274,7 +274,9 @@
 									/>
 								</div>
 							{:else}
-								<p class="self-center text-sm text-slate-500">Uses wildcard for this field.</p>
+								<p class="self-center text-sm text-slate-500">
+									Verwendet Platzhalter für dieses Feld.
+								</p>
 							{/if}
 						</div>
 					</div>
@@ -282,7 +284,7 @@
 			</div>
 
 			<div class="mt-6 space-y-3 rounded-lg border border-slate-700/80 bg-slate-950/70 p-4">
-				<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Cron expression</p>
+				<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Cron-Ausdruck</p>
 				<p class="font-mono text-lg text-purple-200">{expression}</p>
 				<p class="text-sm text-slate-400">{description}</p>
 				<button
@@ -290,13 +292,15 @@
 					onclick={copyExpression}
 					class="inline-flex items-center rounded-lg bg-purple-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-600"
 				>
-					{isCopied ? 'Copied' : 'Copy expression'}
+					{isCopied ? 'Kopiert' : 'Ausdruck kopieren'}
 				</button>
 			</div>
 		</section>
 
 		<section class="space-y-3">
-			<h2 class="text-sm font-medium tracking-[0.14em] text-slate-300 uppercase">Quick presets</h2>
+			<h2 class="text-sm font-medium tracking-[0.14em] text-slate-300 uppercase">
+				Schnellvorlagen
+			</h2>
 			<div class="flex flex-wrap gap-2">
 				{#each presets as preset (preset.label)}
 					<button

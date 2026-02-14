@@ -21,22 +21,24 @@
 <section>
 	<header class="mb-8 space-y-3">
 		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
-			Tools
+			Werkzeuge
 		</h1>
-		<p class="max-w-2xl text-slate-400">Free web tools built for developers and everyday use.</p>
+		<p class="max-w-2xl text-slate-400">
+			Kostenlose Web-Tools für Entwickler und den täglichen Gebrauch.
+		</p>
 	</header>
 
 	<div class="mb-6">
 		<input
 			type="text"
-			placeholder="Search tools..."
+			placeholder="Werkzeuge suchen..."
 			bind:value={search}
 			class="w-full max-w-sm rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
 		/>
 	</div>
 
 	{#if filteredTools.length === 0}
-		<p class="py-12 text-center text-sm text-slate-400">No tools match "{search}"</p>
+		<p class="py-12 text-center text-sm text-slate-400">Keine Werkzeuge gefunden für "{search}"</p>
 	{:else}
 		<div
 			class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
