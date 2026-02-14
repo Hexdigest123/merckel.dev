@@ -29,7 +29,7 @@ const fallbackContributions: OpenSourceContribution[] = projects
 	.map((project) => ({
 		id: project.id,
 		title: project.title,
-		description: 'Open-source ready implementation details and reproducible workflows.',
+		description: 'Implementierungsdetails und reproduzierbare Arbeitsabläufe für Open Source.',
 		tags: project.tags.slice(0, 3),
 		url: project.github
 	}));
@@ -54,15 +54,15 @@ function createFallbackData(note: string): OpenSourceData {
 	return {
 		source: 'fallback',
 		profileUrl: githubProfileUrl,
-		profileLabel: 'Visit GitHub profile',
+		profileLabel: 'GitHub-Profil besuchen',
 		note,
 		stats: [
-			{ label: 'Public repositories', value: `${fallbackContributions.length}` },
+			{ label: 'Öffentliche Repositories', value: `${fallbackContributions.length}` },
 			{
-				label: 'Featured builds',
+				label: 'Ausgewählte Projekte',
 				value: `${projects.filter((project) => project.featured).length}`
 			},
-			{ label: 'Linked channels', value: `${siteConfig.socials.length}` }
+			{ label: 'Verknüpfte Kanäle', value: `${siteConfig.socials.length}` }
 		],
 		contributions: fallbackContributions
 	};
@@ -102,7 +102,7 @@ async function fetchGitHubOpenSourceData(username: string): Promise<OpenSourceDa
 	const contributions = reposData.map((repo) => ({
 		id: `${repo.id}`,
 		title: repo.name,
-		description: repo.description ?? 'Community-maintained repository.',
+		description: repo.description ?? '',
 		tags: repo.topics?.slice(0, 3) ?? [],
 		url: repo.html_url
 	}));
@@ -114,12 +114,12 @@ async function fetchGitHubOpenSourceData(username: string): Promise<OpenSourceDa
 		profileUrl: userData.html_url,
 		profileLabel: `@${username} on GitHub`,
 		note: env.GITHUB_TOKEN
-			? 'Live GitHub data is cached server-side for one hour.'
-			: 'Live GitHub data (unauthenticated mode) is cached server-side for one hour.',
+			? 'Live-GitHub-Daten werden serverseitig für eine Stunde zwischengespeichert.'
+			: 'Live-GitHub-Daten (nicht authentifiziert) werden serverseitig für eine Stunde zwischengespeichert.',
 		stats: [
-			{ label: 'Public repositories', value: `${userData.public_repos ?? 0}` },
-			{ label: 'Featured builds', value: `${featuredCount}` },
-			{ label: 'Tracked repositories', value: `${contributions.length}` }
+			{ label: 'Öffentliche Repositories', value: `${userData.public_repos ?? 0}` },
+			{ label: 'Ausgewählte Projekte', value: `${featuredCount}` },
+			{ label: 'Verfolgte Repositories', value: `${contributions.length}` }
 		],
 		contributions
 	};
@@ -137,7 +137,7 @@ export const load = async () => {
 
 	if (!githubUsername) {
 		const fallbackData = createFallbackData(
-			'GitHub profile is not configured yet, so this section uses local portfolio highlights.'
+			'GitHub-Profil ist noch nicht konfiguriert, daher zeigt dieser Bereich lokale Portfolio-Highlights.'
 		);
 		openSourceCache = { expiresAt: now + OPEN_SOURCE_CACHE_TTL_MS, data: fallbackData };
 		return { openSource: fallbackData, topTools };
@@ -148,14 +148,14 @@ export const load = async () => {
 		const openSource =
 			githubData ??
 			createFallbackData(
-				'GitHub data is temporarily unavailable, so local highlights are shown instead.'
+				'GitHub-Daten sind vorübergehend nicht verfügbar, daher werden lokale Highlights angezeigt.'
 			);
 
 		openSourceCache = { expiresAt: now + OPEN_SOURCE_CACHE_TTL_MS, data: openSource };
 		return { openSource, topTools };
 	} catch {
 		const fallbackData = createFallbackData(
-			'GitHub data request failed, so local highlights are shown instead.'
+			'GitHub-Datenanfrage fehlgeschlagen, daher werden lokale Highlights angezeigt.'
 		);
 		openSourceCache = { expiresAt: now + OPEN_SOURCE_CACHE_TTL_MS, data: fallbackData };
 		return { openSource: fallbackData, topTools };
