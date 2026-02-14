@@ -96,49 +96,16 @@ test.describe('Final E2E coverage: interactions and accessibility-sensitive flow
 		await expect(page.locator('section#projects')).toBeInViewport();
 	});
 
-	test('contact form validates and then submits successfully', async ({ page }) => {
-		await page.route('**/api/contact', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify({
-					success: true,
-					message: 'Message sent successfully. I will reply soon.'
-				})
-			});
-		});
-
+	test('contact section exposes mailto and social links', async ({ page }) => {
 		await page.setViewportSize({ width: 1280, height: 800 });
 		await page.goto('/#contact');
 
 		const contactSection = page.locator('section#contact');
 		await contactSection.scrollIntoViewIfNeeded();
 		await expect(contactSection).toBeInViewport();
-		const form = page.locator('section#contact form[aria-label="Contact form"]');
-		await expect(form).toBeVisible();
-
-		await form.getByRole('button', { name: 'Send inquiry' }).click();
-		await expect(form.getByText('Name is required.')).toBeVisible();
-		await expect(form.getByText('Email is required.')).toBeVisible();
-		await expect(form.getByText('Project details are required.')).toBeVisible();
-
-		await form.getByRole('textbox', { name: 'Name' }).fill('Test User');
-		await form.getByRole('textbox', { name: 'Email' }).fill('not-an-email');
-		await form
-			.getByRole('textbox', { name: 'Project details' })
-			.fill('Build an interactive portfolio.');
-		await form.getByRole('button', { name: 'Send inquiry' }).click();
-		await expect(form.getByText('Enter a valid email address.')).toBeVisible();
-
-		await form.getByRole('textbox', { name: 'Email' }).fill('test@example.com');
-		await form.getByRole('button', { name: 'Send inquiry' }).click();
-
-		await expect(form.getByRole('status')).toContainText(
-			'Message sent successfully. I will reply soon.'
-		);
-		await expect(form.getByRole('textbox', { name: 'Name' })).toHaveValue('');
-		await expect(form.getByRole('textbox', { name: 'Email' })).toHaveValue('');
-		await expect(form.getByRole('textbox', { name: 'Project details' })).toHaveValue('');
+		await expect(contactSection.locator('a[href^="mailto:"]').first()).toBeVisible();
+		await expect(contactSection.locator('[data-testid="contact-socials"] a').first()).toBeVisible();
+		await expect(contactSection.locator('form')).toHaveCount(0);
 	});
 
 	test('desktop custom cursor enables and reacts to interactive elements', async ({ page }) => {
@@ -214,17 +181,6 @@ test.describe('Final E2E coverage: console stability', () => {
 			consoleErrors.push(error.message);
 		});
 
-		await page.route('**/api/contact', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify({
-					success: true,
-					message: 'Message sent successfully. I will reply soon.'
-				})
-			});
-		});
-
 		await page.setViewportSize({ width: 1280, height: 800 });
 		await page.goto('/');
 		await page.waitForLoadState('networkidle');
@@ -235,16 +191,10 @@ test.describe('Final E2E coverage: console stability', () => {
 		await paletteInput.press('Enter');
 		await expect(page).toHaveURL(/#contact$/);
 
-		const form = page.getByRole('form', { name: 'Contact form' });
-		await form.getByRole('textbox', { name: 'Name' }).fill('Console Test');
-		await form.getByRole('textbox', { name: 'Email' }).fill('console@example.com');
-		await form
-			.getByRole('textbox', { name: 'Project details' })
-			.fill('Run a production-ready interaction verification.');
-		await form.getByRole('button', { name: 'Send inquiry' }).click();
-		await expect(form.getByRole('status')).toContainText(
-			'Message sent successfully. I will reply soon.'
-		);
+		const contactSection = page.locator('section#contact');
+		await expect(contactSection.locator('a[href^="mailto:"]').first()).toBeVisible();
+		await expect(contactSection.locator('[data-testid="contact-socials"] a').first()).toBeVisible();
+		await expect(contactSection.locator('form')).toHaveCount(0);
 
 		await page.evaluate(() => {
 			const sequence = [
