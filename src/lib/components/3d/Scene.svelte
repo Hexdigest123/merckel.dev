@@ -106,7 +106,7 @@
 
 	let camera: PerspectiveCamera | undefined;
 	let reducedQuality = $state(false);
-	let dpr = $state(1.4);
+	let dpr = $state(Math.min(window.devicePixelRatio, 1.6));
 	let hasLowEndProfile = $state(false);
 
 	let targetMouseX = 0.22;
@@ -217,6 +217,8 @@
 	.scene-shell {
 		position: fixed;
 		inset: 0;
+		width: 100%;
+		height: 100%;
 		pointer-events: none;
 		z-index: 0;
 		opacity: 0.96;

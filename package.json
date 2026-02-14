@@ -16,10 +16,10 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright test",
 		"dev:db": "docker compose up db -d",
-		"db:generate": "bunx drizzle-kit generate",
-		"db:migrate": "bunx drizzle-kit migrate",
-		"db:studio": "bunx drizzle-kit studio",
-		"db:push": "bunx drizzle-kit push"
+		"db:generate": "bun x drizzle-kit generate",
+		"db:migrate": "bun x drizzle-kit migrate",
+		"db:studio": "bun x drizzle-kit studio",
+		"db:push": "bun x drizzle-kit push"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.11.1",
