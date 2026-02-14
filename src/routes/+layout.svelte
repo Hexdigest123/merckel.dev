@@ -8,8 +8,11 @@
 	import '@fontsource/jetbrains-mono/latin-400.css';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import CommandPalette from '$lib/components/CommandPalette.svelte';
 	import CustomCursor from '$lib/components/CustomCursor.svelte';
 	import { siteConfig } from '$lib/data/site-config';
+	import { createKonamiDetector } from '$lib/utils/konami';
+	import { revealSecret, getSecretsState } from '$lib/utils/secrets-tracker';
 
 	let { children, data }: { children: Snippet; data: { isMobile?: boolean } } = $props();
 	let SceneComponent = $state<Component | null>(null);
@@ -100,6 +103,58 @@
 			canvas.getContext('experimental-webgl')
 		);
 	});
+
+	// --- Command palette sections (hash-navigation targets on main page) ---
+	const sections = [
+		{ id: 'about', title: 'Über mich' },
+		{ id: 'tools', title: 'Werkzeuge' },
+		{ id: 'projects', title: 'Projekte' },
+		{ id: 'experience', title: 'Erfahrung' },
+		{ id: 'opensource', title: 'Open Source' },
+		{ id: 'testimonials', title: 'Referenzen' },
+		{ id: 'contact', title: 'Kontakt' }
+	] as const;
+
+	// --- Secrets & Konami (global across all pages) ---
+	let konamiMessage = $state('');
+	let secretsState = $state(getSecretsState());
+
+	function handleSecretRevealed(secretId: string) {
+		secretsState = revealSecret(secretId);
+	}
+
+	$effect(() => {
+		if (!browser) return;
+
+		const onSecretRevealed = (event: Event) => {
+			secretsState = (event as CustomEvent<typeof secretsState>).detail;
+		};
+
+		window.addEventListener('secret-revealed', onSecretRevealed);
+		return () => window.removeEventListener('secret-revealed', onSecretRevealed);
+	});
+
+	$effect(() => {
+		if (!browser) {
+			return;
+		}
+
+		const detector = createKonamiDetector({
+			onDetected: () => {
+				handleSecretRevealed('konami');
+				konamiMessage = '🎮 Konami-Code aktiviert!';
+				setTimeout(() => {
+					konamiMessage = '';
+				}, 3000);
+			}
+		});
+
+		detector.start();
+
+		return () => {
+			detector.cleanup();
+		};
+	});
 </script>
 
 <svelte:head>
@@ -140,16 +195,37 @@
 		<SceneComponent />
 	{/if}
 
+	<CommandPalette {sections} onSecretRevealed={handleSecretRevealed} />
+
 	<div class="content-layer">
 		<a
 			href="#main-content"
 			class="sr-only z-50 rounded-md bg-slate-100 px-4 py-2 font-mono text-xs tracking-wide text-slate-900 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
 		>
-			Skip to main content
+			Zum Hauptinhalt springen
 		</a>
 		{@render children()}
 	</div>
 	<CustomCursor />
+
+	{#if konamiMessage}
+		<div
+			class="fixed bottom-4 left-4 z-50 rounded-lg border border-purple-400/50 bg-purple-900/90 px-4 py-3 font-mono text-sm text-purple-100 shadow-lg backdrop-blur-sm"
+			role="status"
+			aria-live="polite"
+		>
+			{konamiMessage}
+		</div>
+	{/if}
+
+	{#if secretsState.found > 0}
+		<div
+			class="fixed top-4 left-4 z-30 rounded-lg border border-slate-600/50 bg-slate-900/75 px-3 py-2 font-mono text-xs text-slate-300 backdrop-blur-sm"
+			title="Geheimnisse gefunden"
+		>
+			🔓 {secretsState.found}/{secretsState.total}
+		</div>
+	{/if}
 </div>
 
 <style>

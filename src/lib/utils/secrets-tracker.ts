@@ -62,6 +62,7 @@ export function revealSecret(secretId: string): SecretsState {
 		secret.revealed = true;
 		state.found = state.secrets.filter((s) => s.revealed).length;
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+		window.dispatchEvent(new CustomEvent('secret-revealed', { detail: state }));
 	}
 
 	return state;
