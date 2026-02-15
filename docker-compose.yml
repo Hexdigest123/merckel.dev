@@ -50,8 +50,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-merckel}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - '${POSTGRES_EXPOSE_PORT:-5432}:5432'
     networks:
       - internal
     healthcheck:
