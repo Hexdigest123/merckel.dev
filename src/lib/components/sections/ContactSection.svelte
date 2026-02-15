@@ -28,22 +28,27 @@
 
 			<ul class="mt-5 space-y-2" data-testid="contact-socials" data-reveal-group>
 				{#each siteConfig.socials as social (social.platform)}
-					<li
-						data-reveal-item
-						class={`rounded-lg border border-slate-700/70 px-3 py-2 text-sm transition-opacity duration-200 ${
-							hoveredSocial && hoveredSocial !== social.platform ? 'opacity-45' : 'opacity-100'
-						}`}
-						onmouseenter={() => (hoveredSocial = social.platform)}
-						onmouseleave={() => (hoveredSocial = '')}
-					>
+					<li data-reveal-item>
 						<a
 							data-cursor="link"
 							href={social.url}
 							target="_blank"
 							rel="noreferrer"
-							class="text-slate-300 hover:text-purple-300"
+							class={`group flex items-center justify-between gap-3 rounded-xl border border-slate-700/50 bg-slate-800/40 px-3 py-2 text-sm text-slate-300 transition-all duration-200 hover:border-purple-400/40 hover:text-slate-100 sm:text-base ${
+								hoveredSocial && hoveredSocial !== social.platform ? 'opacity-45' : 'opacity-100'
+							}`}
+							onmouseenter={() => (hoveredSocial = social.platform)}
+							onmouseleave={() => (hoveredSocial = '')}
 						>
-							{social.platform}
+							<span class="flex items-center gap-3">
+								<span class="block h-1.5 w-1.5 rounded-full bg-purple-400"></span>
+								<span>{social.platform}</span>
+							</span>
+							<span
+								class="font-mono text-xs tracking-wider text-slate-500 transition-colors duration-200 group-hover:text-purple-200"
+							>
+								Besuchen
+							</span>
 						</a>
 					</li>
 				{/each}

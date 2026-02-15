@@ -27,7 +27,7 @@ describe('Section', () => {
 		});
 
 		expect(body).toContain('data-testid="section-header-tools"');
-		expect(body).toContain('sticky top-0 z-20');
+		expect(body).toContain('sticky top-14 z-20');
 	});
 
 	it('can disable sticky heading', () => {
@@ -40,6 +40,6 @@ describe('Section', () => {
 		});
 
 		expect(body).toContain('data-testid="section-header-contact"');
-		expect(body).not.toContain('sticky top-0 z-20');
+		expect(body).not.toContain('sticky top-14 z-20');
 	});
 });

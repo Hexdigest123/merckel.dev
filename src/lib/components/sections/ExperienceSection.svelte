@@ -42,9 +42,9 @@
 
 <Section id="experience" title="Erfahrung" description="Zeitstrahl, Erfolge und Wirkung.">
 	<ol class="relative space-y-3" data-testid="experience-timeline" data-reveal-group>
+		<div class="absolute top-0 bottom-0 left-[0.37rem] w-px bg-slate-700/65 sm:hidden"></div>
 		{#each experience as entry (entry.id)}
 			<li class="group relative pl-6 sm:pl-0" data-reveal-item>
-				<div class="absolute top-0 bottom-0 left-[0.37rem] w-px bg-slate-700/65 sm:hidden"></div>
 				<div
 					class="absolute top-6 left-0 h-3 w-3 rounded-full border border-purple-400/60 bg-slate-900 sm:hidden"
 				></div>

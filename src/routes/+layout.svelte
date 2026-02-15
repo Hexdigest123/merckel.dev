@@ -10,6 +10,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import CommandPalette from '$lib/components/CommandPalette.svelte';
 	import CustomCursor from '$lib/components/CustomCursor.svelte';
+	import MobileHeader from '$lib/components/MobileHeader.svelte';
 	import { siteConfig } from '$lib/data/site-config';
 	import { createKonamiDetector } from '$lib/utils/konami';
 	import { revealSecret, getSecretsState } from '$lib/utils/secrets-tracker';
@@ -198,6 +199,11 @@
 	<CommandPalette {sections} onSecretRevealed={handleSecretRevealed} />
 
 	<div class="content-layer">
+		<MobileHeader
+			navItems={sections.map((s) => ({ id: s.id, label: s.title }))}
+			secretsFound={secretsState.found}
+			secretsTotal={secretsState.total}
+		/>
 		<a
 			href="#main-content"
 			class="sr-only z-50 rounded-md bg-slate-100 px-4 py-2 font-mono text-xs tracking-wide text-slate-900 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
@@ -220,7 +226,7 @@
 
 	{#if secretsState.found > 0}
 		<div
-			class="fixed top-4 left-4 z-30 rounded-lg border border-slate-600/50 bg-slate-900/75 px-3 py-2 font-mono text-xs text-slate-300 backdrop-blur-sm"
+			class="fixed top-4 left-4 z-30 hidden rounded-lg border border-slate-600/50 bg-slate-900/75 px-3 py-2 font-mono text-xs text-slate-300 backdrop-blur-sm lg:block"
 			title="Geheimnisse gefunden"
 		>
 			🔓 {secretsState.found}/{secretsState.total}

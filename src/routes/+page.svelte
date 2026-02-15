@@ -62,7 +62,11 @@
 	});
 </script>
 
-<main id="main-content" tabindex="-1" class="min-h-screen bg-slate-900 text-slate-200">
+<main
+	id="main-content"
+	tabindex="-1"
+	class="min-h-screen bg-slate-900 pt-14 text-slate-200 lg:pt-0"
+>
 	<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
 		<div class="lg:grid lg:grid-cols-[minmax(16rem,22rem),1fr] lg:gap-14">
 			<aside

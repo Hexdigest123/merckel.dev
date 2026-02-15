@@ -20,14 +20,14 @@
 	{id}
 	data-section={id}
 	aria-labelledby={`${id}-heading`}
-	class="scroll-mt-24 border-b border-slate-700/50 pb-12 last:border-b-0 lg:scroll-mt-10 lg:pb-16"
+	class="scroll-mt-28 border-b border-slate-700/50 pb-12 last:border-b-0 lg:scroll-mt-10 lg:pb-16"
 >
 	<header
 		data-reveal
 		data-testid={`section-header-${id}`}
 		class={`-mx-4 mb-8 border-b border-slate-700/50 bg-slate-900/90 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 ${
 			mobileSticky
-				? 'sticky top-0 z-20 lg:static lg:border-b-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none'
+				? 'sticky top-14 z-20 lg:static lg:border-b-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none'
 				: ''
 		}`}
 	>
