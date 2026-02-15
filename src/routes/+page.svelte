@@ -73,10 +73,8 @@
 				class="hidden lg:flex lg:flex-col lg:justify-between lg:py-6"
 				aria-label="Site profile"
 			>
-				<div class="space-y-4">
-					<p class="font-mono text-xs tracking-[0.24em] text-purple-300 uppercase">
-						Portfolio Shell
-					</p>
+				<div class="mb-4 space-y-4">
+					<p class="font-mono text-xs tracking-[0.24em] text-purple-300 uppercase">Portfolio</p>
 					<h1 class="font-sans text-4xl font-semibold tracking-tight text-slate-100">
 						{siteConfig.name}
 					</h1>
