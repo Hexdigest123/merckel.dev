@@ -4,34 +4,78 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/merckel
-      - PORT=3000
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-merckel}
+      - PORT=${APP_PORT:-3000}
+      - ORIGIN=${ORIGIN:-http://localhost:3000}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - DB_MAX_RETRIES=${DB_MAX_RETRIES:-5}
+      - DB_RETRY_BASE_DELAY_MS=${DB_RETRY_BASE_DELAY_MS:-500}
     ports:
-      - '3000:3000'
+      - '${APP_PORT:-3000}:3000'
     depends_on:
       db:
         condition: service_healthy
     networks:
       - internal
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--spider', 'http://localhost:3000/api/health']
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: ${RESTART_DELAY:-5s}
+        max_attempts: ${RESTART_MAX_ATTEMPTS:-5}
+        window: ${RESTART_WINDOW:-120s}
+      resources:
+        limits:
+          memory: ${APP_MEMORY_LIMIT:-512M}
+          cpus: '${APP_CPU_LIMIT:-1.0}'
+        reservations:
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
     restart: unless-stopped
 
   db:
-    image: postgres:17-alpine
+    image: postgres:${POSTGRES_VERSION:-17}-alpine
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=merckel
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-merckel}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - '${POSTGRES_EXPOSE_PORT:-5432}:5432'
     networks:
       - internal
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d merckel']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-merckel}']
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: ${RESTART_DELAY:-5s}
+        max_attempts: ${RESTART_MAX_ATTEMPTS:-5}
+        window: ${RESTART_WINDOW:-120s}
+      resources:
+        limits:
+          memory: ${DB_MEMORY_LIMIT:-256M}
+          cpus: '${DB_CPU_LIMIT:-0.5}'
+        reservations:
+          memory: 64M
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
     restart: unless-stopped
 
 networks:

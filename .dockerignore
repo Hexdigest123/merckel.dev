@@ -1,7 +1,49 @@
+# Dependencies
 node_modules
+
+# Build output
 .svelte-kit
 build
+.output
+
+# Environment
 .env
-.sisyphus/evidence
+.env.*
+!.env.example
+
+# Tests
+e2e
+test-results
+playwright-report
+coverage
+
+# IDE / OS
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github
+
+# Project meta
+.sisyphus
+*.md
+LICENSE
+
+# Media (not needed for build — static/ is preserved)
 *.png
 *.jpg
+*.jpeg
+*.gif
+!static/**
+
+# Config files not needed in build
+playwright.config.ts
+docker-compose.yml
