@@ -34,7 +34,7 @@
 		</article>
 
 		<aside data-reveal class="rounded-2xl border border-slate-700/60 bg-slate-900/55 p-5 sm:p-6">
-			<h3 class="font-sans text-lg font-semibold text-slate-100">Kontaktpunkte</h3>
+			<h3 class="font-sans text-lg font-semibold text-slate-100">Socials</h3>
 			<ul class="mt-4 space-y-3" data-reveal-group>
 				{#each siteConfig.socials as social (social.platform)}
 					<li data-reveal-item>

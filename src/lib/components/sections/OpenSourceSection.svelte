@@ -24,7 +24,7 @@
 <Section
 	id="opensource"
 	title="Open Source"
-	description="Community-Beiträge und öffentliche Aktivität."
+	description="Community-Projekte und öffentliche Aktivität."
 >
 	<div class="grid gap-4 lg:grid-cols-[1fr,1.2fr] lg:gap-5">
 		<div class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-5 sm:p-6" data-reveal>

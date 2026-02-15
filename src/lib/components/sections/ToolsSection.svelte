@@ -6,7 +6,7 @@
 	let { tools = [] }: { tools: WebToolWithUsage[] } = $props();
 </script>
 
-<Section id="tools" title="Werkzeuge" description="Kostenlose Web-Tools — einfach ausprobieren.">
+<Section id="tools" title="Werkzeuge" description="Kostenlose Web-Tools - einfach ausprobieren.">
 	<div
 		class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
 		data-testid="tools-grid"

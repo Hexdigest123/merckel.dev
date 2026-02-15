@@ -40,7 +40,11 @@
 	}
 </script>
 
-<Section id="experience" title="Erfahrung" description="Zeitstrahl, Erfolge und Wirkung.">
+<Section
+	id="experience"
+	title="Erfahrung"
+	description="Anstellungen und selbständige Berufserfahrung."
+>
 	<ol class="relative space-y-3" data-testid="experience-timeline" data-reveal-group>
 		<div class="absolute top-0 bottom-0 left-[0.37rem] w-px bg-slate-700/65 sm:hidden"></div>
 		{#each experience as entry (entry.id)}

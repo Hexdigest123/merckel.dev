@@ -5,7 +5,7 @@
 	let hoveredTestimonialId = $state('');
 </script>
 
-<Section id="testimonials" title="Referenzen" description="Kundenstimmen und Empfehlungen.">
+<Section id="testimonials" title="Referenzen" description="Kundenmeinungen und Empfehlungen.">
 	<div
 		class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1"
 		data-testid="testimonials-list"
