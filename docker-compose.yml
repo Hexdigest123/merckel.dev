@@ -5,13 +5,13 @@ services:
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-merckel}
-      - PORT=${APP_PORT:-3000}
+      - PORT=3000
       - ORIGIN=${ORIGIN:-http://localhost:3000}
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - DB_MAX_RETRIES=${DB_MAX_RETRIES:-5}
       - DB_RETRY_BASE_DELAY_MS=${DB_RETRY_BASE_DELAY_MS:-500}
     ports:
-      - '${APP_PORT:-3000}:3000'
+      - '2005:3000'
     depends_on:
       db:
         condition: service_healthy
