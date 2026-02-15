@@ -4,6 +4,8 @@ import { env } from '$env/dynamic/private';
 import * as schema from './schema';
 
 const connectionString = env.DATABASE_URL;
+const DB_MAX_RETRIES = Number(env.DB_MAX_RETRIES) || 5;
+const DB_RETRY_BASE_DELAY_MS = Number(env.DB_RETRY_BASE_DELAY_MS) || 500;
 
 function createDb() {
 	if (!connectionString) {
@@ -14,7 +16,12 @@ function createDb() {
 		prepare: false,
 		max: 10,
 		idle_timeout: 20,
-		connect_timeout: 10
+		connect_timeout: 10,
+		max_lifetime: 60 * 30,
+		backoff(retryCount: number) {
+			if (retryCount >= DB_MAX_RETRIES) return 0;
+			return Math.min(DB_RETRY_BASE_DELAY_MS * Math.pow(2, retryCount), 30_000);
+		}
 	});
 
 	return drizzle(client, { schema });
