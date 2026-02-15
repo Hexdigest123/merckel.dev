@@ -1,0 +1,88 @@
+name: Docker Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: 'Force rebuild without cache'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      ORIGIN: ${{ secrets.ORIGIN }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      POSTGRES_EXPOSE_PORT: ${{ secrets.POSTGRES_EXPOSE_PORT }}
+      APP_PORT: ${{ secrets.APP_PORT }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify environment configuration
+        run: |
+          echo "=== Environment Configuration ==="
+          echo "Environment variables are loaded from GitHub Secrets"
+          echo "ORIGIN: ${ORIGIN:-not set, will use default}"
+          echo "POSTGRES_DB: ${POSTGRES_DB:-not set, will use default}"
+          echo "POSTGRES_USER: ${POSTGRES_USER:-not set, will use default}"
+          echo "POSTGRES_PORT: ${POSTGRES_PORT:-not set, will use default}"
+          echo "APP_PORT: ${APP_PORT:-not set, will use default}"
+          echo "Note: Sensitive values (passwords, tokens) are not displayed"
+
+      - name: Build Docker images
+        run: |
+          if [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
+            docker compose build --no-cache
+          else
+            docker compose build
+          fi
+
+      - name: Stop existing containers
+        run: |
+          docker compose down --remove-orphans || true
+
+      - name: Start new containers
+        run: |
+          docker compose up -d
+
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for services to start..."
+          sleep 10
+
+          if docker compose ps | grep -q "Up"; then
+            echo "Containers are running successfully"
+          else
+            echo "Error: Containers failed to start"
+            docker compose logs
+            exit 1
+          fi
+
+      - name: Cleanup old Docker images
+        run: |
+          docker image prune -f || true
+
+      - name: Deployment summary
+        run: |
+          echo "=== Deployment Complete ==="
+          echo ""
+          echo "Running containers:"
+          docker compose ps
+          echo ""
+          echo "Container logs (last 20 lines each):"
+          echo "--- App container ---"
+          docker compose logs app --tail 20 2>&1 || true
+          echo ""
+          echo "--- DB container ---"
+          docker compose logs db --tail 20 2>&1 || true
