@@ -27,6 +27,7 @@
 		<div class="mt-6 text-center">
 			<a
 				href="/tools"
+				data-sveltekit-preload-data
 				class="inline-flex items-center gap-1 rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-purple-400 hover:text-purple-300"
 			>
 				Alle Werkzeuge ansehen →
