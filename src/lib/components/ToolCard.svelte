@@ -15,7 +15,12 @@
 		clock: '⏰',
 		diff: '📝',
 		image: '🖼️',
-		qrcode: '📱'
+		qrcode: '📱',
+		gradient: '🎨',
+		json: '{ }',
+		palette: '🎛️',
+		regex: '🔣',
+		markdown: '📄'
 	};
 
 	let iconSymbol = $derived(iconMap[icon] ?? '🧰');

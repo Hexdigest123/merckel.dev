@@ -62,6 +62,46 @@ const TOOL_COMMANDS: CommandPaletteCommand[] = [
 		type: 'navigate-url',
 		url: '/tools/qr-generator',
 		visibleByDefault: true
+	},
+	{
+		id: 'tool-markdown-preview',
+		label: 'Markdown Preview',
+		keywords: ['markdown', 'preview', 'md', 'html', 'editor', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/markdown-preview',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-css-gradient',
+		label: 'CSS Gradient Generator',
+		keywords: ['gradient', 'css', 'verlauf', 'background', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/css-gradient',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-json-formatter',
+		label: 'JSON Formatter & Validator',
+		keywords: ['json', 'format', 'validate', 'formatieren', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/json-formatter',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-color-converter',
+		label: 'Farbkonverter & Palette',
+		keywords: ['color', 'farbe', 'convert', 'palette', 'hex', 'rgb', 'hsl', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/color-converter',
+		visibleByDefault: true
+	},
+	{
+		id: 'tool-regex-tester',
+		label: 'Regex Tester',
+		keywords: ['regex', 'regexp', 'pattern', 'muster', 'test', 'match', 'tool'],
+		type: 'navigate-url',
+		url: '/tools/regex-tester',
+		visibleByDefault: true
 	}
 ];
 
@@ -72,7 +112,7 @@ const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
 		keywords: ['commands', 'palette', 'assist'],
 		type: 'hidden',
 		output:
-			'Sektionen: über mich, werkzeuge, projekte, erfahrung, open source, referenzen, kontakt. Tools: url shortener, cron, diff, bildkonverter, qr. Versteckt: secret, matrix, sudo hire me.',
+			'Sektionen: über mich, werkzeuge, projekte, erfahrung, open source, referenzen, kontakt. Tools: url shortener, cron, diff, bildkonverter, qr, markdown, css-verlauf, json-formatter, farbkonverter, regex. Versteckt: secret, matrix, sudo hire me.',
 		visibleByDefault: false
 	},
 	{

@@ -45,5 +45,51 @@ export const webTools: WebTool[] = [
 		icon: 'qrcode',
 		category: 'utility',
 		path: '/tools/qr-generator'
+	},
+	{
+		id: 'css-gradient',
+		name: 'CSS Gradient Generator',
+		slug: 'css-gradient',
+		description: 'CSS-Verläufe visuell erstellen mit Live-Vorschau und kopierfertigem Code.',
+		icon: 'gradient',
+		category: 'developer',
+		path: '/tools/css-gradient'
+	},
+	{
+		id: 'json-formatter',
+		name: 'JSON Formatter & Validator',
+		slug: 'json-formatter',
+		description: 'JSON formatieren, validieren und mit Syntaxhervorhebung anzeigen.',
+		icon: 'json',
+		category: 'developer',
+		path: '/tools/json-formatter'
+	},
+	{
+		id: 'color-converter',
+		name: 'Farbkonverter & Palette',
+		slug: 'color-converter',
+		description:
+			'Farben zwischen HEX, RGB, HSL, HSV und CMYK konvertieren und Farbpaletten generieren.',
+		icon: 'palette',
+		category: 'developer',
+		path: '/tools/color-converter'
+	},
+	{
+		id: 'regex-tester',
+		name: 'Regex Tester',
+		slug: 'regex-tester',
+		description: 'Reguläre Ausdrücke live testen mit Hervorhebung und Muster-Bibliothek.',
+		icon: 'regex',
+		category: 'developer',
+		path: '/tools/regex-tester'
+	},
+	{
+		id: 'markdown-preview',
+		name: 'Markdown Preview',
+		slug: 'markdown-preview',
+		description: 'Markdown mit Live-Vorschau bearbeiten und als HTML kopieren.',
+		icon: 'markdown',
+		category: 'developer',
+		path: '/tools/markdown-preview'
 	}
 ];
