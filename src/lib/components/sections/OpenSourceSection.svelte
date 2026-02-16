@@ -1,20 +1,6 @@
 <script lang="ts">
 	import Section from '$lib/components/Section.svelte';
-
-	interface OpenSourceData {
-		source: 'github' | 'fallback';
-		profileUrl?: string;
-		profileLabel: string;
-		note: string;
-		stats: Array<{ label: string; value: string }>;
-		contributions: Array<{
-			id: string;
-			title: string;
-			description: string;
-			tags: string[];
-			url?: string;
-		}>;
-	}
+	import type { OpenSourceData } from '$lib/types/content';
 
 	let { data }: { data: OpenSourceData } = $props();
 

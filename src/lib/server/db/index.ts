@@ -4,8 +4,8 @@ import { env } from '$env/dynamic/private';
 import * as schema from './schema';
 
 const connectionString = env.DATABASE_URL;
-const DB_MAX_RETRIES = Number(env.DB_MAX_RETRIES) || 5;
-const DB_RETRY_BASE_DELAY_MS = Number(env.DB_RETRY_BASE_DELAY_MS) || 500;
+const DB_MAX_RETRIES = Number(env.DB_MAX_RETRIES) || 3;
+const DB_RETRY_BASE_DELAY_MS = Number(env.DB_RETRY_BASE_DELAY_MS) || 200;
 
 function createDb() {
 	if (!connectionString) {
@@ -20,7 +20,7 @@ function createDb() {
 		max_lifetime: 60 * 30,
 		backoff(retryCount: number) {
 			if (retryCount >= DB_MAX_RETRIES) return 0;
-			return Math.min(DB_RETRY_BASE_DELAY_MS * Math.pow(2, retryCount), 30_000);
+			return Math.min(DB_RETRY_BASE_DELAY_MS * Math.pow(2, retryCount), 5_000);
 		}
 	});
 

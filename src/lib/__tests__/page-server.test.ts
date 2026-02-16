@@ -33,8 +33,8 @@ describe('page server load - open source data', () => {
 
 		expect(fetchMock).not.toHaveBeenCalled();
 		expect(data.openSource.source).toBe('fallback');
-		expect(data.openSource.stats[0].label).toBe('Public repositories');
-		expect(data.openSource.note).toContain('not configured');
+		expect(data.openSource.stats[0].label).toBe('Öffentliche Repositories');
+		expect(data.openSource.note).toContain('nicht konfiguriert');
 	});
 
 	it('falls back gracefully when GitHub API responds with errors', async () => {
@@ -49,7 +49,7 @@ describe('page server load - open source data', () => {
 
 		expect(fetchMock).toHaveBeenCalledTimes(2);
 		expect(data.openSource.source).toBe('fallback');
-		expect(data.openSource.note).toContain('temporarily unavailable');
+		expect(data.openSource.note).toContain('nicht verfügbar');
 	});
 
 	it('caches successful GitHub responses for repeated load calls', async () => {

@@ -10,23 +10,8 @@
 	import TestimonialsSection from '$lib/components/sections/TestimonialsSection.svelte';
 	import ToolsSection from '$lib/components/sections/ToolsSection.svelte';
 	import { siteConfig } from '$lib/data/site-config';
-	import type { WebToolWithUsage } from '$lib/types/content';
+	import type { OpenSourceData, WebToolWithUsage } from '$lib/types/content';
 	import { ensureScrollTriggerRefreshOnNavigate } from '$lib/utils/gsap';
-
-	interface OpenSourceData {
-		source: 'github' | 'fallback';
-		profileUrl?: string;
-		profileLabel: string;
-		note: string;
-		stats: Array<{ label: string; value: string }>;
-		contributions: Array<{
-			id: string;
-			title: string;
-			description: string;
-			tags: string[];
-			url?: string;
-		}>;
-	}
 
 	const defaultOpenSourceData: OpenSourceData = {
 		source: 'fallback',

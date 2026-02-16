@@ -1,5 +1,11 @@
 import { pgTable, uuid, text, timestamp, integer, varchar } from 'drizzle-orm/pg-core';
 
+export const apiCache = pgTable('api_cache', {
+	key: varchar('key', { length: 128 }).primaryKey(),
+	data: text('data').notNull(),
+	fetchedAt: timestamp('fetched_at').defaultNow().notNull()
+});
+
 export const urls = pgTable('urls', {
 	id: uuid('id').primaryKey().defaultRandom(),
 	originalUrl: text('original_url').notNull(),

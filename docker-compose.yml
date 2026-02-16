@@ -8,8 +8,8 @@ services:
       - PORT=3000
       - ORIGIN=${ORIGIN:-http://localhost:3000}
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      - DB_MAX_RETRIES=${DB_MAX_RETRIES:-5}
-      - DB_RETRY_BASE_DELAY_MS=${DB_RETRY_BASE_DELAY_MS:-500}
+      - DB_MAX_RETRIES=${DB_MAX_RETRIES:-3}
+      - DB_RETRY_BASE_DELAY_MS=${DB_RETRY_BASE_DELAY_MS:-200}
     ports:
       - '2005:3000'
     depends_on:
@@ -29,12 +29,6 @@ services:
         delay: ${RESTART_DELAY:-5s}
         max_attempts: ${RESTART_MAX_ATTEMPTS:-5}
         window: ${RESTART_WINDOW:-120s}
-      resources:
-        limits:
-          memory: ${APP_MEMORY_LIMIT:-512M}
-          cpus: '${APP_CPU_LIMIT:-1.0}'
-        reservations:
-          memory: 128M
     logging:
       driver: json-file
       options:
@@ -63,12 +57,6 @@ services:
         delay: ${RESTART_DELAY:-5s}
         max_attempts: ${RESTART_MAX_ATTEMPTS:-5}
         window: ${RESTART_WINDOW:-120s}
-      resources:
-        limits:
-          memory: ${DB_MEMORY_LIMIT:-256M}
-          cpus: '${DB_CPU_LIMIT:-0.5}'
-        reservations:
-          memory: 64M
     logging:
       driver: json-file
       options:
