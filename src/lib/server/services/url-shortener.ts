@@ -49,7 +49,7 @@ export function validateUrl(input: string): UrlValidationResult {
 		}
 	}
 
-	const cleanUrl = `${parsed.protocol}//${parsed.host}${parsed.pathname.replace(/\/+$/, '') || '/'}`;
+	const cleanUrl = `${parsed.protocol}//${parsed.host}${parsed.pathname.replace(/\/+$/, '') || '/'}${parsed.search}${parsed.hash}`;
 
 	if (cleanUrl.length > 2048) {
 		return { valid: false, error: 'URL is too long (max 2048 characters).' };
