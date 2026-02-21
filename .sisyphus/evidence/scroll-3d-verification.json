@@ -1,0 +1,23 @@
+{
+  "desktopInitial": {
+    "scrollingElement": "HTML",
+    "hasNestedScrollContainer": false,
+    "hasHorizontalOverflow": false,
+    "canvasCount": 1,
+    "scrollY": 0
+  },
+  "desktopAfterMotion": {
+    "scrollY": 980,
+    "canvasCount": 1
+  },
+  "canvasFrameChanged": true,
+  "canvasHashes": {
+    "initialCanvasHash": "18b315a5585a00b99222e7f438aa7dfea7952dec",
+    "motionCanvasHash": "f33bae43f2e0c24058b2cac984035be35f0c2e81"
+  },
+  "mobileCheck": {
+    "canvasCount": 0,
+    "hasSceneShell": false,
+    "hasHorizontalOverflow": false
+  }
+}
