@@ -1,0 +1,132 @@
+name: PostgreSQL 17→18 Migration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: self-hosted
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      ORIGIN: ${{ secrets.ORIGIN }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      APP_PORT: ${{ secrets.APP_PORT }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Stop all running containers
+        run: |
+          docker compose down --remove-orphans || true
+
+      - name: Start PG17 temporarily for dump
+        run: |
+          echo "Starting PG17 container for data export..."
+          docker run -d \
+            --name pg17_dump \
+            -e POSTGRES_USER=${POSTGRES_USER:-postgres} \
+            -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres} \
+            -e POSTGRES_DB=${POSTGRES_DB:-merckel} \
+            -v merckeldev_pgdata:/var/lib/postgresql/data \
+            postgres:17-alpine
+
+          echo "Waiting for PG17 to be ready..."
+          for i in $(seq 1 30); do
+            if docker exec pg17_dump pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-merckel} 2>/dev/null; then
+              echo "PG17 is ready"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+
+      - name: Dump database
+        run: |
+          echo "Dumping database..."
+          docker exec pg17_dump pg_dumpall \
+            -U ${POSTGRES_USER:-postgres} \
+            --clean --if-exists \
+            > /tmp/pg17_dump.sql
+
+          DUMP_SIZE=$(wc -c < /tmp/pg17_dump.sql)
+          echo "Dump complete: ${DUMP_SIZE} bytes"
+
+          if [ "$DUMP_SIZE" -lt 100 ]; then
+            echo "WARNING: Dump seems too small, showing contents:"
+            cat /tmp/pg17_dump.sql
+          fi
+
+      - name: Stop PG17 and remove old volume
+        run: |
+          echo "Stopping PG17 container..."
+          docker stop pg17_dump && docker rm pg17_dump
+
+          echo "Removing old pgdata volume..."
+          docker volume rm merckeldev_pgdata || true
+
+      - name: Start fresh PG18 via compose
+        run: |
+          echo "Starting PG18 database..."
+          docker compose up -d db
+
+          echo "Waiting for PG18 to be healthy..."
+          for i in $(seq 1 30); do
+            if docker compose exec db pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-merckel} 2>/dev/null; then
+              echo "PG18 is ready"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+
+      - name: Restore dump into PG18
+        run: |
+          echo "Restoring database dump..."
+          docker compose exec -T db psql \
+            -U ${POSTGRES_USER:-postgres} \
+            -d ${POSTGRES_DB:-merckel} \
+            < /tmp/pg17_dump.sql || true
+
+          echo "Restore complete"
+
+      - name: Start application
+        run: |
+          docker compose up -d
+
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for services to start..."
+          sleep 15
+
+          if docker compose ps | grep -q "Up"; then
+            echo "All containers are running"
+          else
+            echo "Error: Containers failed to start"
+            docker compose logs
+            exit 1
+          fi
+
+      - name: Cleanup
+        run: |
+          rm -f /tmp/pg17_dump.sql
+          docker image prune -f || true
+
+      - name: Migration summary
+        run: |
+          echo "=== Migration Complete ==="
+          echo ""
+          echo "PostgreSQL version:"
+          docker compose exec db psql -U ${POSTGRES_USER:-postgres} -c "SELECT version();" 2>/dev/null || true
+          echo ""
+          echo "Running containers:"
+          docker compose ps
+          echo ""
+          echo "DB logs (last 10 lines):"
+          docker compose logs db --tail 10 2>&1 || true
+          echo ""
+          echo "App logs (last 10 lines):"
+          docker compose logs app --tail 10 2>&1 || true
