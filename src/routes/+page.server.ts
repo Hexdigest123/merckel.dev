@@ -3,6 +3,7 @@ import { projects } from '$lib/data/projects';
 import { siteConfig } from '$lib/data/site-config';
 import { getCachedGitHubData, setCachedGitHubData } from '$lib/server/services/github-cache';
 import { getTopTools } from '$lib/server/services/usage';
+import { getAllPentestingEntries } from '$lib/server/content/pentesting';
 import type { OpenSourceContribution, OpenSourceData } from '$lib/types/content';
 
 const GITHUB_FETCH_TIMEOUT_MS = 8_000;
@@ -127,11 +128,12 @@ async function fetchGitHubOpenSourceData(username: string): Promise<OpenSourceDa
 
 export const load = async () => {
 	const now = Date.now();
+	const pentestingEntries = getAllPentestingEntries();
 
 	// L1: In-memory cache (5 min) — avoids DB round-trip on rapid requests
 	if (inMemoryCache && inMemoryCache.expiresAt > now) {
 		const topTools = await getTopTools(3);
-		return { openSource: inMemoryCache.data, topTools };
+		return { openSource: inMemoryCache.data, topTools, pentestingEntries };
 	}
 
 	const githubProfileUrl = siteConfig.socials.find((social) => social.platform === 'GitHub')?.url;
@@ -143,7 +145,7 @@ export const load = async () => {
 			'GitHub-Profil ist noch nicht konfiguriert, daher zeigt dieser Bereich lokale Portfolio-Highlights.'
 		);
 		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: fallbackData };
-		return { openSource: fallbackData, topTools };
+		return { openSource: fallbackData, topTools, pentestingEntries };
 	}
 
 	const cacheKey = `github:open-source:${githubUsername}`;
@@ -154,7 +156,7 @@ export const load = async () => {
 	// L2: DB cache (24h) — serves cached data without hitting GitHub API
 	if (cachedData) {
 		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: cachedData };
-		return { openSource: cachedData, topTools };
+		return { openSource: cachedData, topTools, pentestingEntries };
 	}
 
 	// Cache miss — fetch from GitHub API with timeout
@@ -171,13 +173,13 @@ export const load = async () => {
 		// Fire-and-forget: persist to DB cache (don't block response)
 		void setCachedGitHubData(cacheKey, openSource);
 
-		return { openSource, topTools };
+		return { openSource, topTools, pentestingEntries };
 	} catch {
 		const fallbackData = createFallbackData(
 			'GitHub-Datenanfrage fehlgeschlagen, daher werden lokale Highlights angezeigt.'
 		);
 		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: fallbackData };
-		return { openSource: fallbackData, topTools };
+		return { openSource: fallbackData, topTools, pentestingEntries };
 	}
 };
 

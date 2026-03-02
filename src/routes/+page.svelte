@@ -7,10 +7,11 @@
 	import ExperienceSection from '$lib/components/sections/ExperienceSection.svelte';
 	import OpenSourceSection from '$lib/components/sections/OpenSourceSection.svelte';
 	import ProjectsSection from '$lib/components/sections/ProjectsSection.svelte';
+	import SecurityResearchSection from '$lib/components/sections/SecurityResearchSection.svelte';
 	import TestimonialsSection from '$lib/components/sections/TestimonialsSection.svelte';
 	import ToolsSection from '$lib/components/sections/ToolsSection.svelte';
 	import { siteConfig } from '$lib/data/site-config';
-	import type { OpenSourceData, WebToolWithUsage } from '$lib/types/content';
+	import type { OpenSourceData, PentestingEntry, WebToolWithUsage } from '$lib/types/content';
 	import { ensureScrollTriggerRefreshOnNavigate } from '$lib/utils/gsap';
 
 	const defaultOpenSourceData: OpenSourceData = {
@@ -22,14 +23,25 @@
 	};
 
 	let {
-		data = {} as { openSource?: OpenSourceData; topTools?: WebToolWithUsage[] }
-	}: { data: { openSource?: OpenSourceData; topTools?: WebToolWithUsage[] } } = $props();
+		data = {} as {
+			openSource?: OpenSourceData;
+			topTools?: WebToolWithUsage[];
+			pentestingEntries?: PentestingEntry[];
+		}
+	}: {
+		data: {
+			openSource?: OpenSourceData;
+			topTools?: WebToolWithUsage[];
+			pentestingEntries?: PentestingEntry[];
+		};
+	} = $props();
 	let openSourceData = $derived(data.openSource ?? defaultOpenSourceData);
 
 	const sections = [
 		{ id: 'about', title: 'Über mich' },
 		{ id: 'tools', title: 'Werkzeuge' },
 		{ id: 'projects', title: 'Projekte' },
+		{ id: 'pentests', title: 'Pentests' },
 		{ id: 'experience', title: 'Erfahrung' },
 		{ id: 'opensource', title: 'Open Source' },
 		{ id: 'testimonials', title: 'Referenzen' },
@@ -77,6 +89,9 @@
 				</AnimateOnScroll>
 				<AnimateOnScroll>
 					<ProjectsSection />
+				</AnimateOnScroll>
+				<AnimateOnScroll>
+					<SecurityResearchSection entries={data.pentestingEntries ?? []} />
 				</AnimateOnScroll>
 				<AnimateOnScroll>
 					<ExperienceSection />

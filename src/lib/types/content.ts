@@ -84,3 +84,17 @@ export interface OpenSourceData {
 	stats: OpenSourceStat[];
 	contributions: OpenSourceContribution[];
 }
+
+export interface PentestingEntry {
+	slug: string;
+	title: string;
+	description: string;
+	date: string;
+	client: string;
+	scope: string;
+	tools: string[];
+	published: boolean;
+	featured: boolean;
+	readTime: number;
+	content?: string;
+}

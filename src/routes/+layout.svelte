@@ -110,6 +110,7 @@
 		{ id: 'about', title: 'Über mich' },
 		{ id: 'tools', title: 'Werkzeuge' },
 		{ id: 'projects', title: 'Projekte' },
+		{ id: 'pentests', title: 'Pentests' },
 		{ id: 'experience', title: 'Erfahrung' },
 		{ id: 'opensource', title: 'Open Source' },
 		{ id: 'testimonials', title: 'Referenzen' },
