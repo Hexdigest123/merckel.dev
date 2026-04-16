@@ -64,7 +64,7 @@
 		"@threlte/extras": "^9.14.5",
 		"cronstrue": "^3.14.0",
 		"diff": "^8.0.4",
-		"dompurify": "^3.3.3",
+		"dompurify": "^3.4.0",
 		"drizzle-orm": "^0.45.2",
 		"gray-matter": "^4.0.3",
 		"gsap": "^3.14.2",
