@@ -55,7 +55,8 @@
 		"typescript-eslint": "^8.58.1",
 		"vite": "^7.3.2",
 		"vitest": "^4.1.4",
-		"vitest-browser-svelte": "^2.1.0"
+		"vitest-browser-svelte": "^2.1.0",
+		"yaml": "^1.10.3"
 	},
 	"dependencies": {
 		"@fontsource/jetbrains-mono": "^5.2.8",
@@ -64,7 +65,7 @@
 		"@threlte/extras": "^9.14.5",
 		"cronstrue": "^3.14.0",
 		"diff": "^8.0.4",
-		"dompurify": "^3.3.3",
+		"dompurify": "^3.4.0",
 		"drizzle-orm": "^0.45.2",
 		"gray-matter": "^4.0.3",
 		"gsap": "^3.14.2",
@@ -75,5 +76,8 @@
 		"postgres": "^3.4.9",
 		"qrcode": "^1.5.4",
 		"three": "^0.182.0"
+	},
+	"overrides": {
+		"yaml": "1.10.3"
 	}
 }
