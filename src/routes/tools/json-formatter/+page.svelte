@@ -73,7 +73,7 @@
 
 		// Replace placeholders with actual HTML spans
 		return result
-			.replace(/\x00KEY_START\x00/g, '<span class="text-purple-300">"')
+			.replace(/\x00KEY_START\x00/g, '<span class="text-purple-200">"')
 			.replace(/\x00KEY_END\x00/g, '"</span>')
 			.replace(/\x00STR_START\x00/g, '<span class="text-emerald-300">"')
 			.replace(/\x00STR_END\x00/g, '"</span>')

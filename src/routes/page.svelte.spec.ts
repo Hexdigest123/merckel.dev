@@ -4,10 +4,12 @@ import { render } from 'vitest-browser-svelte';
 import Page from './+page.svelte';
 
 describe('/+page.svelte', () => {
-	it('should render h1', async () => {
+	it('should render an h1 identity heading', async () => {
 		render(Page);
 
-		const heading = page.getByRole('heading', { level: 1 });
+		const heading = page
+			.getByRole('heading', { level: 1, name: 'Pierre-Maurice Merckel' })
+			.first();
 		await expect.element(heading).toBeInTheDocument();
 	});
 });

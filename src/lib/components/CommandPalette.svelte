@@ -213,7 +213,7 @@
 							>
 								<span>{command.label}</span>
 								<span class="font-mono text-xs tracking-wide text-slate-500 uppercase">
-									{{ navigate: 'Sektion', 'navigate-url': 'Tool' }[command.type]}
+									{{ navigate: 'Sektion', 'navigate-url': 'Werkzeug' }[command.type]}
 								</span>
 							</button>
 						</li>

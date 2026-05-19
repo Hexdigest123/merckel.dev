@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/state';
 	import type { Component } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import '@fontsource/space-grotesk/latin-400.css';
@@ -22,8 +23,16 @@
 	);
 
 	const siteUrl = 'https://merckel.dev';
-	const siteTitle = `${siteConfig.name} — ${siteConfig.title}`;
+	const homeTitle = `${siteConfig.name} — merckel.dev`;
 	const siteDescription = siteConfig.bio;
+	let pageTitle = $derived.by(() => {
+		const t = (page.data as { title?: unknown })?.title;
+		return typeof t === 'string' && t.length > 0 ? `${t} — merckel.dev` : homeTitle;
+	});
+	let pageDescription = $derived.by(() => {
+		const d = (page.data as { description?: unknown })?.description;
+		return typeof d === 'string' && d.length > 0 ? d : siteDescription;
+	});
 	const ogImageUrl = `${siteUrl}/og.png`;
 	const jsonLdSchema = {
 		'@context': 'https://schema.org',
@@ -119,8 +128,8 @@
 
 <svelte:head>
 	<!-- Essential Meta Tags -->
-	<title>{siteTitle}</title>
-	<meta name="description" content={siteDescription} />
+	<title>{pageTitle}</title>
+	<meta name="description" content={pageDescription} />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="theme-color" content="#0f172a" />
 	<link rel="canonical" href={siteUrl} />
@@ -128,8 +137,8 @@
 	<!-- Open Graph Tags -->
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={siteUrl} />
-	<meta property="og:title" content={siteTitle} />
-	<meta property="og:description" content={siteDescription} />
+	<meta property="og:title" content={pageTitle} />
+	<meta property="og:description" content={pageDescription} />
 	<meta property="og:image" content={ogImageUrl} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
@@ -137,8 +146,8 @@
 	<!-- Twitter Card Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:url" content={siteUrl} />
-	<meta name="twitter:title" content={siteTitle} />
-	<meta name="twitter:description" content={siteDescription} />
+	<meta name="twitter:title" content={pageTitle} />
+	<meta name="twitter:description" content={pageDescription} />
 	<meta name="twitter:image" content={ogImageUrl} />
 
 	<!-- JSON-LD Person Schema -->

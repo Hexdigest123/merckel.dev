@@ -95,6 +95,24 @@ export function createRevealContext(root: HTMLElement, options: RevealOptions = 
 		return null;
 	}
 
+	if (typeof window !== 'undefined') {
+		window.setTimeout(() => {
+			const nodes = root.querySelectorAll<HTMLElement>(
+				'[data-reveal], [data-reveal-item], [data-reveal-hero]'
+			);
+			nodes.forEach((node) => {
+				const style = window.getComputedStyle(node);
+				if (style.visibility === 'hidden' || parseFloat(style.opacity) < 0.05) {
+					gsap.set(node, {
+						autoAlpha: 1,
+						y: 0,
+						clearProps: 'opacity,visibility,transform'
+					});
+				}
+			});
+		}, 2000);
+	}
+
 	const {
 		mode = 'section',
 		triggerStart = 'top 84%',

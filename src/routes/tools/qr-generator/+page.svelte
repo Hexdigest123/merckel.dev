@@ -237,16 +237,7 @@
 </script>
 
 <section class="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:py-16">
-	<a
-		href="/tools"
-		data-cursor="link"
-		class="inline-flex items-center gap-2 text-sm text-slate-300 transition-colors duration-200 hover:text-purple-300"
-	>
-		<span aria-hidden="true">←</span>
-		<span>Zurück zu Werkzeugen</span>
-	</a>
-
-	<div class="mt-6 rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
+	<div class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
 		<h1 class="text-3xl font-bold text-slate-100">{data.title}</h1>
 		<p class="mt-2 text-base text-slate-300">
 			QR-Codes für URLs oder Text generieren. URLs werden zuerst gekürzt, damit Scans nachverfolgt

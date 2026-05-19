@@ -65,9 +65,9 @@
 	class="min-h-screen bg-slate-900 pt-14 text-slate-200 lg:pt-0"
 >
 	<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-		<div class="lg:grid lg:grid-cols-[minmax(16rem,22rem),1fr] lg:gap-14">
+		<div class="lg:grid lg:grid-cols-[minmax(16rem,22rem)_1fr] lg:gap-14">
 			<aside
-				class="hidden lg:flex lg:flex-col lg:justify-between lg:py-6"
+				class="hidden lg:flex lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:flex-col lg:justify-between lg:py-6"
 				aria-label="Site profile"
 			>
 				<div class="mb-4 space-y-4">
@@ -79,6 +79,14 @@
 				</div>
 				<Navigation items={navItems} heading="Sektionen" />
 			</aside>
+
+			<header class="mb-2 space-y-3 lg:hidden" aria-label="Site identity">
+				<p class="font-mono text-xs tracking-[0.24em] text-purple-300 uppercase">Portfolio</p>
+				<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
+					{siteConfig.name}
+				</h1>
+				<p class="max-w-md text-sm text-slate-400 sm:text-base">{siteConfig.subtitle}</p>
+			</header>
 
 			<div class="space-y-10 pt-4 lg:pt-0">
 				<AnimateOnScroll>
