@@ -6,13 +6,13 @@ import { render } from 'svelte/server';
 import Navigation from '../Navigation.svelte';
 
 const REQUIRED_LINKS = [
-	{ id: 'about', label: 'About' },
-	{ id: 'tools', label: 'Tools' },
-	{ id: 'projects', label: 'Projects' },
-	{ id: 'experience', label: 'Experience' },
+	{ id: 'about', label: 'Über mich' },
+	{ id: 'tools', label: 'Werkzeuge' },
+	{ id: 'projects', label: 'Projekte' },
+	{ id: 'experience', label: 'Erfahrung' },
 	{ id: 'opensource', label: 'Open Source' },
-	{ id: 'testimonials', label: 'Testimonials' },
-	{ id: 'contact', label: 'Contact' }
+	{ id: 'testimonials', label: 'Referenzen' },
+	{ id: 'contact', label: 'Kontakt' }
 ];
 
 describe('Navigation', () => {

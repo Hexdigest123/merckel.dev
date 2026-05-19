@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 
 const EXPECTED_SECTIONS = [
-	'hero',
 	'about',
 	'tools',
 	'projects',
+	'pentests',
 	'experience',
 	'opensource',
 	'testimonials',
@@ -127,31 +127,6 @@ test.describe('Final E2E coverage: interactions and accessibility-sensitive flow
 		await expect(cursor).toHaveAttribute('data-variant', 'link');
 	});
 
-	test('konami easter path triggers activation message', async ({ page }) => {
-		await page.setViewportSize({ width: 1280, height: 800 });
-		await page.goto('/');
-		await page.waitForLoadState('networkidle');
-
-		const sequence = [
-			'ArrowUp',
-			'ArrowUp',
-			'ArrowDown',
-			'ArrowDown',
-			'ArrowLeft',
-			'ArrowRight',
-			'ArrowLeft',
-			'ArrowRight',
-			'b',
-			'a'
-		] as const;
-
-		for (const key of sequence) {
-			await page.keyboard.press(key);
-		}
-
-		await expect(page.getByText(/Konami Code Activated!/)).toBeVisible();
-	});
-
 	test('reduced motion disables heavy effects and custom cursor', async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 		await page.setViewportSize({ width: 1280, height: 800 });
@@ -195,25 +170,6 @@ test.describe('Final E2E coverage: console stability', () => {
 		await expect(contactSection.locator('a[href^="mailto:"]').first()).toBeVisible();
 		await expect(contactSection.locator('[data-testid="contact-socials"] a').first()).toBeVisible();
 		await expect(contactSection.locator('form')).toHaveCount(0);
-
-		await page.evaluate(() => {
-			const sequence = [
-				'ArrowUp',
-				'ArrowUp',
-				'ArrowDown',
-				'ArrowDown',
-				'ArrowLeft',
-				'ArrowRight',
-				'ArrowLeft',
-				'ArrowRight',
-				'b',
-				'a'
-			];
-			for (const key of sequence) {
-				window.dispatchEvent(new KeyboardEvent('keydown', { key }));
-			}
-		});
-		await expect(page.getByText('Konami Code Activated!')).toBeVisible();
 
 		expect(consoleErrors).toEqual([]);
 	});

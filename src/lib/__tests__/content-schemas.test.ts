@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import type { Project, Experience, Tool, Testimonial, SiteConfig } from '$lib/types/content';
+import type { Project, Experience, WebTool, Testimonial } from '$lib/types/content';
 import { projects } from '$lib/data/projects';
 import { experience } from '$lib/data/experience';
-import { tools } from '$lib/data/tools';
+import { webTools } from '$lib/data/web-tools';
 import { testimonials } from '$lib/data/testimonials';
 import { siteConfig } from '$lib/data/site-config';
 
@@ -60,41 +60,39 @@ describe('Content Schemas', () => {
 		});
 	});
 
-	describe('Tools', () => {
-		it('should have non-empty tools array', () => {
-			expect(tools.length).toBeGreaterThan(0);
+	describe('Web tools', () => {
+		it('should have non-empty webTools array', () => {
+			expect(webTools.length).toBeGreaterThan(0);
 		});
 
 		it('should have all required fields in each tool', () => {
-			tools.forEach((tool: Tool) => {
+			webTools.forEach((tool: WebTool) => {
 				expect(tool.id).toBeDefined();
 				expect(tool.name).toBeDefined();
+				expect(tool.slug).toBeDefined();
+				expect(tool.description).toBeDefined();
 				expect(tool.icon).toBeDefined();
 				expect(tool.category).toBeDefined();
-				expect(tool.proficiency).toBeDefined();
+				expect(tool.path).toBeDefined();
 			});
 		});
 
 		it('should have valid category values', () => {
-			const validCategories = ['language', 'framework', 'tool', 'platform'];
-			tools.forEach((tool: Tool) => {
+			const validCategories: WebTool['category'][] = ['utility', 'developer'];
+			webTools.forEach((tool: WebTool) => {
 				expect(validCategories).toContain(tool.category);
 			});
 		});
 
-		it('should have valid proficiency values', () => {
-			const validProficiencies = ['expert', 'proficient', 'familiar'];
-			tools.forEach((tool: Tool) => {
-				expect(validProficiencies).toContain(tool.proficiency);
-			});
+		it('should have unique ids', () => {
+			const ids = webTools.map((t) => t.id);
+			expect(new Set(ids).size).toBe(ids.length);
 		});
 
-		it('should have tools from all categories', () => {
-			const categories = new Set(tools.map((t) => t.category));
-			expect(categories.has('language')).toBe(true);
-			expect(categories.has('framework')).toBe(true);
-			expect(categories.has('tool')).toBe(true);
-			expect(categories.has('platform')).toBe(true);
+		it('paths should match /tools/<slug> convention', () => {
+			webTools.forEach((tool: WebTool) => {
+				expect(tool.path).toBe(`/tools/${tool.slug}`);
+			});
 		});
 	});
 

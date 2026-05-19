@@ -24,7 +24,8 @@ describe('gsap utilities', () => {
 
 	it('skips reveal animation context when reduced motion is enabled', () => {
 		vi.stubGlobal('window', {
-			matchMedia: vi.fn().mockReturnValue({ matches: true })
+			matchMedia: vi.fn().mockReturnValue({ matches: true }),
+			requestAnimationFrame: vi.fn()
 		});
 
 		const root = {

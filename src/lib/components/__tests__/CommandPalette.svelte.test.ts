@@ -32,7 +32,7 @@ describe('CommandPalette interactions', () => {
 		pressGlobalKey('k', { metaKey: true });
 		await nextFrame();
 
-		const dialog = page.getByRole('dialog', { name: 'Command palette' });
+		const dialog = page.getByRole('dialog', { name: 'Befehlspalette' });
 		await expect.element(dialog).toBeInTheDocument();
 
 		pressGlobalKey('Escape');
@@ -50,11 +50,11 @@ describe('CommandPalette interactions', () => {
 		pressGlobalKey('k', { ctrlKey: true });
 		await nextFrame();
 
-		const input = page.getByLabelText('Command input');
+		const input = page.getByLabelText('Befehlseingabe');
 		await input.fill('projects');
 
 		await expect
-			.element(page.getByRole('option', { name: 'Projects Section' }))
+			.element(page.getByRole('option', { name: 'Projects Sektion' }))
 			.toBeInTheDocument();
 
 		document
@@ -64,53 +64,10 @@ describe('CommandPalette interactions', () => {
 
 		expect(window.location.hash).toBe('#projects');
 		await expect
-			.element(page.getByRole('dialog', { name: 'Command palette' }))
+			.element(page.getByRole('dialog', { name: 'Befehlspalette' }))
 			.not.toBeInTheDocument();
 
 		target.remove();
 		window.history.replaceState(null, '', window.location.pathname);
-	});
-
-	it('runs hidden commands without breaking the dialog', async () => {
-		render(CommandPalette, { props: { sections } });
-		pressGlobalKey('k', { metaKey: true });
-		await nextFrame();
-
-		const input = page.getByLabelText('Command input');
-		await input.fill('sudo hire me');
-		document
-			.getElementById('command-palette-input')
-			?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-		await nextFrame();
-
-		await expect
-			.element(page.getByText('Permission granted. Drafting the offer letter... done.'))
-			.toBeInTheDocument();
-		await expect.element(page.getByRole('dialog', { name: 'Command palette' })).toBeInTheDocument();
-	});
-
-	it('filters to hidden commands from text input', async () => {
-		render(CommandPalette, { props: { sections } });
-		pressGlobalKey('k', { ctrlKey: true });
-		await nextFrame();
-
-		const input = page.getByLabelText('Command input');
-
-		await input.fill('help');
-		await expect.element(page.getByRole('option', { name: 'help Hidden' })).toBeInTheDocument();
-		await expect
-			.element(page.getByRole('option', { name: 'About Section' }))
-			.not.toBeInTheDocument();
-
-		await input.fill('secret');
-		await expect.element(page.getByRole('option', { name: 'secret Hidden' })).toBeInTheDocument();
-
-		await input.fill('matrix');
-		await expect.element(page.getByRole('option', { name: 'matrix Hidden' })).toBeInTheDocument();
-
-		await input.fill('sudo hire me');
-		await expect
-			.element(page.getByRole('option', { name: 'sudo hire me Hidden' }))
-			.toBeInTheDocument();
 	});
 });

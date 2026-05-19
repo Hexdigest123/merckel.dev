@@ -8,13 +8,9 @@
 	}
 
 	let {
-		navItems = [],
-		secretsFound = 0,
-		secretsTotal = 0
+		navItems = []
 	}: {
 		navItems?: NavItem[];
-		secretsFound?: number;
-		secretsTotal?: number;
 	} = $props();
 
 	let isDrawerOpen = $state(false);
@@ -132,15 +128,6 @@
 	class="fixed inset-x-0 top-0 z-30 flex h-14 items-center border-b border-slate-700/50 bg-slate-900/95 px-4 backdrop-blur-sm lg:hidden"
 >
 	<div class="ml-auto flex items-center gap-3">
-		{#if secretsFound > 0}
-			<span
-				class="rounded-md border border-slate-600/50 bg-slate-800/60 px-2 py-1 font-mono text-xs text-slate-400"
-				title="Geheimnisse gefunden"
-			>
-				🔓 {secretsFound}/{secretsTotal}
-			</span>
-		{/if}
-
 		<button
 			type="button"
 			class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 transition-colors duration-150 hover:bg-slate-800 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300"

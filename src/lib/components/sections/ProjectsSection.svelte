@@ -1,16 +1,9 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import Section from '$lib/components/Section.svelte';
 	import { projects } from '$lib/data/projects';
-	import { revealSecret } from '$lib/utils/secrets-tracker';
-	import { createHoverReveal } from '$lib/utils/hover-reveal';
-	import { secretNotes } from '$lib/data/secret-notes';
-
-	let { onSecretRevealed }: { onSecretRevealed?: (secretId: string) => void } = $props();
 
 	let hoveredProjectId = $state<string | null>(null);
 	let hasHoveredProject = $derived(hoveredProjectId !== null);
-	let revealedProjectId = $state<string | null>(null);
 
 	function setHoveredProject(projectId: string) {
 		hoveredProjectId = projectId;
@@ -34,26 +27,6 @@
 
 		clearHoveredProject();
 	}
-
-	function setupHoverReveal(element: HTMLElement, projectId: string) {
-		if (!browser) return;
-
-		const { cleanup } = createHoverReveal(element, {
-			duration: 2000,
-			onRevealed: () => {
-				revealedProjectId = projectId;
-				revealSecret('hover-project');
-				if (onSecretRevealed) {
-					onSecretRevealed('hover-project');
-				}
-				setTimeout(() => {
-					revealedProjectId = null;
-				}, 2500);
-			}
-		});
-
-		return { destroy: cleanup };
-	}
 </script>
 
 <Section id="projects" title="Projekte" description="Ausgewählte Projekte und Umsetzungsdetails.">
@@ -61,7 +34,6 @@
 		{#each projects as project (project.id)}
 			<article
 				data-reveal-item
-				use:setupHoverReveal={project.id}
 				class={`group relative rounded-2xl border border-slate-700/60 bg-slate-800/35 p-5 transition-all duration-200 sm:p-6 ${
 					hasHoveredProject && hoveredProjectId !== project.id ? 'opacity-45' : 'opacity-100'
 				}`}
@@ -70,14 +42,6 @@
 				onfocusin={() => setHoveredProject(project.id)}
 				onfocusout={handleProjectFocusOut}
 			>
-				{#if revealedProjectId === project.id}
-					<div
-						class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500/20 to-purple-600/20 backdrop-blur-sm"
-					>
-						<span class="font-mono text-sm text-purple-200">✨</span>
-						<span class="font-mono text-xs text-purple-100">{secretNotes['hover-project']}</span>
-					</div>
-				{/if}
 				<div class="flex flex-wrap items-start justify-between gap-3">
 					<h3 class="font-sans text-lg font-semibold text-slate-100 sm:text-xl">{project.title}</h3>
 					{#if project.featured}

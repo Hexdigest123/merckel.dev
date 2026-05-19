@@ -7,7 +7,7 @@
 - Immersive 3D animated background (desktop only) using Threlte + Three.js
 - Single-page responsive layout with 8 content sections
 - Dark theme with purple accent color (#8b5cf6)
-- Interactive features: custom cursor, command palette, Easter eggs
+- Interactive features: custom cursor, command palette
 - Full TDD test suite (Vitest + Playwright)
 
 **Tech Stack**:
@@ -60,8 +60,7 @@ src/
 │   │   └── site-config.ts       # Site-wide config (name, title, bio, socials)
 │   ├── utils/
 │   │   ├── cursor.ts            # Custom cursor helpers
-│   │   ├── scroll.ts            # Scroll utilities
-│   │   └── easter-eggs.ts       # Easter egg logic
+│   │   └── scroll.ts            # Scroll utilities
 │   ├── stores/
 │   │   └── (Svelte 5 runes only — no legacy stores)
 │   ├── assets/

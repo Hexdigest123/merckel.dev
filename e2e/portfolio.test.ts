@@ -1,27 +1,14 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const EXPECTED_SECTIONS = [
-	'hero',
 	'about',
 	'tools',
 	'projects',
+	'pentests',
 	'experience',
 	'opensource',
 	'testimonials',
 	'contact'
-] as const;
-
-const KONAMI_SEQUENCE = [
-	'ArrowUp',
-	'ArrowUp',
-	'ArrowDown',
-	'ArrowDown',
-	'ArrowLeft',
-	'ArrowRight',
-	'ArrowLeft',
-	'ArrowRight',
-	'b',
-	'a'
 ] as const;
 
 const MOBILE_CONFIG = {
@@ -38,12 +25,6 @@ async function expectSectionCoverage(page: Page) {
 		await expect(section).toBeAttached();
 		await section.scrollIntoViewIfNeeded();
 		await expect(section).toBeInViewport();
-	}
-}
-
-async function triggerKonamiCode(page: Page) {
-	for (const key of KONAMI_SEQUENCE) {
-		await page.keyboard.press(key);
 	}
 }
 
@@ -169,13 +150,6 @@ test.describe('Portfolio final coverage', () => {
 		await expect(cursor).toHaveAttribute('data-variant', 'link');
 	});
 
-	test('konami code displays activation message', async ({ page }) => {
-		await page.goto('/');
-		await page.waitForLoadState('networkidle');
-		await triggerKonamiCode(page);
-		await expect(page.getByText(/Konami Code Activated!/)).toBeVisible();
-	});
-
 	test('reduced motion disables scene and custom cursor behavior', async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 		await page.setViewportSize({ width: 1280, height: 800 });
@@ -217,9 +191,6 @@ test.describe('Portfolio final coverage', () => {
 		await expect(contactSection.locator('a[href^="mailto:"]').first()).toBeVisible();
 		await expect(contactSection.locator('[data-testid="contact-socials"] a').first()).toBeVisible();
 		await expect(contactSection.locator('form')).toHaveCount(0);
-
-		await triggerKonamiCode(page);
-		await expect(page.getByText(/Konami Code Activated!/)).toBeVisible();
 
 		expect(errors).toEqual([]);
 	});

@@ -12,12 +12,10 @@
 
 	let {
 		sections,
-		placeholder = 'Befehl oder Sektion eingeben...',
-		onSecretRevealed
+		placeholder = 'Befehl oder Sektion eingeben...'
 	}: {
 		sections: readonly CommandPaletteSection[];
 		placeholder?: string;
-		onSecretRevealed?: (secretId: string) => void;
 	} = $props();
 
 	let isOpen = $state(false);
@@ -117,16 +115,7 @@
 			return;
 		}
 
-		const result = executeCommand(command) as {
-			navigateToHash?: string;
-			navigateToUrl?: string;
-			message?: string;
-			secretId?: string;
-		};
-
-		if (result.secretId && onSecretRevealed) {
-			onSecretRevealed(result.secretId);
-		}
+		const result = executeCommand(command);
 
 		if (result.navigateToUrl) {
 			closePalette();
@@ -224,9 +213,7 @@
 							>
 								<span>{command.label}</span>
 								<span class="font-mono text-xs tracking-wide text-slate-500 uppercase">
-									{{ navigate: 'Sektion', 'navigate-url': 'Tool', hidden: 'Versteckt' }[
-										command.type
-									]}
+									{{ navigate: 'Sektion', 'navigate-url': 'Tool' }[command.type]}
 								</span>
 							</button>
 						</li>

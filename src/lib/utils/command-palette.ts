@@ -7,11 +7,9 @@ export interface CommandPaletteCommand {
 	id: string;
 	label: string;
 	keywords: string[];
-	type: 'navigate' | 'navigate-url' | 'hidden';
+	type: 'navigate' | 'navigate-url';
 	hash?: string;
 	url?: string;
-	output?: string;
-	secretId?: string;
 	visibleByDefault: boolean;
 }
 
@@ -19,7 +17,6 @@ export interface CommandExecutionResult {
 	navigateToHash?: string;
 	navigateToUrl?: string;
 	message?: string;
-	secretId?: string;
 }
 
 const TOOL_COMMANDS: CommandPaletteCommand[] = [
@@ -105,45 +102,6 @@ const TOOL_COMMANDS: CommandPaletteCommand[] = [
 	}
 ];
 
-const HIDDEN_COMMANDS: CommandPaletteCommand[] = [
-	{
-		id: 'help',
-		label: 'help',
-		keywords: ['commands', 'palette', 'assist'],
-		type: 'hidden',
-		output:
-			'Sektionen: über mich, werkzeuge, projekte, erfahrung, open source, referenzen, kontakt. Tools: url shortener, cron, diff, bildkonverter, qr, markdown, css-verlauf, json-formatter, farbkonverter, regex. Versteckt: secret, matrix, sudo hire me.',
-		visibleByDefault: false
-	},
-	{
-		id: 'secret',
-		label: 'secret',
-		keywords: ['hidden', 'easter', 'vault'],
-		type: 'hidden',
-		output: 'Keine geheimen Informationen hier. Aber Neugier steht dir gut.',
-		secretId: 'terminal-secret',
-		visibleByDefault: false
-	},
-	{
-		id: 'matrix',
-		label: 'matrix',
-		keywords: ['neo', 'red pill', 'wake up'],
-		type: 'hidden',
-		output: 'Wach auf, Neo. Das Portfolio hat dich.',
-		secretId: 'terminal-secret',
-		visibleByDefault: false
-	},
-	{
-		id: 'sudo-hire-me',
-		label: 'sudo hire me',
-		keywords: ['sudo', 'hire', 'career'],
-		type: 'hidden',
-		output: 'Zugriff gewährt. Angebotsschreiben wird erstellt... fertig.',
-		secretId: 'terminal-secret',
-		visibleByDefault: false
-	}
-];
-
 function normalize(input: string): string {
 	return input.trim().toLowerCase();
 }
@@ -160,7 +118,7 @@ export function createCommandList(
 		visibleByDefault: true
 	}));
 
-	return [...navigationCommands, ...TOOL_COMMANDS, ...HIDDEN_COMMANDS];
+	return [...navigationCommands, ...TOOL_COMMANDS];
 }
 
 export function filterCommands(
@@ -209,13 +167,6 @@ export function executeCommand(command: CommandPaletteCommand): CommandExecution
 	if (command.type === 'navigate-url' && command.url) {
 		return {
 			navigateToUrl: command.url
-		};
-	}
-
-	if (command.type === 'hidden' && command.output) {
-		return {
-			message: command.output,
-			secretId: command.secretId
 		};
 	}
 

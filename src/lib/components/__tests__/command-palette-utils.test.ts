@@ -2,8 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	createCommandList,
 	executeCommand,
-	filterCommands,
-	resolveCommandFromInput
+	filterCommands
 } from '$lib/utils/command-palette';
 
 const sections = [
@@ -17,34 +16,10 @@ describe('command-palette utils', () => {
 		const commands = createCommandList(sections);
 		const filtered = filterCommands(commands, '');
 
-		expect(filtered).toHaveLength(3);
-		expect(filtered.map((command) => command.label)).toEqual(['About', 'Projects', 'Contact']);
-	});
-
-	it('matches hidden commands when searching and resolves exact hidden entries', () => {
-		const commands = createCommandList(sections);
-		const filtered = filterCommands(commands, 'matrix');
-
-		expect(filtered.some((command) => command.label === 'matrix')).toBe(true);
-		expect(executeCommand(resolveCommandFromInput(commands, 'help')!)).toEqual({
-			message:
-				'Commands: about, tools, projects, experience, open source, testimonials, contact. Hidden: secret, matrix, sudo hire me.'
-		});
-		expect(executeCommand(resolveCommandFromInput(commands, 'secret')!)).toEqual({
-			message: 'No classified intel here. But curiosity looks great on you.',
-			secretId: 'terminal-secret'
-		});
-		expect(executeCommand(resolveCommandFromInput(commands, 'matrix')!)).toEqual({
-			message: 'Wake up, Neo. The portfolio has you.',
-			secretId: 'terminal-secret'
-		});
-
-		const exact = resolveCommandFromInput(commands, 'sudo hire me');
-		expect(exact?.label).toBe('sudo hire me');
-		expect(executeCommand(exact!)).toEqual({
-			message: 'Permission granted. Drafting the offer letter... done.',
-			secretId: 'terminal-secret'
-		});
+		const sectionLabels = filtered
+			.filter((c) => c.type === 'navigate')
+			.map((c) => c.label);
+		expect(sectionLabels).toEqual(['About', 'Projects', 'Contact']);
 	});
 
 	it('returns hash targets for section commands', () => {
@@ -54,5 +29,14 @@ describe('command-palette utils', () => {
 
 		expect(selected.label).toBe('Projects');
 		expect(executeCommand(selected)).toEqual({ navigateToHash: 'projects' });
+	});
+
+	it('returns url targets for tool commands', () => {
+		const commands = createCommandList(sections);
+		const filtered = filterCommands(commands, 'url shortener');
+		const tool = filtered.find((c) => c.id === 'tool-url-shortener');
+
+		expect(tool).toBeDefined();
+		expect(executeCommand(tool!)).toEqual({ navigateToUrl: '/tools/url-shortener' });
 	});
 });
