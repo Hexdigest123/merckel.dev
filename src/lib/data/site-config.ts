@@ -13,9 +13,9 @@ export const siteConfig: SiteConfig = {
 			icon: 'github'
 		},
 		{
-			platform: 'Gitea',
-			url: 'https://git.merckel.dev',
-			icon: 'github'
+			platform: 'Twitter formally (X)',
+			url: 'https://x.com/h3xdigest',
+			icon: 'x'
 		},
 		{
 			platform: 'Email',

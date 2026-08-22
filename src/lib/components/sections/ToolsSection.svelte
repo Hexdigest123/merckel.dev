@@ -1,17 +1,18 @@
 <script lang="ts">
 	import Section from '$lib/components/Section.svelte';
 	import ToolCard from '$lib/components/ToolCard.svelte';
+	import { localizeTool } from '$lib/i18n/content';
+	import { useLocale } from '$lib/i18n/locale.svelte';
 	import type { WebToolWithUsage } from '$lib/types/content';
 
+	const i18n = useLocale();
 	let { tools = [] }: { tools: WebToolWithUsage[] } = $props();
+	let localizedTools = $derived(tools.map((tool) => localizeTool(i18n, tool)));
 </script>
 
-<Section id="tools" title="Werkzeuge" description="Kostenlose Web-Tools - einfach ausprobieren.">
-	<div
-		class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
-		data-testid="tools-grid"
-	>
-		{#each tools as tool (tool.id)}
+<Section id="tools" title={i18n.t('navTools')}>
+	<div class="grid grid-cols-1 gap-6 sm:grid-cols-2" data-testid="tools-grid">
+		{#each localizedTools as tool (tool.id)}
 			<ToolCard
 				name={tool.name}
 				description={tool.description}
@@ -24,14 +25,14 @@
 	</div>
 
 	{#if tools.length > 0}
-		<div class="mt-6 text-center">
+		<p class="mt-6">
 			<a
 				href="/tools"
 				data-sveltekit-preload-data
-				class="inline-flex items-center gap-1 rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-purple-400 hover:text-purple-300"
+				class="text-sm text-purple-600 hover:text-purple-700"
 			>
-				Alle Werkzeuge ansehen →
+				{i18n.t('allTools')}
 			</a>
-		</div>
+		</p>
 	{/if}
 </Section>

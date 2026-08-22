@@ -1,5 +1,6 @@
 export const load = async ({ locals }: { locals: App.Locals }) => {
 	return {
-		isMobile: locals.isMobile ?? false
+		isMobile: locals.isMobile ?? false,
+		locale: locals.locale ?? 'en'
 	};
 };

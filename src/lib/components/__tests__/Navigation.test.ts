@@ -6,7 +6,6 @@ import { render } from 'svelte/server';
 import Navigation from '../Navigation.svelte';
 
 const REQUIRED_LINKS = [
-	{ id: 'about', label: 'Über mich' },
 	{ id: 'tools', label: 'Werkzeuge' },
 	{ id: 'projects', label: 'Projekte' },
 	{ id: 'experience', label: 'Erfahrung' },
@@ -21,24 +20,23 @@ describe('Navigation', () => {
 
 		for (const item of REQUIRED_LINKS) {
 			expect(body).toContain(`href="#${item.id}"`);
-			expect(body).toContain(`>${item.label}</span>`);
+			expect(body).toContain(`>${item.label}</a>`);
 		}
 	});
 
-	it('uses desktop-only sticky wrapper classes', () => {
+	it('uses desktop-only navigation wrapper classes', () => {
 		const { body } = render(Navigation);
 
-		expect(body).toContain('class="hidden lg:sticky lg:top-8 lg:block"');
+		expect(body).toContain('class="hidden lg:block"');
 		expect(body).toContain('aria-label="Section navigation"');
 	});
 
-	it('contains intersection observer and hover indicator behavior in implementation', () => {
+	it('contains intersection observer behavior in implementation', () => {
 		const testFile = fileURLToPath(import.meta.url);
 		const componentPath = resolve(dirname(testFile), '../Navigation.svelte');
 		const source = readFileSync(componentPath, 'utf-8');
 
 		expect(source).toContain('new IntersectionObserver');
 		expect(source).toContain("rootMargin: '-35% 0px -45% 0px'");
-		expect(source).toContain("hoveredId === item.id ? 'w-9 opacity-100' : 'w-3 opacity-60'");
 	});
 });

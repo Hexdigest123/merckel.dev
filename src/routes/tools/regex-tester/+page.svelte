@@ -70,7 +70,7 @@
 			result += escapeHtml(testString.slice(lastIndex, match.index));
 
 			const matchText = match[0];
-			result += `<mark class="rounded bg-purple-500/30 px-0.5 text-purple-200">${escapeHtml(matchText)}</mark>`;
+			result += `<mark class="rounded bg-purple-500/30 px-0.5 text-purple-600">${escapeHtml(matchText)}</mark>`;
 
 			lastIndex = match.index + matchText.length;
 		}
@@ -179,7 +179,7 @@
 
 <section class="mx-auto w-full max-w-2xl space-y-8">
 	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
+		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 			{data.title}
 		</h1>
 		<p class="text-slate-400">
@@ -187,15 +187,15 @@
 		</p>
 	</header>
 
-	<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="space-y-6">
 			<div class="space-y-4">
 				<div class="flex flex-col gap-4 sm:flex-row sm:items-start">
 					<div class="flex-1 space-y-2">
-						<label for="pattern" class="text-sm font-medium text-slate-300">Muster</label>
+						<label for="pattern" class="text-sm font-medium text-slate-600">Muster</label>
 						<div class="flex items-center gap-0">
 							<span
-								class="flex h-10 items-center rounded-l-lg border border-r-0 border-slate-700 bg-slate-900/60 pr-1 pl-3 font-mono text-sm text-slate-500 select-none"
+								class="flex h-10 items-center rounded-l-lg border border-r-0 border-slate-200 bg-white pr-1 pl-3 font-mono text-sm text-slate-500 select-none"
 								>/</span
 							>
 							<input
@@ -203,17 +203,17 @@
 								type="text"
 								bind:value={pattern}
 								placeholder="z.B. \d{3}-\d{4}"
-								class="h-10 min-w-0 flex-1 border-y border-slate-700 bg-slate-900/60 px-2 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
+								class="h-10 min-w-0 flex-1 border-y border-slate-200 bg-white px-2 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
 							/>
 							<span
-								class="flex h-10 items-center rounded-r-lg border border-l-0 border-slate-700 bg-slate-900/60 pr-3 pl-1 font-mono text-sm text-slate-500 select-none"
+								class="flex h-10 items-center rounded-r-lg border border-l-0 border-slate-200 bg-white pr-3 pl-1 font-mono text-sm text-slate-500 select-none"
 								>/{flagString}</span
 							>
 						</div>
 					</div>
 
 					<div class="space-y-2">
-						<span class="text-sm font-medium text-slate-300">Flags</span>
+						<span class="text-sm font-medium text-slate-600">Flags</span>
 						<div class="flex flex-wrap gap-1">
 							{#each Object.keys(flags) as flag}
 								<button
@@ -223,8 +223,8 @@
 									class="h-10 w-8 rounded-lg border font-mono text-xs font-medium transition-colors {flags[
 										flag as keyof typeof flags
 									]
-										? 'border-purple-400 bg-purple-500/20 text-purple-200'
-										: 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-purple-400 hover:text-purple-200'}"
+										? 'border-purple-400 bg-purple-500/20 text-purple-600'
+										: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400 hover:text-purple-700'}"
 									title={flag}
 								>
 									{flag}
@@ -244,22 +244,22 @@
 			</div>
 
 			<div class="space-y-2">
-				<label for="testString" class="text-sm font-medium text-slate-300">Testtext</label>
+				<label for="testString" class="text-sm font-medium text-slate-600">Testtext</label>
 				<textarea
 					id="testString"
 					bind:value={testString}
 					rows="6"
 					placeholder="Testtext hier eingeben..."
-					class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2.5 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
+					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
 				></textarea>
 			</div>
 
 			<div class="space-y-2">
 				<div class="flex items-center justify-between">
-					<span class="text-sm font-medium text-slate-300">Ergebnis</span>
+					<span class="text-sm font-medium text-slate-600">Ergebnis</span>
 					{#if matches.length > 0}
 						<span
-							class="rounded-full border border-purple-400/45 bg-purple-500/15 px-2.5 py-1 font-mono text-xs text-purple-200"
+							class="rounded-full border border-purple-400/45 bg-purple-500/15 px-2.5 py-1 font-mono text-xs text-purple-600"
 						>
 							{matches.length} Treffer
 						</span>
@@ -267,7 +267,7 @@
 				</div>
 
 				<div
-					class="relative min-h-[10rem] w-full overflow-hidden rounded-lg border border-slate-700/80 bg-slate-950/70"
+					class="relative min-h-[10rem] w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-50"
 				>
 					<div
 						class="absolute inset-0 overflow-auto p-4 font-mono text-sm whitespace-pre-wrap text-slate-400"
@@ -285,14 +285,14 @@
 
 			{#if matches.length > 0}
 				<div class="space-y-2">
-					<span class="text-sm font-medium text-slate-300">Details</span>
+					<span class="text-sm font-medium text-slate-600">Details</span>
 					<div
-						class="max-h-[20rem] space-y-2 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/30 p-2"
+						class="max-h-[20rem] space-y-2 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-2"
 					>
 						{#each matches as match, i}
-							<div class="rounded border border-slate-700/50 bg-slate-900/50 p-3 text-sm">
+							<div class="rounded border border-slate-200 bg-slate-50 p-3 text-sm">
 								<div class="flex items-start justify-between gap-4">
-									<div class="font-mono text-purple-200">
+									<div class="font-mono text-purple-600">
 										<span class="mr-2 text-slate-500 select-none">#{i + 1}</span>
 										{match[0]}
 									</div>
@@ -300,19 +300,19 @@
 									>
 								</div>
 								{#if match.length > 1}
-									<div class="mt-2 space-y-1 border-t border-slate-700/50 pt-2">
+									<div class="mt-2 space-y-1 border-t border-slate-200 pt-2">
 										<span class="text-xs font-medium text-slate-400">Gruppen:</span>
 										{#each Array.from(match).slice(1) as group, groupIndex}
 											<div class="flex gap-2 font-mono text-xs">
 												<span class="w-6 shrink-0 text-slate-500">${groupIndex + 1}</span>
-												<span class="text-slate-300">{group || '<undefined>'}</span>
+												<span class="text-slate-600">{group || '<undefined>'}</span>
 											</div>
 										{/each}
 										{#if match.groups}
 											{#each Object.entries(match.groups) as [name, content]}
 												<div class="flex gap-2 font-mono text-xs">
 													<span class="shrink-0 text-slate-500">?&lt;{name}&gt;</span>
-													<span class="text-slate-300">{content || '<undefined>'}</span>
+													<span class="text-slate-600">{content || '<undefined>'}</span>
 												</div>
 											{/each}
 										{/if}
@@ -337,7 +337,7 @@
 					type="button"
 					onclick={copyMatches}
 					disabled={matches.length === 0}
-					class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-purple-400 hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
+					class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-purple-400 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					{isCopiedMatches ? 'Kopiert' : 'Treffer kopieren'}
 				</button>
@@ -347,7 +347,7 @@
 						pattern = '';
 						testString = '';
 					}}
-					class="ml-auto rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-400 transition hover:border-rose-500/50 hover:text-rose-400"
+					class="ml-auto rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-400 transition hover:border-rose-500/50 hover:text-rose-400"
 				>
 					Löschen
 				</button>
@@ -361,9 +361,9 @@
 			{#each presets as preset}
 				<button
 					onclick={() => setPreset(preset.pattern, preset.test)}
-					class="flex flex-col items-start gap-1 rounded-lg border border-slate-700 bg-slate-900/60 p-3 text-left transition hover:border-purple-400/50 hover:bg-slate-900/80"
+					class="flex flex-col items-start gap-1 rounded-lg border border-slate-200 bg-white p-3 text-left transition hover:border-purple-400/50 hover:bg-slate-50"
 				>
-					<span class="text-sm font-medium text-slate-200">{preset.name}</span>
+					<span class="text-sm font-medium text-slate-700">{preset.name}</span>
 					<code class="w-full truncate font-mono text-xs text-slate-500">{preset.pattern}</code>
 				</button>
 			{/each}

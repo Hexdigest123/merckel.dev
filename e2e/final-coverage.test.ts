@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 const EXPECTED_SECTIONS = [
-	'about',
 	'tools',
 	'projects',
 	'pentests',
@@ -21,40 +20,14 @@ async function expectAllSectionsReachable(page: import('@playwright/test').Page)
 }
 
 test.describe('Final E2E coverage: viewport and rendering behavior', () => {
-	test('desktop shows all sections and handles 3D rendering gracefully', async ({ page }) => {
+	test('desktop shows all sections without 3D', async ({ page }) => {
 		await page.setViewportSize({ width: 1280, height: 800 });
 		await page.goto('/');
 		await page.waitForLoadState('networkidle');
 
 		await expectAllSectionsReachable(page);
-
-		const reducedMotion = await page.evaluate(
-			() => window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		);
-		const hasWebglSupport = await page.evaluate(() => {
-			const canvas = document.createElement('canvas');
-			return Boolean(
-				canvas.getContext('webgl2') ||
-				canvas.getContext('webgl') ||
-				canvas.getContext('experimental-webgl')
-			);
-		});
-
-		const sceneShell = page.locator('.scene-shell');
-
-		if (reducedMotion || !hasWebglSupport) {
-			await expect(sceneShell).toHaveCount(0);
-			return;
-		}
-
-		await expect(sceneShell).toHaveCount(1);
-		const canvas = sceneShell.locator('canvas');
-		await expect(canvas).toBeVisible({ timeout: 15000 });
-
-		const box = await canvas.boundingBox();
-		expect(box).toBeTruthy();
-		expect(box?.width ?? 0).toBeGreaterThan(0);
-		expect(box?.height ?? 0).toBeGreaterThan(0);
+		await expect(page.locator('.scene-shell')).toHaveCount(0);
+		await expect(page.locator('canvas')).toHaveCount(0);
 	});
 });
 
@@ -77,18 +50,18 @@ test.describe('Final E2E coverage: mobile rendering', () => {
 	});
 });
 
-test.describe('Final E2E coverage: interactions and accessibility-sensitive flows', () => {
+test.describe('Final E2E coverage: interactions', () => {
 	test('command palette opens, filters, and navigates to a section', async ({ page }) => {
 		await page.setViewportSize({ width: 1280, height: 800 });
 		await page.goto('/');
 
-		await page.getByRole('button', { name: 'Open command palette' }).click();
-		const dialog = page.getByRole('dialog', { name: 'Command palette' });
+		await page.getByRole('button', { name: 'Befehlspalette öffnen' }).click();
+		const dialog = page.getByRole('dialog', { name: 'Befehlspalette' });
 		await expect(dialog).toBeVisible();
 
-		const input = page.getByRole('textbox', { name: 'Command input' });
+		const input = page.getByRole('textbox', { name: 'Befehlseingabe' });
 		await input.fill('proj');
-		await expect(dialog.getByRole('option', { name: 'Projects' })).toBeVisible();
+		await expect(dialog.getByRole('option', { name: /Projekte/ })).toBeVisible();
 
 		await input.press('Enter');
 		await expect(dialog).not.toBeVisible();
@@ -106,39 +79,6 @@ test.describe('Final E2E coverage: interactions and accessibility-sensitive flow
 		await expect(contactSection.locator('a[href^="mailto:"]').first()).toBeVisible();
 		await expect(contactSection.locator('[data-testid="contact-socials"] a').first()).toBeVisible();
 		await expect(contactSection.locator('form')).toHaveCount(0);
-	});
-
-	test('desktop custom cursor enables and reacts to interactive elements', async ({ page }) => {
-		await page.setViewportSize({ width: 1280, height: 800 });
-		await page.goto('/');
-
-		const cursor = page.locator('.custom-cursor');
-		await expect(cursor).toBeAttached();
-
-		await page.mouse.move(80, 80);
-		await expect
-			.poll(async () =>
-				page.evaluate(() => document.documentElement.classList.contains('has-custom-cursor'))
-			)
-			.toBe(true);
-		await expect(cursor).toHaveClass(/is-enabled/);
-
-		await page.getByRole('link', { name: 'See Projects' }).hover();
-		await expect(cursor).toHaveAttribute('data-variant', 'link');
-	});
-
-	test('reduced motion disables heavy effects and custom cursor', async ({ page }) => {
-		await page.emulateMedia({ reducedMotion: 'reduce' });
-		await page.setViewportSize({ width: 1280, height: 800 });
-		await page.goto('/');
-		await page.waitForLoadState('networkidle');
-
-		await expect(page.locator('.scene-shell')).toHaveCount(0);
-		await expect
-			.poll(async () =>
-				page.evaluate(() => document.documentElement.classList.contains('has-custom-cursor'))
-			)
-			.toBe(false);
 	});
 });
 
@@ -160,8 +100,8 @@ test.describe('Final E2E coverage: console stability', () => {
 		await page.goto('/');
 		await page.waitForLoadState('networkidle');
 
-		await page.getByRole('button', { name: 'Open command palette' }).click();
-		const paletteInput = page.getByRole('textbox', { name: 'Command input' });
+		await page.getByRole('button', { name: 'Befehlspalette öffnen' }).click();
+		const paletteInput = page.getByRole('textbox', { name: 'Befehlseingabe' });
 		await paletteInput.fill('contact');
 		await paletteInput.press('Enter');
 		await expect(page).toHaveURL(/#contact$/);

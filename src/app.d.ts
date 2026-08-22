@@ -5,9 +5,11 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			isMobile?: boolean;
+			locale?: import('$lib/i18n/messages').Locale;
 		}
 		interface PageData {
 			isMobile?: boolean;
+			locale?: import('$lib/i18n/messages').Locale;
 			openSource?: import('$lib/types/content').OpenSourceData;
 		}
 		// interface PageState {}

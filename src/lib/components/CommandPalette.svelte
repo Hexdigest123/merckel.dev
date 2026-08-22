@@ -9,14 +9,19 @@
 		type CommandPaletteSection
 	} from '$lib/utils/command-palette';
 	import { prefersReducedMotion } from '$lib/utils/gsap';
+	import { useLocale } from '$lib/i18n/locale.svelte';
+
+	const i18n = useLocale();
 
 	let {
 		sections,
-		placeholder = 'Befehl oder Sektion eingeben...'
+		placeholder
 	}: {
 		sections: readonly CommandPaletteSection[];
 		placeholder?: string;
 	} = $props();
+
+	let resolvedPlaceholder = $derived(placeholder ?? i18n.t('commandPlaceholder'));
 
 	let isOpen = $state(false);
 	let query = $state('');
@@ -111,7 +116,7 @@
 
 	function runCommand(command = selectedCommand) {
 		if (!command || !browser) {
-			feedback = 'Kein passender Befehl.';
+			feedback = i18n.t('commandMissing');
 			return;
 		}
 
@@ -135,11 +140,11 @@
 				return;
 			}
 
-			feedback = `Sektion #${result.navigateToHash} ist nicht verfügbar.`;
+			feedback = i18n.t('commandUnavailable', { id: result.navigateToHash });
 			return;
 		}
 
-		feedback = result.message ?? 'Fertig.';
+		feedback = result.message ? i18n.t('commandNoAction') : '';
 	}
 
 	function keyboardHint(): string {
@@ -149,13 +154,12 @@
 
 <button
 	type="button"
-	data-cursor="link"
-	class="fixed top-4 right-4 z-30 hidden items-center gap-2 rounded-full border border-slate-600/70 bg-slate-900/75 px-3 py-1.5 font-mono text-xs tracking-wide text-slate-300 shadow-[0_8px_24px_rgba(15,23,42,0.55)] backdrop-blur focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 sm:inline-flex"
+	class="fixed top-4 right-4 z-30 hidden items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 font-mono text-xs tracking-wide text-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 sm:inline-flex"
 	onclick={openPalette}
-	aria-label="Befehlspalette öffnen"
+	aria-label={i18n.t('commandOpen')}
 >
-	<span>Befehl</span>
-	<kbd class="rounded border border-slate-500/80 px-1.5 py-0.5 text-[11px] text-slate-200"
+	<span>{i18n.t('command')}</span>
+	<kbd class="rounded border border-slate-200 px-1.5 py-0.5 text-[11px] text-slate-500"
 		>{keyboardHint()}</kbd
 	>
 </button>
@@ -167,35 +171,35 @@
 	>
 		<button
 			type="button"
-			class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+			class="absolute inset-0 bg-slate-900/20"
 			onclick={closePalette}
-			aria-label="Befehlspalette schließen"
+			aria-label={i18n.t('commandClose')}
 		></button>
 		<div
 			role="dialog"
 			aria-modal="true"
-			aria-label="Befehlspalette"
-			class="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-purple-400/30 bg-slate-900/95 shadow-[0_28px_80px_rgba(6,11,28,0.9)]"
+			aria-label={i18n.t('commandDialog')}
+			class="relative z-10 w-full max-w-2xl overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg"
 		>
-			<div class="border-b border-slate-700/70 px-4 py-3 sm:px-5">
-				<label for="command-palette-input" class="sr-only">Befehlseingabe</label>
+			<div class="border-b border-slate-200 px-4 py-3 sm:px-5">
+				<label for="command-palette-input" class="sr-only">{i18n.t('commandInput')}</label>
 				<input
 					bind:this={inputElement}
 					id="command-palette-input"
 					type="text"
 					value={query}
-					aria-label="Befehlseingabe"
-					{placeholder}
+					aria-label={i18n.t('commandInput')}
+					placeholder={resolvedPlaceholder}
 					autocomplete="off"
-					class="w-full border-0 bg-transparent px-1 py-2 text-base text-slate-100 outline-none placeholder:text-slate-500"
+					class="w-full border-0 bg-transparent px-1 py-2 text-base text-slate-900 outline-none placeholder:text-slate-400"
 					oninput={handleInput}
 					onkeydown={handleInputKeydown}
 				/>
 			</div>
 
-			<ul role="listbox" aria-label="Befehlsergebnisse" class="max-h-80 overflow-y-auto py-2">
+			<ul role="listbox" aria-label={i18n.t('commandResults')} class="max-h-80 overflow-y-auto py-2">
 				{#if filteredCommands.length === 0}
-					<li class="px-5 py-3 text-sm text-slate-500">Keine Befehle gefunden.</li>
+					<li class="px-5 py-3 text-sm text-slate-500">{i18n.t('commandEmpty')}</li>
 				{:else}
 					{#each filteredCommands as command, index (command.id)}
 						<li>
@@ -205,15 +209,18 @@
 								aria-selected={index === selectedIndex}
 								class={`flex w-full items-center justify-between px-5 py-3 text-left transition-colors duration-150 ${
 									index === selectedIndex
-										? 'bg-purple-500/20 text-slate-100'
-										: 'text-slate-300 hover:bg-slate-800/80 hover:text-slate-100'
+										? 'bg-purple-50 text-slate-900'
+										: 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
 								}`}
 								onmouseenter={() => (selectedIndex = index)}
 								onclick={() => runCommand(command)}
 							>
 								<span>{command.label}</span>
-								<span class="font-mono text-xs tracking-wide text-slate-500 uppercase">
-									{{ navigate: 'Sektion', 'navigate-url': 'Werkzeug' }[command.type]}
+								<span class="font-mono text-xs tracking-wide text-slate-400 uppercase">
+									{{
+										navigate: i18n.t('commandTypeSection'),
+										'navigate-url': i18n.t('commandTypeTool')
+									}[command.type]}
 								</span>
 							</button>
 						</li>
@@ -221,14 +228,16 @@
 				{/if}
 			</ul>
 
-			<div class="border-t border-slate-700/60 px-5 py-2 text-xs text-slate-500">
-				<span class="font-mono text-slate-400">Enter</span> zum Ausführen,
-				<span class="font-mono text-slate-400">Esc</span> zum Schließen.
+			<div class="border-t border-slate-200 px-5 py-2 text-xs text-slate-500">
+				<span class="font-mono text-slate-400">Enter</span>
+				{i18n.t('commandHint')}
+				<span class="font-mono text-slate-400">Esc</span>
+				{i18n.t('commandHintClose')}
 			</div>
 
 			{#if feedback}
-				<div class="border-t border-slate-700/60 bg-slate-950/60 px-5 py-3">
-					<p role="status" aria-live="polite" class="font-mono text-xs text-purple-200">
+				<div class="border-t border-slate-200 bg-slate-50 px-5 py-3">
+					<p role="status" aria-live="polite" class="font-mono text-xs text-purple-700">
 						{feedback}
 					</p>
 				</div>

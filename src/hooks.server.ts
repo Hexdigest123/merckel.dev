@@ -1,4 +1,5 @@
 import type { Handle, HandleServerError } from '@sveltejs/kit';
+import { resolveLocale } from '$lib/i18n/locale';
 
 const MOBILE_USER_AGENT_PATTERN =
 	/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i;
@@ -19,8 +20,14 @@ const CSP_DIRECTIVES = [
 export const handle: Handle = async ({ event, resolve }) => {
 	const userAgent = event.request.headers.get('user-agent') ?? '';
 	event.locals.isMobile = MOBILE_USER_AGENT_PATTERN.test(userAgent);
+	event.locals.locale = resolveLocale(
+		event.cookies.get('locale'),
+		event.request.headers.get('accept-language')
+	);
 
-	const response = await resolve(event);
+	const response = await resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('%lang%', event.locals.locale ?? 'en')
+	});
 
 	response.headers.set('content-security-policy', CSP_DIRECTIVES);
 	response.headers.set('x-frame-options', 'DENY');

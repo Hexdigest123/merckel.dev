@@ -79,12 +79,12 @@
 </script>
 
 <section class="mx-auto w-full max-w-2xl">
-	<section class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
-		<h1 class="text-3xl font-bold text-slate-100">{data.title}</h1>
-		<p class="mt-2 text-base text-slate-300">Lange URLs in kurze, teilbare Links umwandeln.</p>
+	<section class="rounded-lg border border-slate-200 bg-white p-6 sm:p-8">
+		<h1 class="text-3xl font-bold text-slate-900">{data.title}</h1>
+		<p class="mt-2 text-base text-slate-600">Lange URLs in kurze, teilbare Links umwandeln.</p>
 
 		<form class="mt-6 space-y-4" onsubmit={handleSubmit} novalidate>
-			<label class="block space-y-2 text-sm text-slate-300" for="url-input">
+			<label class="block space-y-2 text-sm text-slate-600" for="url-input">
 				<span>Lange URL</span>
 				<input
 					id="url-input"
@@ -96,7 +96,7 @@
 					autocomplete="url"
 					required
 					aria-invalid={errorMessage ? 'true' : 'false'}
-					class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-purple-400/80 focus:outline-none"
+					class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:border-purple-400/80 focus:outline-none"
 				/>
 			</label>
 
@@ -105,7 +105,7 @@
 					data-cursor="link"
 					type="submit"
 					disabled={!canSubmit}
-					class="inline-flex items-center gap-2 rounded-full bg-purple-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors duration-200 hover:bg-purple-400 disabled:cursor-not-allowed disabled:bg-purple-400/50"
+					class="inline-flex items-center gap-2 rounded-md bg-purple-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-purple-400/50"
 				>
 					{#if isSubmitting}
 						<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" aria-hidden="true">
@@ -132,12 +132,12 @@
 			</div>
 
 			{#if errorMessage}
-				<p role="alert" class="text-sm text-rose-300">{errorMessage}</p>
+				<p role="alert" class="text-sm text-rose-600">{errorMessage}</p>
 			{/if}
 		</form>
 
 		{#if shortUrl}
-			<div class="mt-6 rounded-xl border border-slate-700 bg-slate-900/55 p-4">
+			<div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
 				<p class="text-xs tracking-wide text-slate-400 uppercase">Kurze URL</p>
 				<div class="mt-2 flex flex-wrap items-center gap-3">
 					<a
@@ -145,7 +145,7 @@
 						target="_blank"
 						rel="noreferrer"
 						data-cursor="link"
-						class="font-mono text-sm text-purple-200 underline decoration-purple-400/50 underline-offset-4 hover:text-purple-100"
+						class="font-mono text-sm text-purple-600 underline decoration-purple-400/50 underline-offset-4 hover:text-purple-700"
 					>
 						{shortUrl}
 					</a>
@@ -153,7 +153,7 @@
 						type="button"
 						onclick={handleCopy}
 						data-cursor="link"
-						class="rounded-full border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-200"
+						class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-700"
 					>
 						{isCopied ? 'Kopiert!' : 'Kopieren'}
 					</button>

@@ -187,7 +187,7 @@
 
 <section class="mx-auto w-full max-w-2xl space-y-8">
 	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
+		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 			CSS-Verlauf Generator
 		</h1>
 		<p class="text-slate-400">
@@ -195,10 +195,10 @@
 		</p>
 	</header>
 
-	<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="grid gap-5">
 			<div class="space-y-2">
-				<p class="text-sm font-medium text-slate-200">Verlaufstyp</p>
+				<p class="text-sm font-medium text-slate-700">Verlaufstyp</p>
 				<div class="flex flex-wrap gap-2">
 					{#each TYPE_OPTIONS as option (option.value)}
 						<button
@@ -206,8 +206,8 @@
 							onclick={() => (gradientType = option.value)}
 							class={`rounded-lg border px-3 py-2 text-sm transition ${
 								gradientType === option.value
-									? 'border-purple-400 bg-purple-500/20 text-purple-200'
-									: 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-purple-400 hover:text-purple-200'
+									? 'border-purple-400 bg-purple-500/20 text-purple-600'
+									: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400 hover:text-purple-700'
 							}`}
 						>
 							{option.label}
@@ -218,7 +218,7 @@
 
 			{#if showAngle}
 				<div class="space-y-2">
-					<label class="text-sm font-medium text-slate-200" for="angle-slider">
+					<label class="text-sm font-medium text-slate-700" for="angle-slider">
 						Winkel: {angle}°
 					</label>
 					<input
@@ -234,11 +234,9 @@
 			{/if}
 
 			<div class="space-y-3">
-				<p class="text-sm font-medium text-slate-200">Farbstopps</p>
+				<p class="text-sm font-medium text-slate-700">Farbstopps</p>
 				{#each stops as stop (stop.id)}
-					<div
-						class="flex items-center gap-3 rounded-lg border border-slate-700/80 bg-slate-900/50 p-3"
-					>
+					<div class="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
 						<label class="relative cursor-pointer" for={`color-${stop.id}`}>
 							<span
 								class="block h-8 w-8 rounded-lg border border-slate-600"
@@ -257,7 +255,7 @@
 							type="text"
 							value={stop.color}
 							oninput={(e) => updateStopColor(stop.id, e.currentTarget.value)}
-							class="w-24 rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 font-mono text-sm text-slate-200 focus:border-purple-400/80 focus:outline-none"
+							class="w-24 rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-700 focus:border-purple-400/80 focus:outline-none"
 						/>
 
 						<div class="flex items-center gap-1">
@@ -267,7 +265,7 @@
 								max="100"
 								value={stop.position}
 								oninput={(e) => updateStopPosition(stop.id, Number(e.currentTarget.value))}
-								class="w-20 rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-sm text-slate-200 focus:border-purple-400/80 focus:outline-none"
+								class="w-20 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-purple-400/80 focus:outline-none"
 							/>
 							<span class="text-sm text-slate-400">%</span>
 						</div>
@@ -276,7 +274,7 @@
 							<button
 								type="button"
 								onclick={() => removeStop(stop.id)}
-								class="ml-auto text-slate-400 transition hover:text-rose-300"
+								class="ml-auto text-slate-400 transition hover:text-rose-600"
 								aria-label="Farbstopp entfernen"
 							>
 								✕
@@ -288,21 +286,21 @@
 				<button
 					type="button"
 					onclick={addStop}
-					class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-purple-400 hover:text-purple-200"
+					class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 				>
 					Farbstopp hinzufügen
 				</button>
 			</div>
 		</div>
 
-		<div class="mt-6 space-y-3 rounded-lg border border-slate-700/80 bg-slate-950/70 p-4">
+		<div class="mt-6 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
 			<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Vorschau</p>
 			<div class="h-40 w-full rounded-lg" style="background: {cssValue};"></div>
 		</div>
 
-		<div class="mt-4 space-y-3 rounded-lg border border-slate-700/80 bg-slate-950/70 p-4">
+		<div class="mt-4 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
 			<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">CSS-Code</p>
-			<p class="font-mono text-sm break-all text-purple-200">background: {cssValue};</p>
+			<p class="font-mono text-sm break-all text-purple-600">background: {cssValue};</p>
 			<button
 				type="button"
 				onclick={copyCss}
@@ -314,13 +312,13 @@
 	</section>
 
 	<section class="space-y-3">
-		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-300 uppercase">Schnellvorlagen</h2>
+		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-600 uppercase">Schnellvorlagen</h2>
 		<div class="flex flex-wrap gap-2">
 			{#each PRESETS as preset (preset.label)}
 				<button
 					type="button"
 					onclick={() => applyPreset(preset)}
-					class="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-sm text-slate-200 transition hover:border-purple-400 hover:text-purple-200"
+					class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 				>
 					<span
 						class="inline-block h-3 w-3 rounded-full"

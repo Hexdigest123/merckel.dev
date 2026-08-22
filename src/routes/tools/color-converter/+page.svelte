@@ -457,7 +457,7 @@
 
 <section class="mx-auto w-full max-w-3xl space-y-8">
 	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
+		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 			{data.title}
 		</h1>
 		<p class="text-slate-400">
@@ -465,23 +465,23 @@
 		</p>
 	</header>
 
-	<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr),minmax(0,16rem)]">
 			<div class="space-y-4">
 				<label class="space-y-2" for="color-input">
-					<span class="text-sm font-medium text-slate-200">Eingabe</span>
+					<span class="text-sm font-medium text-slate-700">Eingabe</span>
 					<input
 						id="color-input"
 						type="text"
 						bind:value={colorInput}
 						placeholder="#8B5CF6 oder rgb(139, 92, 246)"
-						class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2.5 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
+						class="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
 					/>
 				</label>
 
 				<div class="grid gap-3 sm:grid-cols-3">
 					{#each CHANNELS as channel (channel)}
-						<div class="space-y-2 rounded-lg border border-slate-700/80 bg-slate-900/50 p-3">
+						<div class="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
 							<div class="flex items-center justify-between">
 								<span class="text-xs font-medium tracking-[0.12em] text-slate-400 uppercase"
 									>{channel}</span
@@ -492,7 +492,7 @@
 									max="255"
 									value={currentRgb[channel]}
 									oninput={(event) => setChannel(channel as ChannelKey, event.currentTarget.value)}
-									class="w-18 rounded-md border border-slate-700 bg-slate-900/60 px-2 py-1 text-right font-mono text-sm text-slate-200 focus:border-purple-400/80 focus:outline-none"
+									class="w-18 rounded-md border border-slate-200 bg-white px-2 py-1 text-right font-mono text-sm text-slate-700 focus:border-purple-400/80 focus:outline-none"
 								/>
 							</div>
 							<input
@@ -516,10 +516,10 @@
 				{/if}
 			</div>
 
-			<div class="space-y-3 rounded-xl border border-slate-700/80 bg-slate-950/70 p-4">
+			<div class="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
 				<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Vorschau</p>
 				<div
-					class="h-36 w-full rounded-lg border border-slate-700/80"
+					class="h-36 w-full rounded-lg border border-slate-200"
 					style="background-color: {hexValue};"
 				></div>
 				<div class="flex items-center gap-2">
@@ -527,13 +527,13 @@
 						type="color"
 						value={hexValue}
 						oninput={(event) => (colorInput = event.currentTarget.value)}
-						class="h-10 w-14 cursor-pointer rounded-md border border-slate-700 bg-transparent"
+						class="h-10 w-14 cursor-pointer rounded-md border border-slate-200 bg-transparent"
 						aria-label="Farbwaehler"
 					/>
 					<button
 						type="button"
 						onclick={() => copyValue('preview-hex', hexValue)}
-						class="flex-1 rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-left font-mono text-sm text-slate-200 transition hover:border-purple-400 hover:text-purple-200"
+						class="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left font-mono text-sm text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 					>
 						{copiedKey === 'preview-hex' ? 'Kopiert' : hexValue}
 					</button>
@@ -544,16 +544,16 @@
 		<div class="mt-6 grid gap-3">
 			{#each outputItems as item (item.id)}
 				<div
-					class="flex items-center justify-between rounded-lg border border-slate-700/80 bg-slate-950/70 px-4 py-3"
+					class="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
 				>
 					<div class="min-w-0">
 						<p class="text-xs tracking-[0.14em] text-slate-500 uppercase">{item.label}</p>
-						<p class="truncate font-mono text-sm text-slate-200">{item.value}</p>
+						<p class="truncate font-mono text-sm text-slate-700">{item.value}</p>
 					</div>
 					<button
 						type="button"
 						onclick={() => copyValue(item.id, item.value)}
-						class="rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:border-purple-400 hover:text-purple-200"
+						class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 					>
 						{copiedKey === item.id ? 'Kopiert' : 'Kopieren'}
 					</button>
@@ -562,13 +562,13 @@
 		</div>
 	</section>
 
-	<section class="space-y-4 rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
-		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-300 uppercase">
+	<section class="space-y-4 rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
+		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-600 uppercase">
 			Palette Generator
 		</h2>
 		<div class="grid gap-4">
 			{#each paletteGroups as palette (palette.id)}
-				<div class="space-y-2 rounded-lg border border-slate-700/80 bg-slate-950/70 p-4">
+				<div class="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-4">
 					<p class="text-xs tracking-[0.12em] text-slate-400 uppercase">{palette.label}</p>
 					<div class="grid gap-2 sm:grid-cols-5">
 						{#each palette.colors as color, index (`${palette.id}-${color}-${index}`)}
@@ -576,14 +576,14 @@
 								<button
 									type="button"
 									onclick={() => (colorInput = color)}
-									class="h-14 w-full rounded-md border border-slate-700/80 transition hover:scale-[1.02]"
+									class="h-14 w-full rounded-md border border-slate-200 transition hover:scale-[1.02]"
 									style="background-color: {color};"
 									aria-label={`Farbe ${color} anwenden`}
 								></button>
 								<button
 									type="button"
 									onclick={() => copyValue(`${palette.id}-${index}`, color)}
-									class="w-full rounded-md border border-slate-700 bg-slate-900/60 px-2 py-1 font-mono text-xs text-slate-200 transition hover:border-purple-400 hover:text-purple-200"
+									class="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-mono text-xs text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 								>
 									{copiedKey === `${palette.id}-${index}` ? 'Kopiert' : color}
 								</button>

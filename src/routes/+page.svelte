@@ -1,8 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import AnimateOnScroll from '$lib/components/AnimateOnScroll.svelte';
-	import Navigation from '$lib/components/Navigation.svelte';
-	import AboutSection from '$lib/components/sections/AboutSection.svelte';
 	import ContactSection from '$lib/components/sections/ContactSection.svelte';
 	import ExperienceSection from '$lib/components/sections/ExperienceSection.svelte';
 	import OpenSourceSection from '$lib/components/sections/OpenSourceSection.svelte';
@@ -10,14 +6,18 @@
 	import SecurityResearchSection from '$lib/components/sections/SecurityResearchSection.svelte';
 	import TestimonialsSection from '$lib/components/sections/TestimonialsSection.svelte';
 	import ToolsSection from '$lib/components/sections/ToolsSection.svelte';
+	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+	import Navigation from '$lib/components/Navigation.svelte';
 	import { siteConfig } from '$lib/data/site-config';
+	import { useLocale } from '$lib/i18n/locale.svelte';
 	import type { OpenSourceData, PentestingEntry, WebToolWithUsage } from '$lib/types/content';
-	import { ensureScrollTriggerRefreshOnNavigate } from '$lib/utils/gsap';
+
+	const i18n = useLocale();
 
 	const defaultOpenSourceData: OpenSourceData = {
 		source: 'fallback',
-		profileLabel: 'GitHub-Profil besuchen',
-		note: 'Open-Source-Highlights verwenden derzeit lokale Portfolio-Daten.',
+		profileLabel: i18n.t('openGithubProfile'),
+		note: '',
 		stats: [],
 		contributions: []
 	};
@@ -37,83 +37,44 @@
 	} = $props();
 	let openSourceData = $derived(data.openSource ?? defaultOpenSourceData);
 
-	const sections = [
-		{ id: 'about', title: 'Über mich' },
-		{ id: 'tools', title: 'Werkzeuge' },
-		{ id: 'projects', title: 'Projekte' },
-		{ id: 'pentests', title: 'Pentests' },
-		{ id: 'experience', title: 'Erfahrung' },
-		{ id: 'opensource', title: 'Open Source' },
-		{ id: 'testimonials', title: 'Referenzen' },
-		{ id: 'contact', title: 'Kontakt' }
-	] as const;
+	let sections = $derived([
+		{ id: 'tools', title: i18n.t('navTools') },
+		{ id: 'projects', title: i18n.t('navProjects') },
+		{ id: 'pentests', title: i18n.t('navPentests') },
+		{ id: 'experience', title: i18n.t('navExperience') },
+		{ id: 'opensource', title: i18n.t('navOpenSource') },
+		{ id: 'testimonials', title: i18n.t('navTestimonials') },
+		{ id: 'contact', title: i18n.t('navContact') }
+	]);
 
-	const navItems = sections.map((section) => ({ id: section.id, label: section.title }));
-
-	$effect(() => {
-		if (!browser) {
-			return;
-		}
-
-		ensureScrollTriggerRefreshOnNavigate();
-	});
+	let navItems = $derived(sections.map((section) => ({ id: section.id, label: section.title })));
 </script>
 
-<main
-	id="main-content"
-	tabindex="-1"
-	class="min-h-screen bg-slate-900 pt-14 text-slate-200 lg:pt-0"
->
-	<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-		<div class="lg:grid lg:grid-cols-[minmax(16rem,22rem)_1fr] lg:gap-14">
-			<aside
-				class="hidden lg:flex lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:flex-col lg:justify-between lg:py-6"
-				aria-label="Site profile"
-			>
-				<div class="mb-4 space-y-4">
-					<p class="font-mono text-xs tracking-[0.24em] text-purple-300 uppercase">Portfolio</p>
-					<h1 class="font-sans text-4xl font-semibold tracking-tight text-slate-100">
+<main id="main-content" tabindex="-1" class="min-h-screen bg-white pt-14 text-slate-800 lg:pt-0">
+	<div class="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+		<header class="mb-16 space-y-6 border-b border-slate-200 pb-10" aria-label="Site identity">
+			<div class="flex items-start justify-between gap-4">
+				<div class="space-y-2">
+					<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 						{siteConfig.name}
 					</h1>
-					<p class="max-w-xs text-slate-400">{siteConfig.subtitle}</p>
+					<p class="text-base text-slate-600 sm:text-lg">{i18n.t('jobTitle')}</p>
 				</div>
-				<Navigation items={navItems} heading="Sektionen" />
-			</aside>
-
-			<header class="mb-2 space-y-3 lg:hidden" aria-label="Site identity">
-				<p class="font-mono text-xs tracking-[0.24em] text-purple-300 uppercase">Portfolio</p>
-				<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
-					{siteConfig.name}
-				</h1>
-				<p class="max-w-md text-sm text-slate-400 sm:text-base">{siteConfig.subtitle}</p>
-			</header>
-
-			<div class="space-y-10 pt-4 lg:pt-0">
-				<AnimateOnScroll>
-					<AboutSection />
-				</AnimateOnScroll>
-				<AnimateOnScroll>
-					<ToolsSection tools={data.topTools ?? []} />
-				</AnimateOnScroll>
-				<AnimateOnScroll>
-					<ProjectsSection />
-				</AnimateOnScroll>
-				<AnimateOnScroll>
-					<SecurityResearchSection entries={data.pentestingEntries ?? []} />
-				</AnimateOnScroll>
-				<AnimateOnScroll>
-					<ExperienceSection />
-				</AnimateOnScroll>
-				<AnimateOnScroll>
-					<OpenSourceSection data={openSourceData} />
-				</AnimateOnScroll>
-				<AnimateOnScroll>
-					<TestimonialsSection />
-				</AnimateOnScroll>
-				<AnimateOnScroll>
-					<ContactSection />
-				</AnimateOnScroll>
+				<div class="hidden pt-1 lg:block">
+					<LanguageSwitcher />
+				</div>
 			</div>
+			<Navigation items={navItems} heading={i18n.t('navHeading')} />
+		</header>
+
+		<div class="space-y-16">
+			<ToolsSection tools={data.topTools ?? []} />
+			<ProjectsSection />
+			<SecurityResearchSection entries={data.pentestingEntries ?? []} />
+			<ExperienceSection />
+			<OpenSourceSection data={openSourceData} />
+			<TestimonialsSection />
+			<ContactSection />
 		</div>
 	</div>
 </main>

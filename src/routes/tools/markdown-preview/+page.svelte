@@ -158,25 +158,25 @@ Inline-Code: \`const x = 42;\`
 
 <section class="mx-auto w-full max-w-5xl space-y-8">
 	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
+		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 			Markdown-Vorschau
 		</h1>
 		<p class="text-slate-400">Markdown mit Live-Vorschau bearbeiten und als HTML kopieren.</p>
 	</header>
 
-	<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="flex flex-wrap items-center gap-2">
 			<button
 				type="button"
 				onclick={loadSample}
-				class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500"
+				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-500"
 			>
 				Beispiel laden
 			</button>
 			<button
 				type="button"
 				onclick={clearInput}
-				class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500"
+				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-500"
 			>
 				L&ouml;schen
 			</button>
@@ -184,7 +184,7 @@ Inline-Code: \`const x = 42;\`
 				type="button"
 				onclick={copyHtml}
 				disabled={!htmlOutput}
-				class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition enabled:hover:border-purple-400 enabled:hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
+				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition enabled:hover:border-purple-400 enabled:hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{isCopiedHtml ? 'Kopiert' : 'HTML kopieren'}
 			</button>
@@ -192,7 +192,7 @@ Inline-Code: \`const x = 42;\`
 				type="button"
 				onclick={copyMarkdown}
 				disabled={!markdownInput.trim()}
-				class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition enabled:hover:border-purple-400 enabled:hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
+				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition enabled:hover:border-purple-400 enabled:hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{isCopiedMd ? 'Kopiert' : 'Markdown kopieren'}
 			</button>
@@ -200,16 +200,16 @@ Inline-Code: \`const x = 42;\`
 	</section>
 
 	<div class="grid gap-6 lg:grid-cols-2">
-		<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+		<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 			<div class="space-y-2">
-				<label class="text-sm font-medium text-slate-200" for="markdown-input">
+				<label class="text-sm font-medium text-slate-700" for="markdown-input">
 					Markdown-Eingabe
 				</label>
 				<textarea
 					id="markdown-input"
 					rows="24"
 					bind:value={markdownInput}
-					class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
+					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
 					placeholder="Markdown hier eingeben..."
 				></textarea>
 				<div class="flex gap-3 text-xs text-slate-500">
@@ -220,15 +220,15 @@ Inline-Code: \`const x = 42;\`
 			</div>
 		</section>
 
-		<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+		<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 			<div class="space-y-2">
-				<span class="text-sm font-medium text-slate-200">Vorschau</span>
+				<span class="text-sm font-medium text-slate-700">Vorschau</span>
 				<div
-					class="max-h-[38rem] overflow-y-auto rounded-lg border border-slate-700/80 bg-slate-950/80 px-5 py-4"
+					class="max-h-[38rem] overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 px-5 py-4"
 				>
 					{#if htmlOutput}
 						<div
-							class="prose max-w-none prose-invert prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-code:text-purple-300 prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-slate-700/50 prose-pre:bg-slate-950/80 prose-thead:border-slate-700 prose-tr:border-slate-700/50 prose-th:text-slate-300"
+							class="prose max-w-none prose-headings:text-slate-900 prose-a:text-purple-600 prose-a:no-underline hover:prose-a:text-purple-700 prose-code:text-purple-700 prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-slate-200 prose-pre:bg-slate-50 prose-thead:border-slate-200 prose-tr:border-slate-200 prose-th:text-slate-600"
 						>
 							{@html htmlOutput}
 						</div>

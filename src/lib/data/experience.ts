@@ -8,7 +8,8 @@ export const experience: Experience[] = [
     companyUrl: 'https://meta-menue.de',
     startDate: '2026-01',
     endDate: undefined,
-    description: 'Entwicklung der Software meta-menue, Betreuung von Kunden und Projektmanagement.',
+    description:
+      'Entwicklungs-, Design- und Gründererfahrung durch den Aufbau der Plattform meta-menue, die als Vermittler zwischen Distributoren und Großküchen dient.',
     tags: ['SvelteKit', 'PostgreSQL', 'DevOps', 'Projektmanagement']
   },
   {
@@ -18,7 +19,8 @@ export const experience: Experience[] = [
     companyUrl: 'https://logiqit.de',
     startDate: '2022-06',
     endDate: undefined,
-    description: 'Entwicklung von Web-Anwendungen und Webseiten für Endkunden aller Art.',
+    description:
+      'Gründungserfahrung sowie praxisnahe Systemadministration und Entwicklung durch die Zusammenarbeit mit Kunden an deren digitalen Produkten und Webseiten.',
     tags: ['React', 'Node.js', 'PostgreSQL', 'DevOps', 'Leadership']
   },
   {
@@ -29,7 +31,7 @@ export const experience: Experience[] = [
     startDate: '2025-01',
     endDate: '2026-01',
     description:
-      'Auch als Werkstudent wurden mir eigenständige Projekte für Großkunden aufgetragen, wodurch ich meine Kenntnisse in unterschiedlichen Frameworks und Architekturen vertiefen konnte.',
+      'Als Softwareentwickler habe ich bei NetTrek unterschiedliche Systeme mitentwickelt, darunter KI-RAG-Plattformen als unternehmensweites Wissenssystem und Knowledge Hubs für die Europäische Kommission.',
     tags: ['Next.js', 'Angular.js', 'PostgreSQL', 'n8n', 'RAG']
   }
 ];

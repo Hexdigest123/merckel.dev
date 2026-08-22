@@ -1,39 +1,75 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import Section from '$lib/components/Section.svelte';
 	import { testimonials } from '$lib/data/testimonials';
+	import { useLocale } from '$lib/i18n/locale.svelte';
 
-	let hoveredTestimonialId = $state('');
+	const i18n = useLocale();
+	const ROTATION_MS = 5000;
+
+	let activeIndex = $state(0);
+	let isPaused = $state(false);
+	let activeQuote = $derived(testimonials[activeIndex] ?? testimonials[0]);
+
+	$effect(() => {
+		if (!browser || testimonials.length < 2 || isPaused) {
+			return;
+		}
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			return;
+		}
+
+		const intervalId = window.setInterval(() => {
+			activeIndex = (activeIndex + 1) % testimonials.length;
+		}, ROTATION_MS);
+
+		return () => {
+			window.clearInterval(intervalId);
+		};
+	});
+
+	function goTo(index: number) {
+		activeIndex = index;
+	}
 </script>
 
-<Section id="testimonials" title="Referenzen" description="Kundenmeinungen und Empfehlungen.">
+<Section id="testimonials" title={i18n.t('navTestimonials')}>
 	<div
-		class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1"
+		class="space-y-4"
 		data-testid="testimonials-list"
-		data-reveal-group
+		role="region"
+		onmouseenter={() => (isPaused = true)}
+		onmouseleave={() => (isPaused = false)}
 	>
-		{#each testimonials as quote, index (quote.id)}
-			<blockquote
-				data-reveal-item
-				class={`relative overflow-hidden rounded-2xl border border-slate-700/60 bg-gradient-to-br from-slate-800/55 via-slate-800/35 to-purple-500/10 p-5 shadow-[0_10px_40px_-24px_rgba(139,92,246,0.8)] transition-all duration-200 sm:p-6 ${
-					hoveredTestimonialId && hoveredTestimonialId !== quote.id ? 'opacity-45' : 'opacity-100'
-				}`}
-				onmouseenter={() => (hoveredTestimonialId = quote.id)}
-				onmouseleave={() => (hoveredTestimonialId = '')}
-			>
-				<div
-					class="pointer-events-none absolute -top-8 right-4 text-8xl leading-none text-purple-300/20"
-				>
-					"
-				</div>
-				<p class="text-sm leading-7 text-slate-200 sm:text-base">"{quote.quote}"</p>
-				<footer class="mt-4 border-t border-slate-700/70 pt-4">
-					<p class="font-semibold text-slate-100">{quote.author}</p>
-					<p class="text-sm text-slate-400">{quote.role} bei {quote.company}</p>
-					<p class="mt-2 font-mono text-[11px] tracking-[0.2em] text-purple-300/70 uppercase">
-						Kundenmeinung {index + 1}
-					</p>
+		{#if activeQuote}
+			<blockquote>
+				<p class="text-sm leading-7 text-slate-700 sm:text-base">"{activeQuote.quote}"</p>
+				<footer class="mt-3 text-sm">
+					<p class="font-semibold text-slate-900">{activeQuote.author}</p>
+					<p class="text-slate-500">{activeQuote.role}, {activeQuote.company}</p>
 				</footer>
 			</blockquote>
-		{/each}
+		{/if}
+
+		{#if testimonials.length > 1}
+			<div class="flex items-center gap-2" role="tablist" aria-label={i18n.t('navTestimonials')}>
+				{#each testimonials as quote, index (quote.id)}
+					<button
+						type="button"
+						role="tab"
+						aria-selected={index === activeIndex}
+						aria-label={i18n.t('testimonialLabel', {
+							current: index + 1,
+							total: testimonials.length
+						})}
+						class={`h-2 rounded-full transition-all duration-200 ${
+							index === activeIndex ? 'w-6 bg-purple-500' : 'w-2 bg-slate-300 hover:bg-slate-400'
+						}`}
+						onclick={() => goTo(index)}
+					></button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </Section>

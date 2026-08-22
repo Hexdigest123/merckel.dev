@@ -203,24 +203,24 @@
 
 <section class="mx-auto w-full max-w-2xl space-y-8">
 	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
+		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 			Cron-Ausdruck Generator
 		</h1>
 		<p class="text-slate-400">Cron-Zeitpläne visuell erstellen mit lesbarer Ausgabe.</p>
 	</header>
 
-	<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="grid gap-4">
 			{#each FIELD_CONFIG as field (field.key)}
-				<div class="grid gap-3 rounded-lg border border-slate-700/80 bg-slate-900/50 p-4">
-					<label class="text-sm font-medium text-slate-200" for={`mode-${field.key}`}>
+				<div class="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
+					<label class="text-sm font-medium text-slate-700" for={`mode-${field.key}`}>
 						{field.label}
 					</label>
 					<div class="grid gap-3 sm:grid-cols-[minmax(0,14rem),1fr]">
 						<select
 							id={`mode-${field.key}`}
 							bind:value={fields[field.key].mode}
-							class="w-full rounded-lg border border-slate-700 bg-slate-900/60 text-slate-200"
+							class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 						>
 							<option value="every">Jeder (*)</option>
 							<option value="specific">Bestimmter Wert</option>
@@ -234,7 +234,7 @@
 								min={FIELD_BOUNDS[field.key].min}
 								max={FIELD_BOUNDS[field.key].max}
 								bind:value={fields[field.key].specific}
-								class="w-full rounded-lg border border-slate-700 bg-slate-900/60 text-slate-200"
+								class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 							/>
 						{:else if fields[field.key].mode === 'range'}
 							<div class="grid grid-cols-[1fr,auto,1fr] items-center gap-2">
@@ -243,7 +243,7 @@
 									min={FIELD_BOUNDS[field.key].min}
 									max={FIELD_BOUNDS[field.key].max}
 									bind:value={fields[field.key].rangeStart}
-									class="w-full rounded-lg border border-slate-700 bg-slate-900/60 text-slate-200"
+									class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 								/>
 								<span class="text-center text-slate-500">bis</span>
 								<input
@@ -251,7 +251,7 @@
 									min={FIELD_BOUNDS[field.key].min}
 									max={FIELD_BOUNDS[field.key].max}
 									bind:value={fields[field.key].rangeEnd}
-									class="w-full rounded-lg border border-slate-700 bg-slate-900/60 text-slate-200"
+									class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 								/>
 							</div>
 						{:else if fields[field.key].mode === 'interval'}
@@ -261,7 +261,7 @@
 									type="number"
 									min="1"
 									bind:value={fields[field.key].interval}
-									class="w-full rounded-lg border border-slate-700 bg-slate-900/60 text-slate-200"
+									class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 								/>
 							</div>
 						{:else}
@@ -274,9 +274,9 @@
 			{/each}
 		</div>
 
-		<div class="mt-6 space-y-3 rounded-lg border border-slate-700/80 bg-slate-950/70 p-4">
+		<div class="mt-6 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
 			<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Cron-Ausdruck</p>
-			<p class="font-mono text-lg text-purple-200">{expression}</p>
+			<p class="font-mono text-lg text-purple-600">{expression}</p>
 			<p class="text-sm text-slate-400">{description}</p>
 			<button
 				type="button"
@@ -289,13 +289,13 @@
 	</section>
 
 	<section class="space-y-3">
-		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-300 uppercase">Schnellvorlagen</h2>
+		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-600 uppercase">Schnellvorlagen</h2>
 		<div class="flex flex-wrap gap-2">
 			{#each presets as preset (preset.label)}
 				<button
 					type="button"
 					onclick={() => applyPreset(preset.parts)}
-					class="rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-sm text-slate-200 transition hover:border-purple-400 hover:text-purple-200"
+					class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 				>
 					{preset.label}
 				</button>

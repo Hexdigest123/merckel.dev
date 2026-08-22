@@ -237,29 +237,29 @@
 </script>
 
 <section class="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:py-16">
-	<div class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
-		<h1 class="text-3xl font-bold text-slate-100">{data.title}</h1>
-		<p class="mt-2 text-base text-slate-300">
+	<div class="rounded-lg border border-slate-200 bg-white p-6 sm:p-8">
+		<h1 class="text-3xl font-bold text-slate-900">{data.title}</h1>
+		<p class="mt-2 text-base text-slate-600">
 			QR-Codes für URLs oder Text generieren. URLs werden zuerst gekürzt, damit Scans nachverfolgt
 			werden können.
 		</p>
 
 		<div class="mt-6 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-			<div class="space-y-5 rounded-xl border border-slate-700/60 bg-slate-800/30 p-5">
-				<label for="qr-input" class="block space-y-2 text-sm text-slate-300">
+			<div class="space-y-5 rounded-lg border border-slate-200 bg-white p-5">
+				<label for="qr-input" class="block space-y-2 text-sm text-slate-600">
 					<span>Text oder URL</span>
 					<input
 						id="qr-input"
 						type="text"
 						bind:value={text}
 						placeholder="https://example.com or any plain text"
-						class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-purple-400/80 focus:outline-none"
+						class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:border-purple-400/80 focus:outline-none"
 					/>
 				</label>
 
-				<div class="space-y-4 rounded-xl border border-slate-700/60 bg-slate-800/30 p-4">
+				<div class="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
 					<div>
-						<p class="text-sm text-slate-300">Format</p>
+						<p class="text-sm text-slate-600">Format</p>
 						<div class="mt-2 flex gap-2">
 							{#each formatOptions as option (option)}
 								<button
@@ -267,8 +267,8 @@
 									onclick={() => (outputFormat = option)}
 									class={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
 										outputFormat === option
-											? 'border-purple-400 bg-purple-500/20 text-purple-200'
-											: 'border-slate-700 bg-slate-800 text-slate-200 hover:border-purple-400/60'
+											? 'border-purple-400 bg-purple-500/20 text-purple-600'
+											: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400/60'
 									}`}
 								>
 									{option.toUpperCase()}
@@ -278,7 +278,7 @@
 					</div>
 
 					<div>
-						<p class="text-sm text-slate-300">Größe</p>
+						<p class="text-sm text-slate-600">Größe</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each sizeOptions as option (option.value)}
 								<button
@@ -286,8 +286,8 @@
 									onclick={() => (size = option.value)}
 									class={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
 										size === option.value
-											? 'border-purple-400 bg-purple-500/20 text-purple-200'
-											: 'border-slate-700 bg-slate-800 text-slate-200 hover:border-purple-400/60'
+											? 'border-purple-400 bg-purple-500/20 text-purple-600'
+											: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400/60'
 									}`}
 								>
 									{option.label}
@@ -297,7 +297,7 @@
 					</div>
 
 					<div>
-						<p class="text-sm text-slate-300">Fehlerkorrektur</p>
+						<p class="text-sm text-slate-600">Fehlerkorrektur</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each levelOptions as option (option)}
 								<button
@@ -305,8 +305,8 @@
 									onclick={() => (level = option)}
 									class={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
 										level === option
-											? 'border-purple-400 bg-purple-500/20 text-purple-200'
-											: 'border-slate-700 bg-slate-800 text-slate-200 hover:border-purple-400/60'
+											? 'border-purple-400 bg-purple-500/20 text-purple-600'
+											: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400/60'
 									}`}
 								>
 									{option}
@@ -317,10 +317,10 @@
 				</div>
 			</div>
 
-			<div class="rounded-xl border border-slate-700/60 bg-slate-800/30 p-5">
+			<div class="rounded-lg border border-slate-200 bg-white p-5">
 				<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Live-Vorschau</p>
 				<div
-					class="mt-3 flex min-h-80 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/70 p-4"
+					class="mt-3 flex min-h-80 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 p-4"
 				>
 					{#if !trimmedText}
 						<p class="text-sm text-slate-400">Text eingeben, um einen QR-Code zu generieren</p>
@@ -338,7 +338,7 @@
 							style={`width: ${size}px;`}
 						/>
 					{:else if errorMessage}
-						<p class="text-sm text-rose-300">{errorMessage}</p>
+						<p class="text-sm text-rose-600">{errorMessage}</p>
 					{:else}
 						<p class="text-sm text-slate-400">Keine Vorschau verfügbar</p>
 					{/if}
@@ -349,7 +349,7 @@
 						type="button"
 						onclick={downloadQr}
 						disabled={!hasOutput}
-						class="inline-flex rounded-full bg-purple-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors duration-200 hover:bg-purple-400 disabled:cursor-not-allowed disabled:bg-purple-400/40"
+						class="inline-flex rounded-md bg-purple-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-purple-400/40"
 					>
 						Download {outputFormat.toUpperCase()}
 					</button>
@@ -359,7 +359,7 @@
 							type="button"
 							onclick={copySvg}
 							disabled={!svgString}
-							class="inline-flex rounded-full border border-slate-700 bg-slate-800 px-5 py-2.5 text-sm font-semibold text-slate-200 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
+							class="inline-flex rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 						>
 							{isCopied ? 'SVG kopiert' : 'SVG in Zwischenablage kopieren'}
 						</button>
@@ -368,11 +368,11 @@
 
 				{#if encodedValue}
 					<div
-						class="mt-4 space-y-2 rounded-lg border border-slate-700 bg-slate-900/60 p-3 text-sm text-slate-300"
+						class="mt-4 space-y-2 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-600"
 					>
-						<p class="font-semibold text-slate-200">{statusMessage}</p>
+						<p class="font-semibold text-slate-700">{statusMessage}</p>
 						{#if shortUrl}
-							<p class="font-mono text-xs break-all text-purple-200">{shortUrl}</p>
+							<p class="font-mono text-xs break-all text-purple-600">{shortUrl}</p>
 						{:else}
 							<p class="text-slate-400">Klartext — nicht nachverfolgbar</p>
 						{/if}
@@ -382,7 +382,7 @@
 		</div>
 
 		{#if errorMessage}
-			<p role="alert" class="mt-4 text-sm text-rose-300">{errorMessage}</p>
+			<p role="alert" class="mt-4 text-sm text-rose-600">{errorMessage}</p>
 		{/if}
 	</div>
 

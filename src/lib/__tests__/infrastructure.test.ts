@@ -36,11 +36,11 @@ describe('Infrastructure', () => {
 		expect(appHtml).toMatch(/<html[^>]*class="scroll-smooth"/);
 	});
 
-	it('should have dark background on body element in app.html', () => {
+	it('should have white background on body element in app.html', () => {
 		const appHtmlPath = resolve(projectRoot, 'src/app.html');
 		const appHtml = readFileSync(appHtmlPath, 'utf-8');
-		expect(appHtml).toContain('class="bg-slate-900"');
-		expect(appHtml).toMatch(/<body[^>]*class="bg-slate-900"/);
+		expect(appHtml).toContain('class="bg-white"');
+		expect(appHtml).toMatch(/<body[^>]*class="bg-white"/);
 	});
 
 	it('should have slate-900 and purple-500 colors defined in theme', () => {
@@ -59,16 +59,7 @@ describe('Infrastructure', () => {
 
 	it('should have all required lib directories created', () => {
 		const libPath = resolve(projectRoot, 'src/lib');
-		const directories = [
-			'components',
-			'components/3d',
-			'components/__tests__',
-			'components/3d/__tests__',
-			'types',
-			'data',
-			'utils',
-			'stores'
-		];
+		const directories = ['components', 'components/__tests__', 'types', 'data', 'utils'];
 
 		directories.forEach((dir) => {
 			const dirPath = resolve(libPath, dir);

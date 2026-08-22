@@ -188,19 +188,19 @@
 </script>
 
 <section class="mx-auto w-full max-w-3xl">
-	<section class="rounded-2xl border border-slate-700/60 bg-slate-800/30 p-6 sm:p-8">
-		<h1 class="text-3xl font-bold text-slate-100">{data.title}</h1>
-		<p class="mt-2 text-base text-slate-300">
+	<section class="rounded-lg border border-slate-200 bg-white p-6 sm:p-8">
+		<h1 class="text-3xl font-bold text-slate-900">{data.title}</h1>
+		<p class="mt-2 text-base text-slate-600">
 			Bilder zwischen PNG, JPG und WebP konvertieren — komplett im Browser.
 		</p>
 
 		<div class="mt-6 space-y-6">
 			<label
 				for="image-input"
-				class={`block rounded-2xl border-2 border-dashed p-6 text-center transition-colors duration-200 ${
+				class={`block rounded-lg border-2 border-dashed p-6 text-center transition-colors duration-200 ${
 					isDragOver
 						? 'border-purple-400 bg-purple-500/10'
-						: 'border-slate-700 bg-slate-900/35 hover:border-purple-400/60'
+						: 'border-slate-200 bg-slate-50 hover:border-purple-400/60'
 				}`}
 				ondragover={handleDragOver}
 				ondragleave={handleDragLeave}
@@ -213,44 +213,44 @@
 					onchange={handleFileInput}
 					class="sr-only"
 				/>
-				<p class="text-sm text-slate-300">Bild hierher ziehen oder klicken zum Hochladen</p>
+				<p class="text-sm text-slate-600">Bild hierher ziehen oder klicken zum Hochladen</p>
 				<p class="mt-1 font-mono text-xs tracking-wide text-slate-400 uppercase">PNG, JPEG, WebP</p>
 			</label>
 
 			{#if sourceFile}
 				<div class="grid gap-4 md:grid-cols-2">
-					<div class="rounded-xl border border-slate-700 bg-slate-900/55 p-4">
+					<div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
 						<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Original</p>
 						<img
 							src={sourcePreviewUrl}
 							alt="Vorschau des Uploads"
-							class="mt-3 max-h-64 w-full rounded-lg border border-slate-700 object-contain"
+							class="mt-3 max-h-64 w-full rounded-lg border border-slate-200 object-contain"
 						/>
-						<p class="mt-3 text-sm text-slate-300">Format: {getFormatLabel(sourceFormat)}</p>
-						<p class="text-sm text-slate-300">Size: {sourceSize}</p>
+						<p class="mt-3 text-sm text-slate-600">Format: {getFormatLabel(sourceFormat)}</p>
+						<p class="text-sm text-slate-600">Size: {sourceSize}</p>
 					</div>
 
-					<div class="rounded-xl border border-slate-700 bg-slate-900/55 p-4">
+					<div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
 						<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Konvertiert</p>
 						{#if convertedPreviewUrl}
 							<img
 								src={convertedPreviewUrl}
 								alt="Vorschau der Konvertierung"
-								class="mt-3 max-h-64 w-full rounded-lg border border-slate-700 object-contain"
+								class="mt-3 max-h-64 w-full rounded-lg border border-slate-200 object-contain"
 							/>
-							<p class="mt-3 text-sm text-slate-300">Format: {getFormatLabel(targetFormat)}</p>
-							<p class="text-sm text-slate-300">Size: {convertedSize}</p>
+							<p class="mt-3 text-sm text-slate-600">Format: {getFormatLabel(targetFormat)}</p>
+							<p class="text-sm text-slate-600">Size: {convertedSize}</p>
 							<a
 								href={convertedPreviewUrl}
 								download={convertedFileName}
 								data-cursor="link"
-								class="mt-4 inline-flex rounded-full bg-purple-500 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors duration-200 hover:bg-purple-400"
+								class="mt-4 inline-flex rounded-md bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-purple-600"
 							>
 								Konvertiertes Bild herunterladen
 							</a>
 						{:else}
 							<div
-								class="mt-3 flex h-64 items-center justify-center rounded-lg border border-slate-700 text-sm text-slate-400"
+								class="mt-3 flex h-64 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-400"
 							>
 								Konvertierte Vorschau erscheint hier
 							</div>
@@ -258,9 +258,9 @@
 					</div>
 				</div>
 
-				<div class="space-y-4 rounded-xl border border-slate-700 bg-slate-900/55 p-4">
+				<div class="space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
 					<div>
-						<p class="text-sm text-slate-300">Zielformat</p>
+						<p class="text-sm text-slate-600">Zielformat</p>
 						<div class="mt-2 flex flex-wrap gap-2">
 							{#each formatOptions as option (option.mime)}
 								<button
@@ -270,9 +270,9 @@
 									data-cursor="link"
 									class={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
 										targetFormat === option.mime
-											? 'border-purple-400 bg-purple-500/20 text-purple-200'
-											: 'border-slate-700 bg-slate-800 text-slate-200 hover:border-purple-400/60'
-									} disabled:cursor-not-allowed disabled:border-slate-700 disabled:bg-slate-800/50 disabled:text-slate-500`}
+											? 'border-purple-400 bg-purple-500/20 text-purple-600'
+											: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400/60'
+									} disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500`}
 								>
 									{option.label}
 								</button>
@@ -282,7 +282,7 @@
 
 					{#if isQualityVisible}
 						<label class="block space-y-2" for="quality-slider">
-							<span class="text-sm text-slate-300">Qualität: {quality.toFixed(1)}</span>
+							<span class="text-sm text-slate-600">Qualität: {quality.toFixed(1)}</span>
 							<input
 								id="quality-slider"
 								type="range"
@@ -300,7 +300,7 @@
 						onclick={convertImage}
 						disabled={!canConvert}
 						data-cursor="link"
-						class="inline-flex rounded-full bg-purple-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors duration-200 hover:bg-purple-400 disabled:cursor-not-allowed disabled:bg-purple-400/50"
+						class="inline-flex rounded-md bg-purple-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-purple-400/50"
 					>
 						{isConverting ? 'Konvertiere...' : 'Konvertieren'}
 					</button>
@@ -308,7 +308,7 @@
 			{/if}
 
 			{#if errorMessage}
-				<p role="alert" class="text-sm text-rose-300">{errorMessage}</p>
+				<p role="alert" class="text-sm text-rose-600">{errorMessage}</p>
 			{/if}
 		</div>
 

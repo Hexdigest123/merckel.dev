@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { prefersReducedMotion } from '$lib/utils/gsap';
+	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+	import { useLocale } from '$lib/i18n/locale.svelte';
 
 	interface NavItem {
 		id: string;
@@ -13,16 +14,15 @@
 		navItems?: NavItem[];
 	} = $props();
 
+	const i18n = useLocale();
+
 	let isDrawerOpen = $state(false);
 	let activeId = $state('');
-	let reducedMotion = $state(false);
 
 	$effect(() => {
 		if (!browser || navItems.length === 0) {
 			return;
 		}
-
-		reducedMotion = prefersReducedMotion();
 
 		if (!activeId && navItems[0]) {
 			activeId = navItems[0].id;
@@ -114,7 +114,7 @@
 			const target = document.getElementById(id);
 			if (target) {
 				target.scrollIntoView({
-					behavior: reducedMotion ? 'auto' : 'smooth',
+					behavior: 'smooth',
 					block: 'start'
 				});
 				window.history.replaceState(null, '', `#${id}`);
@@ -123,16 +123,16 @@
 	}
 </script>
 
-<!-- Mobile Header Bar -->
 <header
-	class="fixed inset-x-0 top-0 z-30 flex h-14 items-center border-b border-slate-700/50 bg-slate-900/95 px-4 backdrop-blur-sm lg:hidden"
+	class="fixed inset-x-0 top-0 z-30 flex h-14 items-center border-b border-slate-200 bg-white px-4 lg:hidden"
 >
 	<div class="ml-auto flex items-center gap-3">
+		<LanguageSwitcher />
 		<button
 			type="button"
-			class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 transition-colors duration-150 hover:bg-slate-800 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300"
+			class="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 transition-colors duration-150 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 			onclick={toggleDrawer}
-			aria-label={isDrawerOpen ? 'Navigation schließen' : 'Navigation öffnen'}
+			aria-label={isDrawerOpen ? i18n.t('navClose') : i18n.t('navOpen')}
 			aria-expanded={isDrawerOpen}
 		>
 			<svg
@@ -153,33 +153,29 @@
 	</div>
 </header>
 
-<!-- Drawer Overlay -->
 {#if isDrawerOpen}
 	<button
 		type="button"
-		class="mobile-drawer-overlay fixed inset-0 z-40 lg:hidden"
-		class:is-open={isDrawerOpen}
-		class:no-motion={reducedMotion}
+		class="fixed inset-0 z-40 bg-slate-900/20 lg:hidden"
 		onclick={() => (isDrawerOpen = false)}
-		aria-label="Navigation schließen"
+		aria-label={i18n.t('navClose')}
 	></button>
 {/if}
 
-<!-- Navigation Drawer -->
 <nav
-	class="mobile-drawer fixed top-0 right-0 z-50 flex h-full w-[75vw] max-w-xs flex-col border-l border-slate-700/50 bg-slate-900 lg:hidden"
-	class:is-open={isDrawerOpen}
-	class:no-motion={reducedMotion}
+	class="fixed top-0 right-0 z-50 flex h-full w-[75vw] max-w-xs flex-col border-l border-slate-200 bg-white transition-transform duration-200 lg:hidden"
+	class:translate-x-0={isDrawerOpen}
+	class:translate-x-full={!isDrawerOpen}
 	aria-label="Mobile Navigation"
 	aria-hidden={!isDrawerOpen}
 >
-	<div class="flex items-center justify-between border-b border-slate-700/50 px-5 py-4">
-		<p class="font-mono text-xs tracking-[0.2em] text-slate-400 uppercase">Sektionen</p>
+	<div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+		<p class="text-xs tracking-wide text-slate-500 uppercase">{i18n.t('navSections')}</p>
 		<button
 			type="button"
-			class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors duration-150 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300"
+			class="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors duration-150 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 			onclick={() => (isDrawerOpen = false)}
-			aria-label="Navigation schließen"
+			aria-label={i18n.t('navClose')}
 		>
 			<svg
 				class="h-4 w-4"
@@ -199,57 +195,16 @@
 			<li>
 				<button
 					type="button"
-					class={`group flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors duration-150 ${
+					class={`w-full rounded-md px-3 py-3 text-left text-sm transition-colors duration-150 ${
 						activeId === item.id
-							? 'bg-purple-500/10 text-slate-100'
-							: 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-300'
+							? 'bg-purple-50 font-medium text-purple-700'
+							: 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
 					}`}
 					onclick={() => navigateToSection(item.id)}
 				>
-					<span
-						class={`h-px transition-all duration-200 ${
-							activeId === item.id ? 'w-6 bg-purple-400 opacity-100' : 'w-3 bg-slate-600 opacity-60'
-						}`}
-					></span>
-					<span class="font-mono text-sm">{item.label}</span>
+					{item.label}
 				</button>
 			</li>
 		{/each}
 	</ul>
-
-	<div class="border-t border-slate-700/50 px-5 py-4">
-		<p class="font-mono text-xs tracking-[0.18em] text-purple-300/70 uppercase">Portfolio Shell</p>
-	</div>
 </nav>
-
-<style>
-	.mobile-drawer-overlay {
-		background-color: rgb(2 6 23 / 0);
-		backdrop-filter: blur(0);
-		transition:
-			background-color 300ms ease-out,
-			backdrop-filter 300ms ease-out;
-	}
-
-	.mobile-drawer-overlay.is-open {
-		background-color: rgb(2 6 23 / 0.7);
-		backdrop-filter: blur(4px);
-	}
-
-	.mobile-drawer-overlay.no-motion {
-		transition: none;
-	}
-
-	.mobile-drawer {
-		transform: translateX(100%);
-		transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.mobile-drawer.is-open {
-		transform: translateX(0);
-	}
-
-	.mobile-drawer.no-motion {
-		transition: none;
-	}
-</style>

@@ -73,7 +73,7 @@
 
 		// Replace placeholders with actual HTML spans
 		return result
-			.replace(/\x00KEY_START\x00/g, '<span class="text-purple-200">"')
+			.replace(/\x00KEY_START\x00/g, '<span class="text-purple-600">"')
 			.replace(/\x00KEY_END\x00/g, '"</span>')
 			.replace(/\x00STR_START\x00/g, '<span class="text-emerald-300">"')
 			.replace(/\x00STR_END\x00/g, '"</span>')
@@ -155,27 +155,27 @@
 
 <section class="mx-auto w-full max-w-2xl space-y-8">
 	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-100 sm:text-4xl">
+		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
 			JSON Formatter & Validator
 		</h1>
 		<p class="text-slate-400">JSON formatieren, validieren und mit Syntaxhervorhebung anzeigen.</p>
 	</header>
 
-	<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="space-y-4">
 			<div class="space-y-2">
-				<label class="text-sm font-medium text-slate-200" for="json-input">Eingabe</label>
+				<label class="text-sm font-medium text-slate-700" for="json-input">Eingabe</label>
 				<textarea
 					id="json-input"
 					rows="14"
 					bind:value={input}
-					class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
+					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
 					placeholder="JSON hier einfügen..."
 				></textarea>
 			</div>
 
 			<div class="space-y-2">
-				<p class="text-sm font-medium text-slate-200">Einrückung</p>
+				<p class="text-sm font-medium text-slate-700">Einrückung</p>
 				<div class="flex flex-wrap gap-2">
 					{#each INDENT_OPTIONS as option (option.value)}
 						<button
@@ -183,8 +183,8 @@
 							onclick={() => (indent = option.value)}
 							class={`rounded-lg border px-3 py-2 text-sm transition ${
 								indent === option.value
-									? 'border-purple-400 bg-purple-500/20 text-purple-200'
-									: 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-purple-400 hover:text-purple-200'
+									? 'border-purple-400 bg-purple-500/20 text-purple-600'
+									: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400 hover:text-purple-700'
 							}`}
 						>
 							{option.label}
@@ -206,7 +206,7 @@
 					type="button"
 					onclick={minifyJson}
 					disabled={!hasInput}
-					class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-purple-400 hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
+					class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-purple-400 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					Minimieren
 				</button>
@@ -214,7 +214,7 @@
 					type="button"
 					onclick={clearAll}
 					disabled={!hasInput}
-					class="rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-purple-400 hover:text-purple-200 disabled:cursor-not-allowed disabled:opacity-50"
+					class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-purple-400 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					Löschen
 				</button>
@@ -223,24 +223,22 @@
 
 		{#if error}
 			<div role="alert" class="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 p-4">
-				<p class="text-sm font-medium text-rose-300">Validierungsfehler</p>
+				<p class="text-sm font-medium text-rose-600">Validierungsfehler</p>
 				<p class="mt-1 font-mono text-sm text-rose-200">{error.message}</p>
 				{#if error.line}
-					<p class="mt-1 text-sm text-rose-300/70">Zeile {error.line}</p>
+					<p class="mt-1 text-sm text-rose-600/70">Zeile {error.line}</p>
 				{/if}
 			</div>
 		{/if}
 	</section>
 
-	<section class="rounded-2xl border border-slate-700 bg-slate-900/60 p-5 sm:p-6">
+	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="space-y-4">
 			<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Ausgabe</p>
 
-			<div
-				class="max-h-[30rem] overflow-auto rounded-lg border border-slate-700/80 bg-slate-950/70 p-4"
-			>
+			<div class="max-h-[30rem] overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
 				{#if formattedOutput}
-					<pre class="font-mono text-sm leading-6 text-slate-200"><code
+					<pre class="font-mono text-sm leading-6 text-slate-700"><code
 							>{@html highlightedOutput}</code
 						></pre>
 				{:else}
@@ -260,12 +258,12 @@
 
 				{#if formattedOutput}
 					<span
-						class="rounded-full border border-slate-700 bg-slate-900/60 px-2.5 py-1 font-mono text-xs text-slate-300"
+						class="rounded-full border border-slate-200 bg-white px-2.5 py-1 font-mono text-xs text-slate-600"
 					>
 						Zeichen: {charCount}
 					</span>
 					<span
-						class="rounded-full border border-slate-700 bg-slate-900/60 px-2.5 py-1 font-mono text-xs text-slate-300"
+						class="rounded-full border border-slate-200 bg-white px-2.5 py-1 font-mono text-xs text-slate-600"
 					>
 						Zeilen: {lineCount}
 					</span>

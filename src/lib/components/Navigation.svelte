@@ -7,7 +7,6 @@
 	}
 
 	const DEFAULT_ITEMS: NavigationItem[] = [
-		{ id: 'about', label: 'Über mich' },
 		{ id: 'tools', label: 'Werkzeuge' },
 		{ id: 'projects', label: 'Projekte' },
 		{ id: 'experience', label: 'Erfahrung' },
@@ -28,7 +27,6 @@
 
 	let firstItemId = $derived(items[0]?.id ?? '');
 	let activeId = $state('');
-	let hoveredId = $state('');
 
 	$effect(() => {
 		if (!activeId && firstItemId) {
@@ -88,43 +86,27 @@
 		};
 	});
 
-	function handleHover(id: string) {
-		hoveredId = id;
-	}
-
-	function clearHover() {
-		hoveredId = '';
-	}
-
 	function handleSelect(id: string) {
 		activeId = id;
 	}
 </script>
 
-<nav class="hidden lg:sticky lg:top-8 lg:block" aria-label="Section navigation">
-	<p class="mb-5 font-mono text-xs tracking-[0.2em] text-slate-400 uppercase">{heading}</p>
-	<ul class="space-y-2">
+<nav class="hidden lg:block" aria-label="Section navigation">
+	<p class="sr-only">{heading}</p>
+	<ul class="flex flex-wrap gap-x-5 gap-y-2">
 		{#each items as item (item.id)}
 			<li>
 				<a
-					data-cursor="link"
 					href={`#${item.id}`}
 					aria-current={activeId === item.id ? 'location' : undefined}
-					class="group flex items-center gap-3 rounded-sm py-1.5 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-purple-300"
-					onmouseenter={() => handleHover(item.id)}
-					onmouseleave={clearHover}
-					onfocus={() => handleHover(item.id)}
-					onblur={clearHover}
+					class={`text-sm transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-purple-500 ${
+						activeId === item.id
+							? 'font-medium text-purple-600'
+							: 'text-slate-500 hover:text-slate-900'
+					}`}
 					onclick={() => handleSelect(item.id)}
 				>
-					<span
-						class={`h-px bg-purple-400 transition-all duration-200 ${activeId === item.id || hoveredId === item.id ? 'w-9 opacity-100' : 'w-3 opacity-60'}`}
-					></span>
-					<span
-						class={`font-mono text-sm transition-colors duration-200 ${activeId === item.id ? 'text-slate-100' : 'text-slate-400 group-hover:text-slate-300 group-focus-visible:text-slate-300'}`}
-					>
-						{item.label}
-					</span>
+					{item.label}
 				</a>
 			</li>
 		{/each}

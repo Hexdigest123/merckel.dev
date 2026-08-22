@@ -1,79 +1,59 @@
 <script lang="ts">
 	import Section from '$lib/components/Section.svelte';
 	import { projects } from '$lib/data/projects';
+	import { localizeProject } from '$lib/i18n/content';
+	import { useLocale } from '$lib/i18n/locale.svelte';
 
-	let hoveredProjectId = $state<string | null>(null);
-	let hasHoveredProject = $derived(hoveredProjectId !== null);
-
-	function setHoveredProject(projectId: string) {
-		hoveredProjectId = projectId;
-	}
-
-	function clearHoveredProject() {
-		hoveredProjectId = null;
-	}
-
-	function handleProjectFocusOut(event: FocusEvent) {
-		const nextTarget = event.relatedTarget;
-		const currentTarget = event.currentTarget;
-
-		if (
-			currentTarget instanceof HTMLElement &&
-			nextTarget instanceof Node &&
-			currentTarget.contains(nextTarget)
-		) {
-			return;
-		}
-
-		clearHoveredProject();
-	}
+	const i18n = useLocale();
+	let localizedProjects = $derived(projects.map((project) => localizeProject(i18n, project)));
 </script>
 
-<Section id="projects" title="Projekte" description="Ausgewählte Projekte und Umsetzungsdetails.">
-	<div class="space-y-4" data-testid="projects-list" data-reveal-group>
-		{#each projects as project (project.id)}
-			<article
-				data-reveal-item
-				class={`group relative rounded-2xl border border-slate-700/60 bg-slate-800/35 p-5 transition-all duration-200 sm:p-6 ${
-					hasHoveredProject && hoveredProjectId !== project.id ? 'opacity-45' : 'opacity-100'
-				}`}
-				onmouseenter={() => setHoveredProject(project.id)}
-				onmouseleave={clearHoveredProject}
-				onfocusin={() => setHoveredProject(project.id)}
-				onfocusout={handleProjectFocusOut}
-			>
-				<div class="flex flex-wrap items-start justify-between gap-3">
-					<h3 class="font-sans text-lg font-semibold text-slate-100 sm:text-xl">{project.title}</h3>
+<Section id="projects" title={i18n.t('navProjects')}>
+	<div class="space-y-10" data-testid="projects-list">
+		{#each localizedProjects as project (project.id)}
+			<article>
+				<div class="flex flex-wrap items-baseline justify-between gap-2">
+					<h3 class="font-sans text-lg font-semibold text-slate-900">{project.title}</h3>
 					{#if project.featured}
-						<span
-							class="rounded-full border border-purple-400/50 bg-purple-500/15 px-3 py-1 font-mono text-xs tracking-wide text-purple-200 uppercase"
-						>
-							Highlight
+						<span class="font-mono text-xs tracking-wide text-purple-600 uppercase">
+							{i18n.t('featured')}
 						</span>
 					{/if}
 				</div>
-				<p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">{project.description}</p>
+				<p class="mt-2 text-sm leading-6 text-slate-600 sm:text-base">{project.description}</p>
 
-				<ul class="mt-4 flex flex-wrap gap-2">
-					{#each project.tags as tag}
-						<li
-							class="rounded-full border border-purple-400/45 bg-purple-500/15 px-3 py-1 text-xs text-purple-200 sm:text-sm"
-						>
-							{tag}
-						</li>
+				{#if project.image && project.url}
+					<a
+						href={project.url}
+						target="_blank"
+						rel="noreferrer"
+						aria-label={i18n.t('openPreview', { title: project.title })}
+						class="mt-4 block overflow-hidden rounded-lg border border-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+					>
+						<img
+							src={project.image}
+							alt={i18n.t('previewOf', { title: project.title })}
+							class="aspect-[16/10] w-full object-cover object-top"
+						/>
+					</a>
+				{/if}
+
+				<ul class="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
+					{#each project.tags as tag (tag)}
+						<li>{tag}</li>
 					{/each}
 				</ul>
 
-				<div class="mt-5 flex flex-wrap gap-3 text-sm">
+				<div class="mt-3 flex flex-wrap gap-4 text-sm">
 					{#if project.url}
 						<a
 							href={project.url}
 							target="_blank"
 							rel="noreferrer"
-							aria-label={`Live-Demo öffnen für ${project.title}`}
-							class="rounded-full border border-slate-600 px-3.5 py-1.5 text-slate-200 transition-colors duration-200 hover:border-purple-400 hover:text-purple-300 focus-visible:border-purple-400 focus-visible:text-purple-300 focus-visible:outline-none"
+							aria-label={i18n.t('openPreview', { title: project.title })}
+							class="text-purple-600 hover:text-purple-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 						>
-							Live-Demo
+							{i18n.t('livePreview')}
 						</a>
 					{/if}
 					{#if project.github}
@@ -81,10 +61,10 @@
 							href={project.github}
 							target="_blank"
 							rel="noreferrer"
-							aria-label={`Quellcode öffnen für ${project.title}`}
-							class="rounded-full border border-slate-600 px-3.5 py-1.5 text-slate-200 transition-colors duration-200 hover:border-purple-400 hover:text-purple-300 focus-visible:border-purple-400 focus-visible:text-purple-300 focus-visible:outline-none"
+							aria-label={i18n.t('openSourceCode', { title: project.title })}
+							class="text-purple-600 hover:text-purple-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 						>
-							Quellcode
+							{i18n.t('sourceCode')}
 						</a>
 					{/if}
 				</div>
