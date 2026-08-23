@@ -15,6 +15,7 @@ export const projects: Project[] = [
 		id: 'project-2',
 		title: 'Adoptierlieber',
 		description: 'Webseite unter adoptierlieber.de.',
+		image: '/images/projects/adoptierlieber.webp',
 		tags: ['SvelteKit'],
 		url: 'https://adoptierlieber.de',
 		featured: true
