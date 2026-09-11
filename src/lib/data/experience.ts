@@ -7,7 +7,7 @@ export const experience: Experience[] = [
     company: 'Meta Menü',
     companyUrl: 'https://meta-menue.de',
     startDate: '2026-01',
-    endDate: undefined,
+    endDate: '2026-01',
     description:
       'Entwicklungs-, Design- und Gründererfahrung durch den Aufbau der Plattform meta-menue, die als Vermittler zwischen Distributoren und Großküchen dient.',
     tags: ['SvelteKit', 'PostgreSQL', 'DevOps', 'Projektmanagement']
@@ -29,7 +29,7 @@ export const experience: Experience[] = [
     company: 'NetTrek GmbH',
     companyUrl: 'https://nettrek.de',
     startDate: '2025-01',
-    endDate: '2026-01',
+    endDate: undefined,
     description:
       'Als Softwareentwickler habe ich bei NetTrek unterschiedliche Systeme mitentwickelt, darunter KI-RAG-Plattformen als unternehmensweites Wissenssystem und Knowledge Hubs für die Europäische Kommission.',
     tags: ['Next.js', 'Angular.js', 'PostgreSQL', 'n8n', 'RAG']
