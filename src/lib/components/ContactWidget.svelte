@@ -95,7 +95,7 @@
 	}
 </script>
 
-<div class="fixed right-4 bottom-4 z-30 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
+<div class="fixed right-3 bottom-3 z-30 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
 	{#if isOpen}
 		<section
 			class="w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-slate-200 bg-white p-4 shadow-lg"
