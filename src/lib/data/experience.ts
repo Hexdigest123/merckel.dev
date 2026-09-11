@@ -2,6 +2,17 @@ import type { Experience } from '$lib/types/content';
 
 export const experience: Experience[] = [
   {
+    id: 'exp-0',
+    role: 'Gesellschafter und Softwareentwickler',
+    company: 'S&B Digital UG',
+    companyUrl: 'https://sb-digital.de',
+    startDate: '2026',
+    endDate: undefined,
+    description:
+      'Als Mitgründer der S&B Digital UG entwickle ich unsere modulare Gastro-Management-Plattform, die Online-Bestellung, Tischservice und Lieferung in einem gemeinsamen System zusammenführt – mit White-Label-Fähigkeit, kundeneigenen Domains und wählbarer Selbsthosting-Infrastruktur.',
+    tags: ['Svelte', 'GMP', 'Product Owner']
+  },
+  {
     id: 'exp-1',
     role: 'Geschäftsführer und Softwareentwickler',
     company: 'Meta Menü',
