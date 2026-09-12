@@ -12,12 +12,14 @@ const PROJECT_TAG: Record<string, MessageKey> = {
 };
 
 const EXPERIENCE_ROLE: Record<string, MessageKey> = {
+	'exp-0': 'expRoleShareholder',
 	'exp-1': 'expRoleFounder',
 	'exp-2': 'expRoleFounder',
 	'exp-3': 'expRoleStudent'
 };
 
 const EXPERIENCE_DESCRIPTION: Record<string, MessageKey> = {
+	'exp-0': 'expSbDigital',
 	'exp-1': 'expMetaMenue',
 	'exp-2': 'expLogiqit',
 	'exp-3': 'expNettrek'
