@@ -37,11 +37,6 @@
 							<p class="text-sm text-slate-600">{entry.company}</p>
 						{/if}
 						<p class="text-sm leading-6 text-slate-600 sm:text-base">{entry.description}</p>
-						<ul class="flex flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
-							{#each entry.tags as tag (tag)}
-								<li>{tag}</li>
-							{/each}
-						</ul>
 					</div>
 				</article>
 			</li>
