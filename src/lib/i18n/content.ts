@@ -12,6 +12,7 @@ const PROJECT_TAG: Record<string, MessageKey> = {
 };
 
 const EXPERIENCE_ROLE: Record<string, MessageKey> = {
+	'exp-0': 'expRoleShareholder',
 	'exp-1': 'expRoleFounder',
 	'exp-2': 'expRoleFounder',
 	'exp-3': 'expRoleStudent'

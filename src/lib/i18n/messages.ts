@@ -79,6 +79,7 @@ export const messages = {
 		projectAdoptierlieber: 'Webseite unter adoptierlieber.de.',
 		tagOrdering: 'Bestellung',
 		expRoleFounder: 'Geschäftsführer und Softwareentwickler',
+		expRoleShareholder: 'Gesellschafter und Softwareentwickler',
 		expRoleStudent: 'Werkstudent Full-Stack Developer',
 		expMetaMenue:
 			'Entwicklungs-, Design- und Gründererfahrung durch den Aufbau der Plattform meta-menue, die als Vermittler zwischen Distributoren und Großküchen dient.',
@@ -176,6 +177,7 @@ export const messages = {
 		projectAdoptierlieber: 'Website at adoptierlieber.de.',
 		tagOrdering: 'Ordering',
 		expRoleFounder: 'Managing Director and Software Developer',
+		expRoleShareholder: 'Shareholder and Software Developer',
 		expRoleStudent: 'Working Student Full-Stack Developer',
 		expMetaMenue:
 			'Development, design, and founder experience from building the meta-menue platform, an intermediary between distributors and large-scale kitchens.',
