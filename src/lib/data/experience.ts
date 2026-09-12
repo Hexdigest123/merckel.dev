@@ -31,7 +31,7 @@ export const experience: Experience[] = [
 		startDate: '2026',
 		endDate: undefined,
 		description:
-			'Als Mitgründer der S&B Digital UG entwickle ich unsere modulare Gastro-Management-Plattform, die Online-Bestellung, Tischservice und Lieferung in einem gemeinsamen System zusammenführt – mit White-Label-Fähigkeit, kundeneigenen Domains und wählbarer Selbsthosting-Infrastruktur.',
+			'In meiner Funktion bei S&B Digital unterstütze ich die Entwicklung und Bereitstellung von Gastro-Systemen, die Restaurants in ihren Arbeitsablauf integrieren, um Prozesse zu vereinfachen.',
 		tags: ['Svelte', 'GMP', 'Product Owner']
 	},
 	{

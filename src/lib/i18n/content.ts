@@ -19,6 +19,7 @@ const EXPERIENCE_ROLE: Record<string, MessageKey> = {
 };
 
 const EXPERIENCE_DESCRIPTION: Record<string, MessageKey> = {
+	'exp-0': 'expSbDigital',
 	'exp-1': 'expMetaMenue',
 	'exp-2': 'expLogiqit',
 	'exp-3': 'expNettrek'
