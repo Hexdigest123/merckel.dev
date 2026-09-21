@@ -3,6 +3,8 @@ import nodemailer from 'nodemailer';
 import { siteConfig } from '$lib/data/site-config';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const HEADER_UNSAFE_CHARS = ['\r', '\n', '\u0000'];
+const isHeaderUnsafe = (value: string) => HEADER_UNSAFE_CHARS.some((c) => value.includes(c));
 const MAX_NAME_LENGTH = 100;
 const MAX_MAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 4000;
@@ -25,6 +27,8 @@ export function validateContactInput(input: ContactInput): ContactValidationErro
 		errors.push({ field: 'name', error: 'name is required' });
 	} else if (input.name.length > MAX_NAME_LENGTH) {
 		errors.push({ field: 'name', error: 'name is too long' });
+	} else if (isHeaderUnsafe(input.name)) {
+		errors.push({ field: 'name', error: 'name is invalid' });
 	}
 
 	if (!input.mail) {

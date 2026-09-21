@@ -151,8 +151,7 @@
 					rows="12"
 					bind:value={originalText}
 					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-					placeholder="Originaltext einfügen..."
-				></textarea>
+					placeholder="Originaltext einfügen..."></textarea>
 			</div>
 
 			<div class="space-y-2">
@@ -162,8 +161,7 @@
 					rows="12"
 					bind:value={modifiedText}
 					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-					placeholder="Geänderten Text einfügen..."
-				></textarea>
+					placeholder="Geänderten Text einfügen..."></textarea>
 			</div>
 		</div>
 
