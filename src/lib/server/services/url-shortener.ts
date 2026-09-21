@@ -39,15 +39,34 @@ function isPrivateIPv6(hostname: string): boolean {
 	if (h.startsWith('fc') || h.startsWith('fd')) return true;
 	if (h.startsWith('fe80:') || h.startsWith('fe80')) return true;
 	if (h.startsWith('ff')) return true;
-	if (h.startsWith('::ffff:')) {
-		const v4 = h.slice('::ffff:'.length);
-		return isPrivateIPv4(v4);
+	if (h.startsWith(IPv4_IN_IPV6_PREFIX)) {
+		const v4 = h.slice(IPv4_IN_IPV6_PREFIX.length);
+		return isPrivateIPv4(v4) || isPrivateIPv6(v4);
 	}
 	return false;
 }
 
+function isPrivateIPv4MappedIPv6(hostname: string): boolean {
+	if (!hostname.startsWith(IPv4_IN_IPV6_PREFIX)) return false;
+	const tail = hostname.slice(IPv4_IN_IPV6_PREFIX.length);
+	if (tail.includes('.')) {
+		return isPrivateIPv4(tail);
+	}
+	const groups = tail.split(':').filter(Boolean);
+	if (groups.length !== 2) return false;
+	const octets: number[] = [];
+	for (const group of groups) {
+		const value = Number.parseInt(group, 16);
+		if (!Number.isInteger(value) || value < 0 || value > 0xffff) return false;
+		octets.push(value >> 8, value & 0xff);
+	}
+	return isPrivateIPv4(octets.map(String).join('.'));
+}
+
+const IPv4_IN_IPV6_PREFIX = '::ffff:';
+
 function isBlockedHost(hostname: string): boolean {
-	const h = hostname.toLowerCase();
+	const h = hostname.replace(/^\[|\]$/g, '').toLowerCase();
 	if (BLACKLISTED_HOST_NAMES.has(h)) return true;
 	for (const blocked of BLACKLISTED_HOSTS) {
 		if (h === blocked || h.endsWith(`.${blocked}`)) return true;
@@ -55,6 +74,7 @@ function isBlockedHost(hostname: string): boolean {
 	for (const suffix of BLACKLISTED_HOST_SUFFIXES) {
 		if (h.endsWith(suffix)) return true;
 	}
+	if (isPrivateIPv4MappedIPv6(h)) return true;
 	if (isPrivateIPv4(h)) return true;
 	if (isPrivateIPv6(h)) return true;
 	return false;
@@ -139,7 +159,10 @@ export async function createShortUrl(input: string): Promise<{
 
 			return { success: true, shortCode, originalUrl: validation.cleanUrl };
 		} catch (err: unknown) {
-			const isUniqueViolation = err instanceof Error && err.message.includes('unique');
+			const isUniqueViolation =
+				err instanceof Error &&
+				(err.message.toLowerCase().includes('unique') ||
+					err.message.toLowerCase().includes('duplicate'));
 			if (!isUniqueViolation) {
 				return { success: false, error: 'Database connection failed. Please try again later.' };
 			}

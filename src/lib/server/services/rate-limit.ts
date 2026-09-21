@@ -44,9 +44,11 @@ export function rateLimit(
 }
 
 export function getClientKey(request: Request, getClientAddress: () => string): string {
-	const forwarded = request.headers.get('x-forwarded-for');
-	if (forwarded) {
-		return forwarded.split(',')[0]!.trim();
+	if (process.env.TRUST_PROXY === '1') {
+		const forwarded = request.headers.get('x-forwarded-for');
+		if (forwarded) {
+			return forwarded.split(',')[0]!.trim();
+		}
 	}
 	try {
 		return getClientAddress();

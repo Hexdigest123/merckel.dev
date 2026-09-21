@@ -27,7 +27,7 @@ function extractGithubUsername(profileUrl: string | undefined): string | null {
 
 	try {
 		const url = new URL(profileUrl);
-		if (!url.hostname.includes('github.com')) return null;
+		if (url.protocol !== 'https:' || url.hostname !== 'github.com') return null;
 		const [candidate] = url.pathname.split('/').filter(Boolean);
 		if (!candidate || candidate === 'github') return null;
 		return candidate;

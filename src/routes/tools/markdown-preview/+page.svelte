@@ -210,8 +210,7 @@ Inline-Code: \`const x = 42;\`
 					rows="24"
 					bind:value={markdownInput}
 					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-					placeholder="Markdown hier eingeben..."
-				></textarea>
+					placeholder="Markdown hier eingeben..."></textarea>
 				<div class="flex gap-3 text-xs text-slate-500">
 					<span>{wordCount} W&ouml;rter</span>
 					<span>&middot;</span>
