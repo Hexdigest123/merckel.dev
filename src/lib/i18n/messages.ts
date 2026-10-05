@@ -79,7 +79,10 @@ export const messages = {
 		projectAdoptierlieber: 'Webseite unter adoptierlieber.de.',
 		tagOrdering: 'Bestellung',
 		expRoleFounder: 'Geschäftsführer und Softwareentwickler',
+		expRoleShareholder: 'Gesellschafter und Softwareentwickler',
 		expRoleStudent: 'Werkstudent Full-Stack Developer',
+		expSbDigital:
+			'In meiner Funktion bei S&B Digital unterstütze ich die Entwicklung und Bereitstellung von Gastro-Systemen, die Restaurants in ihren Arbeitsablauf integrieren, um Prozesse zu vereinfachen.',
 		expMetaMenue:
 			'Entwicklungs-, Design- und Gründererfahrung durch den Aufbau der Plattform meta-menue, die als Vermittler zwischen Distributoren und Großküchen dient.',
 		expLogiqit:
@@ -176,7 +179,10 @@ export const messages = {
 		projectAdoptierlieber: 'Website at adoptierlieber.de.',
 		tagOrdering: 'Ordering',
 		expRoleFounder: 'Managing Director and Software Developer',
+		expRoleShareholder: 'Shareholder and Software Developer',
 		expRoleStudent: 'Working Student Full-Stack Developer',
+		expSbDigital:
+			'In my role at S&B Digital, I help develop and deploy restaurant systems that integrate into restaurants’ workflows to simplify processes.',
 		expMetaMenue:
 			'Development, design, and founder experience from building the meta-menue platform, an intermediary between distributors and large-scale kitchens.',
 		expLogiqit:

@@ -19,7 +19,6 @@
 				icon={tool.icon}
 				path={tool.path}
 				usageCount={tool.usageCount}
-				category={tool.category}
 			/>
 		{/each}
 	</div>

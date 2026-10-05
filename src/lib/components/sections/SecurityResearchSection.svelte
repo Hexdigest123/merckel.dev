@@ -35,12 +35,6 @@
 						<span aria-hidden="true">·</span>
 						<span>{formatReadingTime(entry.readTime, i18n.t('readingTime'))}</span>
 					</div>
-
-					<ul class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
-						{#each entry.tools as tool (tool)}
-							<li>{tool}</li>
-						{/each}
-					</ul>
 				</a>
 			{/each}
 		</div>
