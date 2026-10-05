@@ -29,7 +29,7 @@
 			pentestingEntries?: PentestingEntry[];
 		}
 	}: {
-		data: {
+		data?: {
 			openSource?: OpenSourceData;
 			topTools?: WebToolWithUsage[];
 			pentestingEntries?: PentestingEntry[];

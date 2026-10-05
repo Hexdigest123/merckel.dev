@@ -1,7 +1,6 @@
-import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
-import { render } from 'vitest-browser-svelte';
-import CommandPalette from '../CommandPalette.svelte';
+import { mount, unmount } from 'svelte';
+import CommandPaletteLocaleWrapper from './CommandPaletteLocaleWrapper.svelte';
 
 const sections = [
 	{ id: 'about', title: 'About' },
@@ -25,48 +24,58 @@ async function nextFrame() {
 	await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
+function getDialog(): HTMLElement | null {
+	return document.querySelector<HTMLElement>('[role="dialog"][aria-modal="true"]');
+}
+
 describe('CommandPalette interactions', () => {
 	it('opens with Cmd/Ctrl+K and closes with Escape', async () => {
-		render(CommandPalette, { props: { sections } });
+		const app = mount(CommandPaletteLocaleWrapper, { target: document.body, props: { sections } });
+		await nextFrame();
+		expect(getDialog()).toBeNull();
 
 		pressGlobalKey('k', { metaKey: true });
 		await nextFrame();
 
-		const dialog = page.getByRole('dialog', { name: 'Befehlspalette' });
-		await expect.element(dialog).toBeInTheDocument();
+		expect(getDialog()?.getAttribute('aria-label')).toBe('Befehlspalette');
 
 		pressGlobalKey('Escape');
 		await nextFrame();
 
-		await expect.element(dialog).not.toBeInTheDocument();
+		expect(getDialog()).toBeNull();
+		await unmount(app);
 	});
 
 	it('filters typed commands and navigates on Enter', async () => {
 		const target = document.createElement('section');
 		target.id = 'projects';
+		target.scrollIntoView = () => {};
 		document.body.append(target);
 
-		render(CommandPalette, { props: { sections } });
+		const app = mount(CommandPaletteLocaleWrapper, { target: document.body, props: { sections } });
+		await nextFrame();
 		pressGlobalKey('k', { ctrlKey: true });
 		await nextFrame();
 
-		const input = page.getByLabelText('Befehlseingabe');
-		await input.fill('projects');
+		const input = document.getElementById('command-palette-input');
+		expect(input?.getAttribute('aria-label')).toBe('Befehlseingabe');
 
-		await expect
-			.element(page.getByRole('option', { name: 'Projects Sektion' }))
-			.toBeInTheDocument();
+		if (input instanceof HTMLInputElement) {
+			input.value = 'projects';
+			input.dispatchEvent(new Event('input', { bubbles: true }));
+		}
+		await nextFrame();
 
-		document
-			.getElementById('command-palette-input')
-			?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+		const listbox = document.querySelector('[role="listbox"]');
+		expect(listbox?.textContent).toContain('Projects');
+
+		input?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
 		await nextFrame();
 
 		expect(window.location.hash).toBe('#projects');
-		await expect
-			.element(page.getByRole('dialog', { name: 'Befehlspalette' }))
-			.not.toBeInTheDocument();
+		expect(getDialog()).toBeNull();
 
+		await unmount(app);
 		target.remove();
 		window.history.replaceState(null, '', window.location.pathname);
 	});

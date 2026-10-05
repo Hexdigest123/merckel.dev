@@ -1,15 +1,14 @@
-import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
-import { render } from 'vitest-browser-svelte';
+import { mount, unmount } from 'svelte';
 import Page from './+page.svelte';
 
 describe('/+page.svelte', () => {
 	it('should render an h1 identity heading', async () => {
-		render(Page);
+		const app = mount(Page, { target: document.body });
 
-		const heading = page
-			.getByRole('heading', { level: 1, name: 'Pierre-Maurice Merckel' })
-			.first();
-		await expect.element(heading).toBeInTheDocument();
+		const heading = document.querySelector('h1');
+		expect(heading?.textContent?.trim()).toBe('Pierre-Maurice Merckel');
+
+		await unmount(app);
 	});
 });
