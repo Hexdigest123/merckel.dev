@@ -16,7 +16,6 @@
 			<ToolCard
 				name={tool.name}
 				description={tool.description}
-				icon={tool.icon}
 				path={tool.path}
 				usageCount={tool.usageCount}
 			/>
