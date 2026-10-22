@@ -1,12 +1,15 @@
 <script lang="ts">
-	let { name, description, path, usageCount } = $props<{
+	let {
+		name,
+		description,
+		path,
+		usageCount
+	}: {
 		name: string;
 		description: string;
-		icon?: string;
 		path: string;
 		usageCount: number;
-		category?: 'utility' | 'developer';
-	}>();
+	} = $props();
 </script>
 
 <a href={path} class="group block">
