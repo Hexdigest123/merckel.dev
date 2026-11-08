@@ -9,7 +9,7 @@ COPY . .
 RUN bun run build
 
 # Stage 2: Production runtime
-FROM node:22-alpine AS runner
+FROM node:22.23.4-alpine AS runner
 RUN apk add --no-cache dumb-init wget
 
 WORKDIR /app
