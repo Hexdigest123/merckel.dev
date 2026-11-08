@@ -1,3 +1,7 @@
+import type { Pathname } from '$app/types';
+import { webTools } from '$lib/data/web-tools';
+import type { WebTool } from '$lib/types/content';
+
 export interface CommandPaletteSection {
 	id: string;
 	title: string;
@@ -9,105 +13,29 @@ export interface CommandPaletteCommand {
 	keywords: string[];
 	type: 'navigate' | 'navigate-url';
 	hash?: string;
-	url?: string;
+	url?: Pathname;
 	visibleByDefault: boolean;
 }
 
 export interface CommandExecutionResult {
 	navigateToHash?: string;
-	navigateToUrl?: string;
+	navigateToUrl?: Pathname;
 	message?: string;
 }
 
-const TOOL_COMMANDS: CommandPaletteCommand[] = [
-	{
-		id: 'tool-url-shortener',
-		label: 'URL Shortener',
-		keywords: ['shorten', 'link', 'url', 'short', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/url-shortener',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-cron-generator',
-		label: 'Cron Expression Generator',
-		keywords: ['cron', 'schedule', 'crontab', 'timer', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/cron-generator',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-text-diff',
-		label: 'Text Diff Checker',
-		keywords: ['diff', 'compare', 'text', 'difference', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/text-diff',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-image-converter',
-		label: 'Image Format Converter',
-		keywords: ['image', 'convert', 'png', 'jpg', 'webp', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/image-converter',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-qr-generator',
-		label: 'QR Code Generator',
-		keywords: ['qr', 'qrcode', 'barcode', 'scan', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/qr-generator',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-markdown-preview',
-		label: 'Markdown Preview',
-		keywords: ['markdown', 'preview', 'md', 'html', 'editor', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/markdown-preview',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-css-gradient',
-		label: 'CSS Gradient Generator',
-		keywords: ['gradient', 'css', 'verlauf', 'background', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/css-gradient',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-json-formatter',
-		label: 'JSON Formatter & Validator',
-		keywords: ['json', 'format', 'validate', 'formatieren', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/json-formatter',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-color-converter',
-		label: 'Farbkonverter & Palette',
-		keywords: ['color', 'farbe', 'convert', 'palette', 'hex', 'rgb', 'hsl', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/color-converter',
-		visibleByDefault: true
-	},
-	{
-		id: 'tool-regex-tester',
-		label: 'Regex Tester',
-		keywords: ['regex', 'regexp', 'pattern', 'muster', 'test', 'match', 'tool'],
-		type: 'navigate-url',
-		url: '/tools/regex-tester',
-		visibleByDefault: true
-	}
-];
+type CommandPaletteTool = Pick<WebTool, 'id' | 'name' | 'path' | 'keywords'>;
 
 function normalize(input: string): string {
 	return input.trim().toLowerCase();
 }
 
+/**
+ * Builds the command list: one command per home-page section followed by one per tool.
+ * Pass localized tools so the labels follow the active language.
+ */
 export function createCommandList(
-	sections: readonly CommandPaletteSection[]
+	sections: readonly CommandPaletteSection[],
+	tools: readonly CommandPaletteTool[] = webTools
 ): CommandPaletteCommand[] {
 	const navigationCommands = sections.map<CommandPaletteCommand>((section) => ({
 		id: `section-${section.id}`,
@@ -118,7 +46,16 @@ export function createCommandList(
 		visibleByDefault: true
 	}));
 
-	return [...navigationCommands, ...TOOL_COMMANDS];
+	const toolCommands = tools.map<CommandPaletteCommand>((tool) => ({
+		id: `tool-${tool.id}`,
+		label: tool.name,
+		keywords: [...tool.keywords, tool.id.replaceAll('-', ' ')],
+		type: 'navigate-url',
+		url: tool.path,
+		visibleByDefault: true
+	}));
+
+	return [...navigationCommands, ...toolCommands];
 }
 
 export function filterCommands(
@@ -171,6 +108,6 @@ export function executeCommand(command: CommandPaletteCommand): CommandExecution
 	}
 
 	return {
-		message: 'Befehl erkannt, aber keine Aktion konfiguriert.'
+		message: 'Command recognized, but no action is configured.'
 	};
 }

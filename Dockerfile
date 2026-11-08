@@ -43,7 +43,7 @@ ARG BUILD_DATE
 ARG VCS_REF
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
   org.opencontainers.image.revision="${VCS_REF}" \
-  org.opencontainers.image.source="https://github.com/merckel/merckel.dev"
+  org.opencontainers.image.source="https://github.com/Hexdigest123/merckel.dev"
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "npx drizzle-kit migrate && node build"]
+CMD ["sh", "-c", "npx drizzle-kit migrate && exec node build"]

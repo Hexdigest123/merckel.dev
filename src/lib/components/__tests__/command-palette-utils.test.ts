@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-	createCommandList,
-	executeCommand,
-	filterCommands
-} from '$lib/utils/command-palette';
+import { createCommandList, executeCommand, filterCommands } from '$lib/utils/command-palette';
 
 const sections = [
 	{ id: 'about', title: 'About' },
@@ -16,9 +12,7 @@ describe('command-palette utils', () => {
 		const commands = createCommandList(sections);
 		const filtered = filterCommands(commands, '');
 
-		const sectionLabels = filtered
-			.filter((c) => c.type === 'navigate')
-			.map((c) => c.label);
+		const sectionLabels = filtered.filter((c) => c.type === 'navigate').map((c) => c.label);
 		expect(sectionLabels).toEqual(['About', 'Projects', 'Contact']);
 	});
 
@@ -38,5 +32,31 @@ describe('command-palette utils', () => {
 
 		expect(tool).toBeDefined();
 		expect(executeCommand(tool!)).toEqual({ navigateToUrl: '/tools/url-shortener' });
+	});
+});
+
+describe('command-palette tool commands', () => {
+	it('uses the provided (localized) tool names and keeps search keywords', () => {
+		const tools = [
+			{
+				id: 'color-converter',
+				name: 'Color converter & palette',
+				path: '/tools/color-converter' as const,
+				keywords: ['farbe', 'hex']
+			}
+		];
+		const commands = createCommandList(sections, tools);
+		const tool = commands.find((command) => command.id === 'tool-color-converter');
+
+		expect(tool?.label).toBe('Color converter & palette');
+		expect(filterCommands(commands, 'farbe').map((command) => command.id)).toContain(
+			'tool-color-converter'
+		);
+		expect(executeCommand(tool!)).toEqual({ navigateToUrl: '/tools/color-converter' });
+	});
+
+	it('includes every tool by default', () => {
+		const toolCommands = createCommandList(sections).filter((c) => c.type === 'navigate-url');
+		expect(toolCommands).toHaveLength(10);
 	});
 });

@@ -1,6 +1,9 @@
 import gsap from 'gsap';
 import { afterNavigate } from '$app/navigation';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { prefersReducedMotion } from './motion';
+
+export { prefersReducedMotion };
 
 type RevealMode = 'section' | 'hero';
 
@@ -14,8 +17,6 @@ export interface RevealOptions {
 	ease?: string;
 	once?: boolean;
 }
-
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 let isPluginRegistered = false;
 let isScrollRefreshBound = false;
@@ -56,14 +57,6 @@ function showContentImmediately(root: HTMLElement) {
 		y: 0,
 		clearProps: 'opacity,visibility,transform'
 	});
-}
-
-export function prefersReducedMotion() {
-	if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-		return false;
-	}
-
-	return window.matchMedia(REDUCED_MOTION_QUERY).matches;
 }
 
 export function ensureGsapRegistered() {

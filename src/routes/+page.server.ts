@@ -126,63 +126,76 @@ async function fetchGitHubOpenSourceData(username: string): Promise<OpenSourceDa
 	}
 }
 
-export const load = async () => {
-	const now = Date.now();
-	const pentestingEntries = getAllPentestingEntries();
-
-	// L1: In-memory cache (5 min) — avoids DB round-trip on rapid requests
-	if (inMemoryCache && inMemoryCache.expiresAt > now) {
-		const topTools = await getTopTools(3);
-		return { openSource: inMemoryCache.data, topTools, pentestingEntries };
-	}
-
+async function loadOpenSourceData(now: number): Promise<OpenSourceData> {
 	const githubProfileUrl = siteConfig.socials.find((social) => social.platform === 'GitHub')?.url;
 	const githubUsername = extractGithubUsername(githubProfileUrl);
 
 	if (!githubUsername) {
-		const topTools = await getTopTools(3);
 		const fallbackData = createFallbackData(
 			'GitHub-Profil ist noch nicht konfiguriert, daher zeigt dieser Bereich lokale Portfolio-Highlights.'
 		);
 		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: fallbackData };
-		return { openSource: fallbackData, topTools, pentestingEntries };
+		return fallbackData;
 	}
 
 	const cacheKey = `github:open-source:${githubUsername}`;
 
-	// Parallel: fetch top tools + check DB cache simultaneously
-	const [topTools, cachedData] = await Promise.all([getTopTools(3), getCachedGitHubData(cacheKey)]);
-
 	// L2: DB cache (24h) — serves cached data without hitting GitHub API
+	const cachedData = await getCachedGitHubData(cacheKey);
 	if (cachedData) {
 		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: cachedData };
-		return { openSource: cachedData, topTools, pentestingEntries };
+		return cachedData;
 	}
 
 	// Cache miss — fetch from GitHub API with timeout
 	try {
 		const githubData = await fetchGitHubOpenSourceData(githubUsername);
-		const openSource =
-			githubData ??
-			createFallbackData(
-				'GitHub-Daten sind vorübergehend nicht verfügbar, daher werden lokale Highlights angezeigt.'
-			);
 
-		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: openSource };
+		if (githubData) {
+			inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: githubData };
+			// Fire-and-forget: persist to DB cache (setCachedGitHubData never rejects)
+			void setCachedGitHubData(cacheKey, githubData);
+			return githubData;
+		}
 
-		// Fire-and-forget: persist to DB cache (don't block response)
-		void setCachedGitHubData(cacheKey, openSource);
-
-		return { openSource, topTools, pentestingEntries };
+		// Only cache the fallback in memory, so GitHub is retried after a few minutes
+		// instead of serving the fallback for the whole 24h DB cache lifetime.
+		const fallbackData = createFallbackData(
+			'GitHub-Daten sind vorübergehend nicht verfügbar, daher werden lokale Highlights angezeigt.'
+		);
+		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: fallbackData };
+		return fallbackData;
 	} catch {
 		const fallbackData = createFallbackData(
 			'GitHub-Datenanfrage fehlgeschlagen, daher werden lokale Highlights angezeigt.'
 		);
 		inMemoryCache = { expiresAt: now + IN_MEMORY_TTL_MS, data: fallbackData };
-		return { openSource: fallbackData, topTools, pentestingEntries };
+		return fallbackData;
 	}
+}
+
+/** Shares one in-flight lookup between concurrent requests on a cold cache. */
+let pendingOpenSource: Promise<OpenSourceData> | null = null;
+
+function getOpenSourceData(now: number): Promise<OpenSourceData> {
+	// L1: In-memory cache (5 min) — avoids DB round-trip on rapid requests
+	if (inMemoryCache && inMemoryCache.expiresAt > now) {
+		return Promise.resolve(inMemoryCache.data);
+	}
+
+	pendingOpenSource ??= loadOpenSourceData(now).finally(() => {
+		pendingOpenSource = null;
+	});
+	return pendingOpenSource;
+}
+
+export const load = async () => {
+	const [openSource, topTools] = await Promise.all([getOpenSourceData(Date.now()), getTopTools(3)]);
+
+	return { openSource, topTools, pentestingEntries: getAllPentestingEntries() };
 };
 
 export function __resetOpenSourceCache() {
 	inMemoryCache = null;
+	pendingOpenSource = null;
 }

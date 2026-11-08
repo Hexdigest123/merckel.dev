@@ -14,7 +14,7 @@
 				<a
 					href={social.url}
 					target={social.icon === 'email' ? undefined : '_blank'}
-					rel={social.icon === 'email' ? undefined : 'noreferrer'}
+					rel="external noreferrer"
 					class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 				>
 					{#if social.icon === 'github'}

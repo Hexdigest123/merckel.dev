@@ -10,7 +10,7 @@
 </script>
 
 <Section id="about" title="Über mich" description="Hintergrund, Werte und persönliche Geschichte.">
-	<div class="grid gap-5 lg:grid-cols-[1.3fr,1fr] lg:gap-8">
+	<div class="grid gap-5 lg:grid-cols-[1.3fr_1fr] lg:gap-8">
 		<article
 			data-reveal
 			class="rounded-2xl border border-slate-700/60 bg-gradient-to-br from-slate-800/55 to-slate-900/70 p-5 shadow-lg shadow-slate-950/20 sm:p-6"
@@ -18,7 +18,7 @@
 			<p class="font-mono text-xs tracking-[0.18em] text-purple-300 uppercase">Geschichte</p>
 			<h3 class="mt-3 font-sans text-xl font-semibold text-slate-100 sm:text-2xl">Wer bin ich</h3>
 			<div class="mt-4 space-y-3 text-sm leading-7 text-slate-300 sm:text-base">
-				{#each bioParagraphs as paragraph}
+				{#each bioParagraphs as paragraph (paragraph)}
 					<p>{paragraph}</p>
 				{/each}
 			</div>
@@ -41,7 +41,7 @@
 						<a
 							href={social.url}
 							target="_blank"
-							rel="noreferrer"
+							rel="external noreferrer"
 							class="group flex items-center justify-between gap-3 rounded-xl border border-slate-700/50 bg-slate-800/40 px-3 py-2 text-sm text-slate-300 transition-colors duration-200 hover:border-purple-400/40 hover:text-slate-100 sm:text-base"
 						>
 							<span class="flex items-center gap-3">

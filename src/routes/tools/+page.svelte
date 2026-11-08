@@ -2,10 +2,10 @@
 	import ToolCard from '$lib/components/ToolCard.svelte';
 	import { localizeTool } from '$lib/i18n/content';
 	import { useLocale } from '$lib/i18n/locale.svelte';
-	import type { WebToolWithUsage } from '$lib/types/content';
+	import type { PageProps } from './$types';
 
 	const i18n = useLocale();
-	let { data }: { data: { tools: WebToolWithUsage[] } } = $props();
+	let { data }: PageProps = $props();
 
 	let search = $state('');
 
@@ -17,7 +17,8 @@
 			(tool) =>
 				tool.name.toLowerCase().includes(q) ||
 				tool.description.toLowerCase().includes(q) ||
-				tool.category.toLowerCase().includes(q)
+				tool.category.toLowerCase().includes(q) ||
+				tool.keywords.some((keyword) => keyword.includes(q))
 		);
 	});
 </script>
@@ -31,15 +32,18 @@
 
 	<div class="mb-6">
 		<input
-			type="text"
+			type="search"
 			placeholder={i18n.t('searchTools')}
+			aria-label={i18n.t('searchTools')}
 			bind:value={search}
 			class="w-full max-w-sm rounded-md border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30 focus:outline-none"
 		/>
 	</div>
 
 	{#if filteredTools.length === 0}
-		<p class="py-12 text-center text-sm text-slate-500">{i18n.t('noTools', { query: search })}</p>
+		<p class="py-12 text-center text-sm text-slate-500" role="status">
+			{i18n.t('noTools', { query: search })}
+		</p>
 	{:else}
 		<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="tools-grid">
 			{#each filteredTools as tool (tool.id)}

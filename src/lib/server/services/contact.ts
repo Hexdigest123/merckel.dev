@@ -6,6 +6,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NAME_LENGTH = 100;
 const MAX_MAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 4000;
+const DEFAULT_SMTP_PORT = 587;
 
 export interface ContactInput {
 	name: string;
@@ -46,12 +47,18 @@ export function isSmtpConfigured(): boolean {
 	return Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS);
 }
 
+/** Parses `SMTP_PORT`; an unset or empty value (e.g. `SMTP_PORT=`) falls back to 587. */
+export function resolveSmtpPort(value: string | undefined): number {
+	const port = Number(value);
+	return Number.isInteger(port) && port > 0 && port <= 65_535 ? port : DEFAULT_SMTP_PORT;
+}
+
 export async function sendContactMessage(input: ContactInput): Promise<void> {
 	if (!isSmtpConfigured()) {
 		throw new Error('smtp is not configured');
 	}
 
-	const port = Number(env.SMTP_PORT ?? 587);
+	const port = resolveSmtpPort(env.SMTP_PORT);
 	const transporter = nodemailer.createTransport({
 		host: env.SMTP_HOST,
 		port,

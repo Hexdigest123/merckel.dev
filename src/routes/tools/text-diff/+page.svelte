@@ -1,168 +1,109 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { diffLines, type Change } from 'diff';
+	import ToolHeader from '$lib/components/tools/ToolHeader.svelte';
+	import { useLocale } from '$lib/i18n/locale.svelte';
+	import { CopyFeedback } from '$lib/utils/clipboard.svelte';
+	import { computeTextDiff, formatTextDiff } from '$lib/utils/text-diff';
+	import { trackToolUsage } from '$lib/utils/tool-usage';
 
-	type DiffKind = 'added' | 'removed' | 'unchanged';
+	const de = {
+		original: 'Original',
+		modified: 'Geändert',
+		originalPlaceholder: 'Originaltext einfügen...',
+		modifiedPlaceholder: 'Geänderten Text einfügen...',
+		copyDiff: 'Diff-Ausgabe kopieren',
+		additions: (count: number) => `${count} ${count === 1 ? 'Hinzufügung' : 'Hinzufügungen'}`,
+		deletions: (count: number) => `${count} ${count === 1 ? 'Löschung' : 'Löschungen'}`,
+		empty: 'Text in beide Felder einfügen, um einen Live-Vergleich zu sehen.',
+		identical: 'Keine Unterschiede – beide Texte sind identisch.',
+		originalLine: 'Zeile im Original',
+		modifiedLine: 'Zeile in der geänderten Fassung',
+		addedLine: 'Hinzugefügt:',
+		removedLine: 'Entfernt:'
+	};
 
-	interface DiffLine {
-		kind: DiffKind;
-		text: string;
-		prefix: '+' | '-' | ' ';
-		lineNumber: number;
-		key: string;
-	}
+	const en: typeof de = {
+		original: 'Original',
+		modified: 'Modified',
+		originalPlaceholder: 'Paste the original text...',
+		modifiedPlaceholder: 'Paste the modified text...',
+		copyDiff: 'Copy diff output',
+		additions: (count: number) => `${count} ${count === 1 ? 'addition' : 'additions'}`,
+		deletions: (count: number) => `${count} ${count === 1 ? 'deletion' : 'deletions'}`,
+		empty: 'Paste text into both fields to see a live comparison.',
+		identical: 'No differences – both texts are identical.',
+		originalLine: 'Line in the original',
+		modifiedLine: 'Line in the modified version',
+		addedLine: 'Added:',
+		removedLine: 'Removed:'
+	};
+
+	const COPY = { de, en };
+
+	const i18n = useLocale();
+	const clipboard = new CopyFeedback();
+
+	let t = $derived(COPY[i18n.current]);
 
 	let originalText = $state('');
 	let modifiedText = $state('');
-	let hasTrackedUsage = $state(false);
-	let isCopied = $state(false);
+	let copyFailed = $state(false);
 
-	function splitLines(value: string): string[] {
-		if (value.length === 0) {
-			return [];
-		}
+	let hasBothInputs = $derived(originalText.trim().length > 0 && modifiedText.trim().length > 0);
+	let diff = $derived(
+		hasBothInputs
+			? computeTextDiff(originalText, modifiedText)
+			: { lines: [], additions: 0, deletions: 0 }
+	);
+	let hasDifferences = $derived(diff.additions > 0 || diff.deletions > 0);
+	let diffOutput = $derived(hasDifferences ? formatTextDiff(diff.lines) : '');
 
-		const lines = value.split('\n');
-		if (lines.at(-1) === '') {
-			lines.pop();
-		}
-
-		return lines;
-	}
-
-	function countChunkLines(value: string): number {
-		return splitLines(value).length;
-	}
-
-	function getChunkKind(chunk: Change): DiffKind {
-		if (chunk.added) {
-			return 'added';
-		}
-
-		if (chunk.removed) {
-			return 'removed';
-		}
-
-		return 'unchanged';
-	}
-
-	async function trackUsage() {
-		if (!browser) {
-			return;
-		}
-
-		await fetch('/api/tools/usage', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ toolId: 'text-diff' })
-		});
-	}
-
-	let chunks = $derived.by(() => {
-		if (!originalText.trim() || !modifiedText.trim()) {
-			return [];
-		}
-
-		return diffLines(originalText, modifiedText);
-	});
+	$effect(() => () => clipboard.dispose());
 
 	$effect(() => {
-		if (hasTrackedUsage || chunks.length === 0) {
-			return;
+		if (hasBothInputs) {
+			trackToolUsage('text-diff');
 		}
-
-		hasTrackedUsage = true;
-		void trackUsage();
 	});
 
 	function clearAll() {
 		originalText = '';
 		modifiedText = '';
-		isCopied = false;
+		copyFailed = false;
+		clipboard.reset();
 	}
 
-	const additions = $derived(
-		chunks.reduce((total, chunk) => total + (chunk.added ? countChunkLines(chunk.value) : 0), 0)
-	);
-
-	const deletions = $derived(
-		chunks.reduce((total, chunk) => total + (chunk.removed ? countChunkLines(chunk.value) : 0), 0)
-	);
-
-	const hasDifferences = $derived(additions > 0 || deletions > 0);
-
-	const lines = $derived.by(() => {
-		const output: DiffLine[] = [];
-		let lineNumber = 1;
-
-		chunks.forEach((chunk, chunkIndex) => {
-			const kind = getChunkKind(chunk);
-			const prefix = kind === 'added' ? '+' : kind === 'removed' ? '-' : ' ';
-			const lineItems = splitLines(chunk.value);
-
-			lineItems.forEach((line, lineIndex) => {
-				output.push({
-					kind,
-					text: line,
-					prefix,
-					lineNumber,
-					key: `${chunkIndex}-${lineIndex}-${kind}-${lineNumber}`
-				});
-				lineNumber += 1;
-			});
-		});
-
-		return output;
-	});
-
-	const diffOutput = $derived(lines.map((line) => `${line.prefix} ${line.text}`).join('\n'));
-
 	async function copyDiffOutput() {
-		if (!browser || diffOutput.length === 0) {
-			return;
-		}
-
-		await navigator.clipboard.writeText(diffOutput);
-		isCopied = true;
-		setTimeout(() => {
-			isCopied = false;
-		}, 1800);
+		if (!diffOutput) return;
+		copyFailed = !(await clipboard.copy(diffOutput));
 	}
 </script>
 
 <section class="mx-auto w-full max-w-4xl space-y-8">
-	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-			Text-Vergleich
-		</h1>
-		<p class="text-slate-400">
-			Zwei Texte nebeneinander vergleichen mit hervorgehobenen Unterschieden.
-		</p>
-	</header>
+	<ToolHeader toolId="text-diff" />
 
 	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="grid gap-4 lg:grid-cols-2">
 			<div class="space-y-2">
-				<label class="text-sm font-medium text-slate-700" for="original-text">Original</label>
+				<label class="text-sm font-medium text-slate-700" for="original-text">{t.original}</label>
 				<textarea
 					id="original-text"
 					rows="12"
 					bind:value={originalText}
+					spellcheck="false"
 					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-					placeholder="Originaltext einfügen..."
+					placeholder={t.originalPlaceholder}
 				></textarea>
 			</div>
 
 			<div class="space-y-2">
-				<label class="text-sm font-medium text-slate-700" for="modified-text">Geändert</label>
+				<label class="text-sm font-medium text-slate-700" for="modified-text">{t.modified}</label>
 				<textarea
 					id="modified-text"
 					rows="12"
 					bind:value={modifiedText}
+					spellcheck="false"
 					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-					placeholder="Geänderten Text einfügen..."
+					placeholder={t.modifiedPlaceholder}
 				></textarea>
 			</div>
 		</div>
@@ -173,57 +114,68 @@
 				onclick={clearAll}
 				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-500"
 			>
-				Löschen
+				{i18n.t('clear')}
 			</button>
 			<button
 				type="button"
 				onclick={copyDiffOutput}
-				disabled={diffOutput.length === 0}
+				disabled={!diffOutput}
 				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition enabled:hover:border-purple-400 enabled:hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{isCopied ? 'Kopiert' : 'Diff-Ausgabe kopieren'}
+				{clipboard.isCopied() ? i18n.t('copied') : t.copyDiff}
 			</button>
 		</div>
+		{#if copyFailed}
+			<p role="alert" class="mt-3 text-sm text-rose-600">{i18n.t('clipboardFailed')}</p>
+		{/if}
 	</section>
 
 	<section class="space-y-3 rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		{#if hasDifferences}
-			<div class="flex flex-wrap items-center gap-2">
+			<div class="flex flex-wrap items-center gap-2" role="status">
 				<span
-					class="rounded-full border border-emerald-400/50 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300"
+					class="rounded-full border border-emerald-400/50 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
 				>
-					{additions} Hinzufügungen
+					{t.additions(diff.additions)}
 				</span>
 				<span
-					class="rounded-full border border-rose-400/50 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-600"
+					class="rounded-full border border-rose-400/50 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700"
 				>
-					{deletions} Löschungen
+					{t.deletions(diff.deletions)}
 				</span>
 			</div>
 		{/if}
 
 		<div class="max-h-[30rem] overflow-y-auto rounded-lg border border-slate-200 bg-slate-50">
-			{#if !originalText.trim() || !modifiedText.trim()}
-				<p class="px-4 py-3 font-mono text-sm text-slate-400">
-					Text in beide Felder einfügen, um einen Live-Vergleich zu sehen.
-				</p>
-			{:else if lines.length === 0}
-				<p class="px-4 py-3 font-mono text-sm text-slate-400">Keine Unterschiede.</p>
+			{#if !hasBothInputs}
+				<p class="px-4 py-3 font-mono text-sm text-slate-500">{t.empty}</p>
+			{:else if !hasDifferences}
+				<p class="px-4 py-3 font-mono text-sm text-slate-600" role="status">{t.identical}</p>
 			{:else}
-				{#each lines as line (line.key)}
+				{#each diff.lines as line (line.key)}
 					<div
 						class={`flex items-start px-4 py-0.5 font-mono text-sm leading-6 ${
 							line.kind === 'added'
-								? 'border-l-2 border-emerald-400 bg-emerald-500/10 text-emerald-300'
+								? 'border-l-2 border-emerald-500 bg-emerald-50 text-emerald-800'
 								: line.kind === 'removed'
-									? 'border-l-2 border-rose-400 bg-rose-500/10 text-rose-600'
-									: 'text-slate-400'
+									? 'border-l-2 border-rose-500 bg-rose-50 text-rose-800'
+									: 'border-l-2 border-transparent text-slate-600'
 						}`}
 					>
-						<span class="w-12 shrink-0 pr-3 text-right text-slate-500 select-none"
-							>{line.lineNumber}</span
+						<span
+							class="w-10 shrink-0 pr-2 text-right text-slate-400 select-none"
+							title={t.originalLine}>{line.oldLineNumber ?? ''}</span
 						>
-						<span class="w-6 shrink-0 text-center select-none">{line.prefix}</span>
+						<span
+							class="w-10 shrink-0 pr-2 text-right text-slate-400 select-none"
+							title={t.modifiedLine}>{line.newLineNumber ?? ''}</span
+						>
+						<span class="w-6 shrink-0 text-center select-none" aria-hidden="true"
+							>{line.prefix}</span
+						>
+						{#if line.kind !== 'unchanged'}
+							<span class="sr-only">{line.kind === 'added' ? t.addedLine : t.removedLine}</span>
+						{/if}
 						<span class="min-w-0 flex-1 break-words whitespace-pre-wrap">{line.text}</span>
 					</div>
 				{/each}

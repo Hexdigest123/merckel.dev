@@ -31,7 +31,7 @@
 							<a
 								href={contribution.url}
 								target="_blank"
-								rel="noreferrer"
+								rel="external noreferrer"
 								class="font-sans text-base font-semibold text-slate-900 hover:text-purple-600 sm:text-lg"
 							>
 								{contribution.title}
@@ -60,7 +60,7 @@
 			<a
 				href={data.profileUrl}
 				target="_blank"
-				rel="noreferrer"
+				rel="external noreferrer"
 				class="inline-block text-sm text-purple-600 hover:text-purple-700"
 			>
 				{localizeGithubProfileLabel(i18n, data.profileLabel)}

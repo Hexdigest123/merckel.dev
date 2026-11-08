@@ -1,7 +1,12 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { untrack } from 'svelte';
+	import ToolHeader from '$lib/components/tools/ToolHeader.svelte';
+	import { useLocale } from '$lib/i18n/locale.svelte';
+	import { CopyFeedback } from '$lib/utils/clipboard.svelte';
+	import { trackToolUsage } from '$lib/utils/tool-usage';
 
 	type ChannelKey = 'r' | 'g' | 'b';
+	type PaletteId = 'tones' | 'analogous' | 'complementary' | 'triad';
 
 	interface RGB {
 		r: number;
@@ -29,20 +34,61 @@
 	}
 
 	interface PaletteGroup {
-		id: string;
-		label: string;
+		id: PaletteId;
 		colors: string[];
 	}
 
 	const CHANNELS: ChannelKey[] = ['r', 'g', 'b'];
 
-	let { data }: { data: { title: string } } = $props();
+	const de = {
+		input: 'Eingabe',
+		inputPlaceholder: '#8B5CF6 oder rgb(139, 92, 246)',
+		parseError: 'Ungültiges Format. Erlaubt: HEX, rgb(...), hsl(...), hsv(...), cmyk(...).',
+		channels: { r: 'Rot', g: 'Grün', b: 'Blau' } satisfies Record<ChannelKey, string>,
+		slider: (channel: string) => `${channel}-Regler`,
+		preview: 'Vorschau',
+		colorPicker: 'Farbwähler',
+		copyHex: (hex: string) => `${hex} kopieren`,
+		paletteGenerator: 'Palettengenerator',
+		palettes: {
+			tones: 'Tonwerte',
+			analogous: 'Analog',
+			complementary: 'Komplementär',
+			triad: 'Triade'
+		} satisfies Record<PaletteId, string>,
+		applyColor: (color: string) => `Farbe ${color} anwenden`
+	};
+
+	const en: typeof de = {
+		input: 'Input',
+		inputPlaceholder: '#8B5CF6 or rgb(139, 92, 246)',
+		parseError: 'Invalid format. Supported: HEX, rgb(...), hsl(...), hsv(...), cmyk(...).',
+		channels: { r: 'Red', g: 'Green', b: 'Blue' },
+		slider: (channel: string) => `${channel} slider`,
+		preview: 'Preview',
+		colorPicker: 'Color picker',
+		copyHex: (hex: string) => `Copy ${hex}`,
+		paletteGenerator: 'Palette generator',
+		palettes: {
+			tones: 'Tones',
+			analogous: 'Analogous',
+			complementary: 'Complementary',
+			triad: 'Triad'
+		},
+		applyColor: (color: string) => `Apply color ${color}`
+	};
+
+	const COPY = { de, en };
+
+	const i18n = useLocale();
+	const clipboard = new CopyFeedback();
+
+	let t = $derived(COPY[i18n.current]);
 
 	let colorInput = $state('#8b5cf6');
 	let currentRgb = $state<RGB>({ r: 139, g: 92, b: 246 });
-	let parseError = $state('');
-	let copiedKey = $state<string | null>(null);
-	let hasInitializedTracking = false;
+	let hasParseError = $state(false);
+	let copyFailed = $state(false);
 
 	function clamp(value: number, min: number, max: number): number {
 		return Math.min(max, Math.max(min, value));
@@ -335,29 +381,26 @@
 		const nextRgb = { ...currentRgb, [channel]: clamp(parsed, 0, 255) };
 		currentRgb = nextRgb;
 		colorInput = rgbToHex(nextRgb);
-		parseError = '';
+		hasParseError = false;
 	}
 
-	function buildPaletteGroup(base: HSL): PaletteGroup[] {
+	function buildPaletteGroups(base: HSL): PaletteGroup[] {
 		const makeColor = (hue: number, saturation: number, lightness: number): string =>
 			rgbToHex(hslToRgb({ h: hue, s: saturation, l: lightness }));
 
 		return [
 			{
 				id: 'tones',
-				label: 'Tonwerte',
 				colors: [18, 34, 50, 66, 82].map((lightness) => makeColor(base.h, base.s, lightness))
 			},
 			{
 				id: 'analogous',
-				label: 'Analog',
 				colors: [-42, -22, 0, 22, 42].map((offset) =>
 					makeColor(base.h + offset, clamp(base.s, 28, 92), clamp(base.l, 22, 78))
 				)
 			},
 			{
 				id: 'complementary',
-				label: 'Komplementaer',
 				colors: [
 					makeColor(base.h, clamp(base.s + 8, 20, 100), 28),
 					makeColor(base.h, base.s, 46),
@@ -368,7 +411,6 @@
 			},
 			{
 				id: 'triad',
-				label: 'Triade',
 				colors: [
 					makeColor(base.h, clamp(base.s + 6, 18, 100), 48),
 					makeColor(base.h + 120, clamp(base.s, 18, 100), 42),
@@ -381,25 +423,17 @@
 	}
 
 	async function copyValue(key: string, value: string) {
-		if (!browser) {
-			return;
-		}
-
-		await navigator.clipboard.writeText(value);
-		copiedKey = key;
-		setTimeout(() => {
-			copiedKey = null;
-		}, 1800);
+		copyFailed = !(await clipboard.copy(value, key));
 	}
 
 	$effect(() => {
 		const parsed = parseColor(colorInput);
 		if (!parsed) {
-			parseError = 'Ungueltiges Format. Erlaubt: HEX, rgb(...), hsl(...), hsv(...), cmyk(...).';
+			hasParseError = true;
 			return;
 		}
 
-		parseError = '';
+		hasParseError = false;
 		currentRgb = parsed;
 	});
 
@@ -427,54 +461,35 @@
 		{ id: 'cmyk', label: 'CMYK', value: cmykValue }
 	]);
 
-	const paletteGroups = $derived(buildPaletteGroup(hslValueRaw));
+	const paletteGroups = $derived(buildPaletteGroups(hslValueRaw));
+	const initialHex = untrack(() => hexValue);
+
+	$effect(() => () => clipboard.dispose());
 
 	$effect(() => {
-		if (!browser || parseError || hexValue.length === 0) {
-			return;
+		if (hexValue !== initialHex) {
+			trackToolUsage('color-converter');
 		}
-
-		if (!hasInitializedTracking) {
-			hasInitializedTracking = true;
-			return;
-		}
-
-		const timeout = setTimeout(() => {
-			void fetch('/api/tools/usage', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ toolId: 'color-converter' })
-			}).catch(() => undefined);
-		}, 2000);
-
-		return () => {
-			clearTimeout(timeout);
-		};
 	});
 </script>
 
 <section class="mx-auto w-full max-w-3xl space-y-8">
-	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-			{data.title}
-		</h1>
-		<p class="text-slate-400">
-			Farben zwischen HEX, RGB, HSL, HSV und CMYK konvertieren und passende Paletten erzeugen.
-		</p>
-	</header>
+	<ToolHeader toolId="color-converter" />
 
 	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
-		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr),minmax(0,16rem)]">
+		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,16rem)]">
 			<div class="space-y-4">
-				<label class="space-y-2" for="color-input">
-					<span class="text-sm font-medium text-slate-700">Eingabe</span>
+				<label class="block space-y-2" for="color-input">
+					<span class="block text-sm font-medium text-slate-700">{t.input}</span>
 					<input
 						id="color-input"
 						type="text"
 						bind:value={colorInput}
-						placeholder="#8B5CF6 oder rgb(139, 92, 246)"
+						placeholder={t.inputPlaceholder}
+						autocomplete="off"
+						spellcheck="false"
+						aria-invalid={hasParseError ? 'true' : undefined}
+						aria-describedby={hasParseError ? 'color-input-error' : undefined}
 						class="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
 					/>
 				</label>
@@ -483,15 +498,19 @@
 					{#each CHANNELS as channel (channel)}
 						<div class="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
 							<div class="flex items-center justify-between">
-								<span class="text-xs font-medium tracking-[0.12em] text-slate-400 uppercase"
-									>{channel}</span
+								<label
+									for={`channel-${channel}`}
+									class="text-xs font-medium tracking-[0.12em] text-slate-500 uppercase"
+									title={t.channels[channel]}>{channel}</label
 								>
 								<input
+									id={`channel-${channel}`}
 									type="number"
 									min="0"
 									max="255"
 									value={currentRgb[channel]}
-									oninput={(event) => setChannel(channel as ChannelKey, event.currentTarget.value)}
+									aria-label={t.channels[channel]}
+									oninput={(event) => setChannel(channel, event.currentTarget.value)}
 									class="w-18 rounded-md border border-slate-200 bg-white px-2 py-1 text-right font-mono text-sm text-slate-700 focus:border-purple-400/80 focus:outline-none"
 								/>
 							</div>
@@ -500,24 +519,27 @@
 								min="0"
 								max="255"
 								value={currentRgb[channel]}
-								oninput={(event) => setChannel(channel as ChannelKey, event.currentTarget.value)}
-								class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-purple-400"
+								aria-label={t.slider(t.channels[channel])}
+								oninput={(event) => setChannel(channel, event.currentTarget.value)}
+								class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-purple-500"
 							/>
 						</div>
 					{/each}
 				</div>
 
-				{#if parseError}
+				{#if hasParseError}
 					<p
-						class="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-200"
+						id="color-input-error"
+						role="alert"
+						class="rounded-lg border border-amber-400/60 bg-amber-50 px-3 py-2 text-sm text-amber-800"
 					>
-						{parseError}
+						{t.parseError}
 					</p>
 				{/if}
 			</div>
 
 			<div class="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
-				<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Vorschau</p>
+				<h2 class="text-xs tracking-[0.16em] text-slate-500 uppercase">{t.preview}</h2>
 				<div
 					class="h-36 w-full rounded-lg border border-slate-200"
 					style="background-color: {hexValue};"
@@ -525,17 +547,18 @@
 				<div class="flex items-center gap-2">
 					<input
 						type="color"
-						value={hexValue}
+						value={hexValue.toLowerCase()}
 						oninput={(event) => (colorInput = event.currentTarget.value)}
 						class="h-10 w-14 cursor-pointer rounded-md border border-slate-200 bg-transparent"
-						aria-label="Farbwaehler"
+						aria-label={t.colorPicker}
 					/>
 					<button
 						type="button"
 						onclick={() => copyValue('preview-hex', hexValue)}
+						aria-label={t.copyHex(hexValue)}
 						class="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left font-mono text-sm text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 					>
-						{copiedKey === 'preview-hex' ? 'Kopiert' : hexValue}
+						{clipboard.isCopied('preview-hex') ? i18n.t('copied') : hexValue}
 					</button>
 				</div>
 			</div>
@@ -553,39 +576,47 @@
 					<button
 						type="button"
 						onclick={() => copyValue(item.id, item.value)}
+						aria-label={`${i18n.t('copy')}: ${item.label}`}
 						class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 					>
-						{copiedKey === item.id ? 'Kopiert' : 'Kopieren'}
+						{clipboard.isCopied(item.id) ? i18n.t('copied') : i18n.t('copy')}
 					</button>
 				</div>
 			{/each}
 		</div>
+
+		{#if copyFailed}
+			<p role="alert" class="mt-3 text-sm text-rose-600">{i18n.t('clipboardFailed')}</p>
+		{/if}
 	</section>
 
 	<section class="space-y-4 rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-600 uppercase">
-			Palette Generator
+			{t.paletteGenerator}
 		</h2>
 		<div class="grid gap-4">
 			{#each paletteGroups as palette (palette.id)}
 				<div class="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-4">
-					<p class="text-xs tracking-[0.12em] text-slate-400 uppercase">{palette.label}</p>
+					<h3 class="text-xs tracking-[0.12em] text-slate-500 uppercase">
+						{t.palettes[palette.id]}
+					</h3>
 					<div class="grid gap-2 sm:grid-cols-5">
-						{#each palette.colors as color, index (`${palette.id}-${color}-${index}`)}
+						{#each palette.colors as color, index (`${palette.id}-${index}`)}
 							<div class="space-y-2">
 								<button
 									type="button"
 									onclick={() => (colorInput = color)}
 									class="h-14 w-full rounded-md border border-slate-200 transition hover:scale-[1.02]"
 									style="background-color: {color};"
-									aria-label={`Farbe ${color} anwenden`}
+									aria-label={t.applyColor(color)}
 								></button>
 								<button
 									type="button"
 									onclick={() => copyValue(`${palette.id}-${index}`, color)}
+									aria-label={t.copyHex(color)}
 									class="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-mono text-xs text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 								>
-									{copiedKey === `${palette.id}-${index}` ? 'Kopiert' : color}
+									{clipboard.isCopied(`${palette.id}-${index}`) ? i18n.t('copied') : color}
 								</button>
 							</div>
 						{/each}

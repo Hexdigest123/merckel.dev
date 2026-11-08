@@ -1,42 +1,62 @@
-# sv
+# merckel.dev
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Personal website of Pierre-Maurice Merckel: portfolio, pentest writeups and a collection of free
+browser-based developer tools. Built with SvelteKit 2, Svelte 5, Tailwind CSS v4 and PostgreSQL.
+The site is available in English and German.
 
-## Creating a project
+## Getting started
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
+Requirements: [Bun](https://bun.sh) and Docker (for the local database).
 
 ```sh
-# recreate this project
-bun x sv create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" playwright tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:node" --install bun .
+bun install
+cp .env.example .env    # adjust DATABASE_URL, SMTP and GitHub settings as needed
+bun run dev:db          # start PostgreSQL via docker compose
+bun run db:migrate      # apply the migrations in ./drizzle
+bun run dev
 ```
 
-## Developing
+The app also runs without a database: short links are then unavailable and tool usage counts
+stay at zero.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Scripts
 
-```sh
-npm run dev
+| Command               | Description                           |
+| --------------------- | ------------------------------------- |
+| `bun run dev`         | Start the dev server                  |
+| `bun run build`       | Production build (`build/`)           |
+| `bun run preview`     | Preview the production build          |
+| `bun run check`       | Type-check with `svelte-check`        |
+| `bun run lint`        | Prettier + ESLint                     |
+| `bun run format`      | Format all files                      |
+| `bun run test`        | Run the Vitest suite once             |
+| `bun run test:unit`   | Vitest in watch mode                  |
+| `bun run db:generate` | Generate a migration from `schema.ts` |
+| `bun run db:migrate`  | Apply migrations                      |
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+## Configuration
 
-## Building
+All environment variables are documented in [`.env.example`](.env.example). The important ones
+for production:
 
-To create a production version of your app:
+- `ORIGIN` — public URL of the site (required for SvelteKit's CSRF protection).
+- `DATABASE_URL` — PostgreSQL connection string.
+- `XFF_DEPTH` — number of trusted reverse proxies in front of the app. Rate limiting reads the
+  client address from `X-Forwarded-For`, counting this many entries from the right.
+- `SMTP_*`, `CONTACT_TO` — mail delivery for the contact form.
+- `GITHUB_TOKEN` — optional, raises the GitHub API rate limit for the open-source section.
 
-```sh
-npm run build
-```
+## Deployment
 
-You can preview the production build with `npm run preview`.
+The site runs as a Docker container (`Dockerfile`, `docker-compose.yml`) behind a reverse proxy.
+Migrations are applied automatically when the container starts. Deployments are triggered
+manually via the "Docker Deployment" GitHub Actions workflow on the self-hosted runner.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Content
+
+- Projects, experience, testimonials and tools: `src/lib/data/`
+- Pentest writeups: Markdown files with frontmatter in `src/content/pentesting/`
+  (`published: true` makes them visible; `lang` defaults to `de`)
+- UI translations: `src/lib/i18n/messages.ts`
+
+See [`AGENTS.md`](AGENTS.md) for architecture and coding conventions.

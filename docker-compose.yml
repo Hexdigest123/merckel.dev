@@ -4,7 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-merckel}
+      # Postgres always listens on 5432 inside the compose network.
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-merckel}
       - PORT=3000
       - ORIGIN=${ORIGIN:-http://localhost:3000}
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
@@ -16,6 +17,8 @@ services:
       - CONTACT_TO=${CONTACT_TO:-}
       - DB_MAX_RETRIES=${DB_MAX_RETRIES:-3}
       - DB_RETRY_BASE_DELAY_MS=${DB_RETRY_BASE_DELAY_MS:-200}
+      # Number of trusted reverse proxies that append to X-Forwarded-For (used for rate limiting).
+      - XFF_DEPTH=${XFF_DEPTH:-1}
     ports:
       - '2005:3000'
     depends_on:

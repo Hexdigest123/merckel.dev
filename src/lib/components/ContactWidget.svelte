@@ -1,16 +1,27 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { tick } from 'svelte';
 	import { useLocale } from '$lib/i18n/locale.svelte';
+	import type { MessageKey } from '$lib/i18n/messages';
 
 	const i18n = useLocale();
+
+	/** Maps API status codes to user-facing (localized) messages. */
+	const ERROR_MESSAGES: Record<number, MessageKey> = {
+		400: 'contactInvalid',
+		429: 'contactRateLimited',
+		503: 'contactUnavailable'
+	};
 
 	let isOpen = $state(false);
 	let name = $state('');
 	let mail = $state('');
 	let message = $state('');
 	let isSubmitting = $state(false);
-	let errorMessage = $state('');
+	let errorKey = $state<MessageKey | null>(null);
 	let isSent = $state(false);
+	let toggleButton = $state<HTMLButtonElement | null>(null);
+	let nameInput = $state<HTMLInputElement | null>(null);
 
 	let canSubmit = $derived(
 		name.trim().length > 0 && mail.trim().length > 0 && message.trim().length > 0 && !isSubmitting
@@ -34,14 +45,17 @@
 		};
 	});
 
-	function openPanel() {
+	async function openPanel() {
 		isOpen = true;
 		isSent = false;
-		errorMessage = '';
+		errorKey = null;
+		await tick();
+		nameInput?.focus();
 	}
 
 	function closePanel() {
 		isOpen = false;
+		toggleButton?.focus();
 	}
 
 	function togglePanel() {
@@ -49,12 +63,12 @@
 			closePanel();
 			return;
 		}
-		openPanel();
+		void openPanel();
 	}
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		errorMessage = '';
+		errorKey = null;
 		isSent = false;
 
 		if (!canSubmit) {
@@ -74,12 +88,8 @@
 				})
 			});
 
-			const body = (await response.json().catch(() => null)) as {
-				error?: string;
-			} | null;
-
 			if (!response.ok) {
-				errorMessage = body?.error ?? i18n.t('contactError');
+				errorKey = ERROR_MESSAGES[response.status] ?? 'contactError';
 				return;
 			}
 
@@ -88,7 +98,7 @@
 			mail = '';
 			message = '';
 		} catch {
-			errorMessage = i18n.t('contactNetwork');
+			errorKey = 'contactNetwork';
 		} finally {
 			isSubmitting = false;
 		}
@@ -98,30 +108,41 @@
 <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
 	{#if isOpen}
 		<section
+			id="contact-widget-panel"
 			class="w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-slate-200 bg-white p-4 shadow-lg"
-			aria-label={i18n.t('contactForm')}
+			aria-labelledby="contact-widget-title"
 		>
 			<div class="mb-3 flex items-start justify-between gap-3">
-				<h2 class="font-sans text-base font-semibold text-slate-900">{i18n.t('contactSend')}</h2>
+				<h2 id="contact-widget-title" class="font-sans text-base font-semibold text-slate-900">
+					{i18n.t('contactSend')}
+				</h2>
 				<button
 					type="button"
-					class="rounded-md p-1 text-slate-400 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+					class="rounded-md p-1 text-slate-500 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 					onclick={closePanel}
 					aria-label={i18n.t('contactClose')}
 				>
-					<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						class="h-4 w-4"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						aria-hidden="true"
+					>
 						<path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
 					</svg>
 				</button>
 			</div>
 
 			{#if isSent}
-				<p class="text-sm text-slate-600">{i18n.t('contactThanks')}</p>
+				<p role="status" class="text-sm text-slate-600">{i18n.t('contactThanks')}</p>
 			{:else}
 				<form class="space-y-3" onsubmit={handleSubmit} novalidate>
 					<label class="block space-y-1 text-sm text-slate-600" for="contact-name">
 						<span>{i18n.t('contactName')}</span>
 						<input
+							bind:this={nameInput}
 							id="contact-name"
 							name="name"
 							type="text"
@@ -160,8 +181,8 @@
 						></textarea>
 					</label>
 
-					{#if errorMessage}
-						<p role="alert" class="text-sm text-rose-600">{errorMessage}</p>
+					{#if errorKey}
+						<p role="alert" class="text-sm text-rose-600">{i18n.t(errorKey)}</p>
 					{/if}
 
 					<button
@@ -177,13 +198,22 @@
 	{/if}
 
 	<button
+		bind:this={toggleButton}
 		type="button"
 		class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-purple-500 text-white shadow-md transition-colors duration-150 hover:bg-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 		onclick={togglePanel}
 		aria-expanded={isOpen}
+		aria-controls={isOpen ? 'contact-widget-panel' : undefined}
 		aria-label={isOpen ? i18n.t('contactClose') : i18n.t('contactOpen')}
 	>
-		<svg class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+		<svg
+			class="h-10 w-10"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1.8"
+			aria-hidden="true"
+		>
 			<rect x="3" y="5" width="18" height="14" rx="2" />
 			<path d="m4 7 8 6 8-6" />
 		</svg>

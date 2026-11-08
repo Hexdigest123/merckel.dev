@@ -53,9 +53,6 @@ export function calculateReadingTime(markdown: string): number {
  * Format reading time as a human-readable string.
  * Example: formatReadingTime(5) → "5 Min. Lesezeit"
  */
-export function formatReadingTime(
-	minutes: number,
-	template = '{minutes} Min. Lesezeit'
-): string {
+export function formatReadingTime(minutes: number, template = '{minutes} Min. Lesezeit'): string {
 	return template.replaceAll('{minutes}', String(minutes));
 }
