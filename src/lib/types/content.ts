@@ -2,6 +2,7 @@
  * Content type definitions for the portfolio
  * All interfaces are exported for use in data files and components
  */
+import type { Pathname } from '$app/types';
 
 export interface Project {
 	id: string;
@@ -32,7 +33,10 @@ export interface WebTool {
 	description: string;
 	icon: string;
 	category: 'utility' | 'developer';
-	path: string;
+	/** Route of the tool page; typed so links are checked against existing routes. */
+	path: Pathname;
+	/** Extra search terms for the command palette (both languages). */
+	keywords: string[];
 }
 
 export interface WebToolWithUsage extends WebTool {
@@ -56,6 +60,8 @@ export interface SocialLink {
 
 export interface SiteConfig {
 	name: string;
+	/** Canonical origin of the production site, without a trailing slash. */
+	url: string;
 	title: string;
 	subtitle: string;
 	bio: string;
@@ -89,6 +95,7 @@ export interface PentestingEntry {
 	slug: string;
 	title: string;
 	description: string;
+	/** ISO date (`YYYY-MM-DD`). */
 	date: string;
 	client: string;
 	scope: string;
@@ -96,5 +103,7 @@ export interface PentestingEntry {
 	published: boolean;
 	featured: boolean;
 	readTime: number;
+	/** Language of the writeup (frontmatter `lang`, defaults to German). */
+	lang: 'de' | 'en';
 	content?: string;
 }

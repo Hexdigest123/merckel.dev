@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { getContext, setContext } from 'svelte';
-import { DEFAULT_LOCALE } from './locale';
-import { messages, type Locale, type MessageKey } from './messages';
+import { DEFAULT_LOCALE, translate, type TranslationVars, type Translator } from './locale';
+import type { Locale, MessageKey } from './messages';
 
 export { isLocale, parseLocale, resolveLocale } from './locale';
 
@@ -9,7 +9,7 @@ const COOKIE_NAME = 'locale';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const CONTEXT_KEY = Symbol('locale');
 
-export class LocaleStore {
+export class LocaleStore implements Translator {
 	current = $state<Locale>(DEFAULT_LOCALE);
 
 	constructor(initial: Locale = DEFAULT_LOCALE) {
@@ -23,19 +23,12 @@ export class LocaleStore {
 		}
 
 		document.documentElement.lang = next;
-		document.cookie = `${COOKIE_NAME}=${next}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`;
+		const secure = window.location.protocol === 'https:' ? '; secure' : '';
+		document.cookie = `${COOKIE_NAME}=${next}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax${secure}`;
 	}
 
-	t(key: MessageKey, vars?: Record<string, string | number>): string {
-		let value: string = messages[this.current][key] ?? messages.de[key];
-		if (!vars) {
-			return value;
-		}
-
-		for (const [name, replacement] of Object.entries(vars)) {
-			value = value.replaceAll(`{${name}}`, String(replacement));
-		}
-		return value;
+	t(key: MessageKey, vars?: TranslationVars): string {
+		return translate(this.current, key, vars);
 	}
 }
 
@@ -48,5 +41,3 @@ export function createLocaleStore(initial: Locale): LocaleStore {
 export function useLocale(): LocaleStore {
 	return getContext<LocaleStore>(CONTEXT_KEY) ?? new LocaleStore(DEFAULT_LOCALE);
 }
-
-

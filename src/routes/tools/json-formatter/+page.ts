@@ -1,1 +1,3 @@
-export const load = () => ({ title: 'JSON Formatter & Validator' });
+import { createToolPageLoad } from '$lib/utils/tool-page';
+
+export const load = createToolPageLoad('json-formatter');

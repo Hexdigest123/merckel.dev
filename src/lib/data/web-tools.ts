@@ -8,7 +8,8 @@ export const webTools: WebTool[] = [
 		description: 'Lange URLs in kurze, teilbare Links umwandeln.',
 		icon: 'link',
 		category: 'utility',
-		path: '/tools/url-shortener'
+		path: '/tools/url-shortener',
+		keywords: ['shorten', 'link', 'url', 'short', 'kürzen', 'tool']
 	},
 	{
 		id: 'cron-generator',
@@ -17,7 +18,8 @@ export const webTools: WebTool[] = [
 		description: 'Cron-Zeitpläne visuell erstellen mit lesbarer Ausgabe.',
 		icon: 'clock',
 		category: 'developer',
-		path: '/tools/cron-generator'
+		path: '/tools/cron-generator',
+		keywords: ['cron', 'schedule', 'crontab', 'timer', 'zeitplan', 'tool']
 	},
 	{
 		id: 'text-diff',
@@ -26,7 +28,8 @@ export const webTools: WebTool[] = [
 		description: 'Zwei Texte nebeneinander vergleichen mit hervorgehobenen Unterschieden.',
 		icon: 'diff',
 		category: 'developer',
-		path: '/tools/text-diff'
+		path: '/tools/text-diff',
+		keywords: ['diff', 'compare', 'text', 'difference', 'vergleich', 'tool']
 	},
 	{
 		id: 'image-converter',
@@ -35,7 +38,8 @@ export const webTools: WebTool[] = [
 		description: 'Bilder zwischen PNG, JPG und WebP konvertieren — komplett im Browser.',
 		icon: 'image',
 		category: 'utility',
-		path: '/tools/image-converter'
+		path: '/tools/image-converter',
+		keywords: ['image', 'convert', 'png', 'jpg', 'webp', 'bild', 'tool']
 	},
 	{
 		id: 'qr-generator',
@@ -44,7 +48,8 @@ export const webTools: WebTool[] = [
 		description: 'Skalierbare SVG- oder PNG-QR-Codes für jede URL generieren.',
 		icon: 'qrcode',
 		category: 'utility',
-		path: '/tools/qr-generator'
+		path: '/tools/qr-generator',
+		keywords: ['qr', 'qrcode', 'barcode', 'scan', 'tool']
 	},
 	{
 		id: 'css-gradient',
@@ -53,7 +58,8 @@ export const webTools: WebTool[] = [
 		description: 'CSS-Verläufe visuell erstellen mit Live-Vorschau und kopierfertigem Code.',
 		icon: 'gradient',
 		category: 'developer',
-		path: '/tools/css-gradient'
+		path: '/tools/css-gradient',
+		keywords: ['gradient', 'css', 'verlauf', 'background', 'tool']
 	},
 	{
 		id: 'json-formatter',
@@ -62,7 +68,8 @@ export const webTools: WebTool[] = [
 		description: 'JSON formatieren, validieren und mit Syntaxhervorhebung anzeigen.',
 		icon: 'json',
 		category: 'developer',
-		path: '/tools/json-formatter'
+		path: '/tools/json-formatter',
+		keywords: ['json', 'format', 'validate', 'formatieren', 'tool']
 	},
 	{
 		id: 'color-converter',
@@ -72,7 +79,8 @@ export const webTools: WebTool[] = [
 			'Farben zwischen HEX, RGB, HSL, HSV und CMYK konvertieren und Farbpaletten generieren.',
 		icon: 'palette',
 		category: 'developer',
-		path: '/tools/color-converter'
+		path: '/tools/color-converter',
+		keywords: ['color', 'colour', 'farbe', 'convert', 'palette', 'hex', 'rgb', 'hsl', 'tool']
 	},
 	{
 		id: 'regex-tester',
@@ -81,7 +89,8 @@ export const webTools: WebTool[] = [
 		description: 'Reguläre Ausdrücke live testen mit Hervorhebung und Muster-Bibliothek.',
 		icon: 'regex',
 		category: 'developer',
-		path: '/tools/regex-tester'
+		path: '/tools/regex-tester',
+		keywords: ['regex', 'regexp', 'pattern', 'muster', 'test', 'match', 'tool']
 	},
 	{
 		id: 'markdown-preview',
@@ -90,6 +99,7 @@ export const webTools: WebTool[] = [
 		description: 'Markdown mit Live-Vorschau bearbeiten und als HTML kopieren.',
 		icon: 'markdown',
 		category: 'developer',
-		path: '/tools/markdown-preview'
+		path: '/tools/markdown-preview',
+		keywords: ['markdown', 'preview', 'md', 'html', 'editor', 'vorschau', 'tool']
 	}
 ];

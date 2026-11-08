@@ -1,1 +1,3 @@
-export const load = () => ({ title: 'Image Format Converter' });
+import { createToolPageLoad } from '$lib/utils/tool-page';
+
+export const load = createToolPageLoad('image-converter');

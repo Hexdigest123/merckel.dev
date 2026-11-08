@@ -1,50 +1,16 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { Marked } from 'marked';
-	import { markedHighlight } from 'marked-highlight';
-	import hljs from 'highlight.js/lib/core';
 	import DOMPurify from 'dompurify';
-	import 'highlight.js/styles/github-dark.css';
+	// Same light theme as the writeup pages: highlight.js styles are global, so two
+	// different themes would override each other after client-side navigation.
+	import 'highlight.js/styles/github.css';
+	import ToolHeader from '$lib/components/tools/ToolHeader.svelte';
+	import { useLocale } from '$lib/i18n/locale.svelte';
+	import { CopyFeedback } from '$lib/utils/clipboard.svelte';
+	import { renderMarkdown } from '$lib/utils/markdown';
+	import { trackToolUsage } from '$lib/utils/tool-usage';
 
-	import javascript from 'highlight.js/lib/languages/javascript';
-	import typescript from 'highlight.js/lib/languages/typescript';
-	import python from 'highlight.js/lib/languages/python';
-	import bash from 'highlight.js/lib/languages/bash';
-	import jsonLang from 'highlight.js/lib/languages/json';
-	import css from 'highlight.js/lib/languages/css';
-	import xml from 'highlight.js/lib/languages/xml';
-	import go from 'highlight.js/lib/languages/go';
-	import rust from 'highlight.js/lib/languages/rust';
-	import sql from 'highlight.js/lib/languages/sql';
-	import yaml from 'highlight.js/lib/languages/yaml';
-
-	hljs.registerLanguage('javascript', javascript);
-	hljs.registerLanguage('typescript', typescript);
-	hljs.registerLanguage('python', python);
-	hljs.registerLanguage('bash', bash);
-	hljs.registerLanguage('json', jsonLang);
-	hljs.registerLanguage('css', css);
-	hljs.registerLanguage('html', xml);
-	hljs.registerLanguage('xml', xml);
-	hljs.registerLanguage('go', go);
-	hljs.registerLanguage('rust', rust);
-	hljs.registerLanguage('sql', sql);
-	hljs.registerLanguage('yaml', yaml);
-	hljs.registerLanguage('svelte', xml);
-
-	const markedInstance = new Marked(
-		markedHighlight({
-			langPrefix: 'hljs language-',
-			highlight(code: string, lang: string) {
-				const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-				return hljs.highlight(code, { language }).value;
-			}
-		})
-	);
-
-	markedInstance.use({ gfm: true, breaks: true });
-
-	const SAMPLE_MARKDOWN = `# Markdown-Vorschau Demo
+	const SAMPLE_DE = `# Markdown-Vorschau Demo
 
 Das ist ein **fetter Text**, *kursiver Text* und ~~durchgestrichener Text~~.
 
@@ -52,7 +18,7 @@ Das ist ein **fetter Text**, *kursiver Text* und ~~durchgestrichener Text~~.
 
 - [x] Markdown-Parser integrieren
 - [x] Live-Vorschau implementieren
-- [ ] Weitere Funktionen hinzuf\u00FCgen
+- [ ] Weitere Funktionen hinzufügen
 
 ## Code-Beispiel
 
@@ -77,12 +43,12 @@ function begruessung(b: Benutzer): string {
 
 ## Blockzitat
 
-> Einfachheit ist die h\u00F6chste Stufe der Vollendung.
-> \u2014 Leonardo da Vinci
+> Einfachheit ist die höchste Stufe der Vollendung.
+> — Leonardo da Vinci
 
 ## Links
 
-Besuche [GitHub](https://github.com) f\u00FCr mehr Informationen.
+Besuche [GitHub](https://github.com) für mehr Informationen.
 
 ---
 
@@ -97,72 +63,130 @@ Inline-Code: \`const x = 42;\`
 3. Dritter Punkt
 `;
 
+	const SAMPLE_EN = `# Markdown Preview Demo
+
+This is **bold text**, *italic text* and ~~strikethrough text~~.
+
+## Task list
+
+- [x] Integrate a Markdown parser
+- [x] Implement the live preview
+- [ ] Add more features
+
+## Code example
+
+\`\`\`typescript
+interface User {
+  name: string;
+  age: number;
+}
+
+function greet(user: User): string {
+  return \`Hello, \${user.name}!\`;
+}
+\`\`\`
+
+## Table
+
+| Language   | Typing   | Popularity |
+|------------|----------|------------|
+| TypeScript | Static   | Very high  |
+| Python     | Dynamic  | Very high  |
+| Rust       | Static   | Rising     |
+
+## Blockquote
+
+> Simplicity is the ultimate sophistication.
+> — Leonardo da Vinci
+
+## Links
+
+Visit [GitHub](https://github.com) for more information.
+
+---
+
+Inline code: \`const x = 42;\`
+
+### Nested list
+
+1. First item
+   - Sub-item A
+   - Sub-item B
+2. Second item
+3. Third item
+`;
+
+	const de = {
+		sample: SAMPLE_DE,
+		loadSample: 'Beispiel laden',
+		copyHtml: 'HTML kopieren',
+		copyMarkdown: 'Markdown kopieren',
+		input: 'Markdown-Eingabe',
+		inputPlaceholder: 'Markdown hier eingeben...',
+		words: (count: number) => `${count} ${count === 1 ? 'Wort' : 'Wörter'}`,
+		characters: (count: number) => `${count} Zeichen`,
+		preview: 'Vorschau',
+		previewEmpty: 'Markdown eingeben, um die Vorschau zu sehen.'
+	};
+
+	const en: typeof de = {
+		sample: SAMPLE_EN,
+		loadSample: 'Load sample',
+		copyHtml: 'Copy HTML',
+		copyMarkdown: 'Copy Markdown',
+		input: 'Markdown input',
+		inputPlaceholder: 'Type Markdown here...',
+		words: (count: number) => `${count} ${count === 1 ? 'word' : 'words'}`,
+		characters: (count: number) => `${count} ${count === 1 ? 'character' : 'characters'}`,
+		preview: 'Preview',
+		previewEmpty: 'Type some Markdown to see the preview.'
+	};
+
+	const COPY = { de, en };
+
+	const i18n = useLocale();
+	const clipboard = new CopyFeedback();
+
+	let t = $derived(COPY[i18n.current]);
+
 	let markdownInput = $state('');
-	let hasTrackedUsage = $state(false);
-	let isCopiedHtml = $state(false);
-	let isCopiedMd = $state(false);
+	let copyFailed = $state(false);
 
 	let htmlOutput = $derived.by(() => {
 		const trimmed = markdownInput.trim();
+		// DOMPurify needs a DOM, so the preview is only rendered in the browser.
 		if (!trimmed || !browser) return '';
-		const raw = markedInstance.parse(trimmed) as string;
-		return DOMPurify.sanitize(raw);
+		return DOMPurify.sanitize(renderMarkdown(trimmed, { breaks: true }));
 	});
 
 	let wordCount = $derived(markdownInput.trim() ? markdownInput.trim().split(/\s+/).length : 0);
 	let charCount = $derived(markdownInput.length);
 
-	async function trackUsage() {
-		if (!browser) return;
-		await fetch('/api/tools/usage', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ toolId: 'markdown-preview' })
-		});
-	}
+	$effect(() => () => clipboard.dispose());
 
 	$effect(() => {
-		if (hasTrackedUsage || !markdownInput.trim()) return;
-		hasTrackedUsage = true;
-		void trackUsage();
+		if (markdownInput.trim()) {
+			trackToolUsage('markdown-preview');
+		}
 	});
 
-	async function copyHtml() {
-		if (!browser || !htmlOutput) return;
-		await navigator.clipboard.writeText(htmlOutput);
-		isCopiedHtml = true;
-		setTimeout(() => {
-			isCopiedHtml = false;
-		}, 1800);
-	}
-
-	async function copyMarkdown() {
-		if (!browser || !markdownInput.trim()) return;
-		await navigator.clipboard.writeText(markdownInput);
-		isCopiedMd = true;
-		setTimeout(() => {
-			isCopiedMd = false;
-		}, 1800);
+	async function copy(text: string, key: string) {
+		copyFailed = !(await clipboard.copy(text, key));
 	}
 
 	function clearInput() {
 		markdownInput = '';
-		isCopiedHtml = false;
-		isCopiedMd = false;
+		copyFailed = false;
+		clipboard.reset();
 	}
 
 	function loadSample() {
-		markdownInput = SAMPLE_MARKDOWN;
+		markdownInput = t.sample;
 	}
 </script>
 
 <section class="mx-auto w-full max-w-5xl space-y-8">
-	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-			Markdown-Vorschau
-		</h1>
-		<p class="text-slate-400">Markdown mit Live-Vorschau bearbeiten und als HTML kopieren.</p>
-	</header>
+	<ToolHeader toolId="markdown-preview" />
 
 	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="flex flex-wrap items-center gap-2">
@@ -171,69 +195,73 @@ Inline-Code: \`const x = 42;\`
 				onclick={loadSample}
 				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-500"
 			>
-				Beispiel laden
+				{t.loadSample}
 			</button>
 			<button
 				type="button"
 				onclick={clearInput}
 				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-500"
 			>
-				L&ouml;schen
+				{i18n.t('clear')}
 			</button>
 			<button
 				type="button"
-				onclick={copyHtml}
+				onclick={() => copy(htmlOutput, 'html')}
 				disabled={!htmlOutput}
 				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition enabled:hover:border-purple-400 enabled:hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{isCopiedHtml ? 'Kopiert' : 'HTML kopieren'}
+				{clipboard.isCopied('html') ? i18n.t('copied') : t.copyHtml}
 			</button>
 			<button
 				type="button"
-				onclick={copyMarkdown}
+				onclick={() => copy(markdownInput, 'markdown')}
 				disabled={!markdownInput.trim()}
 				class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition enabled:hover:border-purple-400 enabled:hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
 			>
-				{isCopiedMd ? 'Kopiert' : 'Markdown kopieren'}
+				{clipboard.isCopied('markdown') ? i18n.t('copied') : t.copyMarkdown}
 			</button>
 		</div>
+		{#if copyFailed}
+			<p role="alert" class="mt-3 text-sm text-rose-600">{i18n.t('clipboardFailed')}</p>
+		{/if}
 	</section>
 
 	<div class="grid gap-6 lg:grid-cols-2">
 		<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 			<div class="space-y-2">
 				<label class="text-sm font-medium text-slate-700" for="markdown-input">
-					Markdown-Eingabe
+					{t.input}
 				</label>
 				<textarea
 					id="markdown-input"
 					rows="24"
 					bind:value={markdownInput}
 					class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 font-mono text-sm text-slate-700 placeholder:text-slate-400 focus:border-purple-400/80 focus:ring-1 focus:ring-purple-400/30 focus:outline-none"
-					placeholder="Markdown hier eingeben..."
+					placeholder={t.inputPlaceholder}
 				></textarea>
 				<div class="flex gap-3 text-xs text-slate-500">
-					<span>{wordCount} W&ouml;rter</span>
-					<span>&middot;</span>
-					<span>{charCount} Zeichen</span>
+					<span>{t.words(wordCount)}</span>
+					<span aria-hidden="true">&middot;</span>
+					<span>{t.characters(charCount)}</span>
 				</div>
 			</div>
 		</section>
 
 		<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 			<div class="space-y-2">
-				<span class="text-sm font-medium text-slate-700">Vorschau</span>
+				<h2 class="text-sm font-medium text-slate-700">{t.preview}</h2>
 				<div
 					class="max-h-[38rem] overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 px-5 py-4"
 				>
 					{#if htmlOutput}
 						<div
-							class="prose max-w-none prose-headings:text-slate-900 prose-a:text-purple-600 prose-a:no-underline hover:prose-a:text-purple-700 prose-code:text-purple-700 prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-slate-200 prose-pre:bg-slate-50 prose-thead:border-slate-200 prose-tr:border-slate-200 prose-th:text-slate-600"
+							class="prose max-w-none prose-headings:text-slate-900 prose-a:text-purple-600 prose-a:no-underline hover:prose-a:text-purple-700 prose-code:text-purple-700 prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-slate-200 prose-pre:bg-white prose-thead:border-slate-200 prose-tr:border-slate-200 prose-th:text-slate-600"
 						>
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitised with DOMPurify -->
 							{@html htmlOutput}
 						</div>
 					{:else}
-						<p class="text-sm text-slate-500">Markdown eingeben, um die Vorschau zu sehen.</p>
+						<p class="text-sm text-slate-500">{t.previewEmpty}</p>
 					{/if}
 				</div>
 			</div>

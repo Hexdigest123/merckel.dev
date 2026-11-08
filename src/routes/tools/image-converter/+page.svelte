@@ -1,15 +1,58 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { getLocalizedTool } from '$lib/i18n/content';
+	import { useLocale } from '$lib/i18n/locale.svelte';
+	import { trackToolUsage } from '$lib/utils/tool-usage';
 
 	type SupportedMime = 'image/png' | 'image/jpeg' | 'image/webp';
 
-	const formatOptions: Array<{ mime: SupportedMime; label: string; extension: string }> = [
+	const FORMAT_OPTIONS: Array<{ mime: SupportedMime; label: string; extension: string }> = [
 		{ mime: 'image/png', label: 'PNG', extension: 'png' },
 		{ mime: 'image/jpeg', label: 'JPEG', extension: 'jpg' },
 		{ mime: 'image/webp', label: 'WebP', extension: 'webp' }
 	];
 
-	let { data }: { data: { title: string } } = $props();
+	const de = {
+		unsupported: 'Bitte laden Sie ein PNG-, JPEG- oder WebP-Bild hoch.',
+		failed: 'Konvertierung fehlgeschlagen. Bitte versuchen Sie ein anderes Bild.',
+		dropzone: 'Bild hierher ziehen oder klicken zum Hochladen',
+		original: 'Original',
+		converted: 'Konvertiert',
+		originalAlt: 'Vorschau des hochgeladenen Bildes',
+		convertedAlt: 'Vorschau des konvertierten Bildes',
+		format: 'Format',
+		size: 'Größe',
+		download: 'Konvertiertes Bild herunterladen',
+		convertedPlaceholder: 'Konvertierte Vorschau erscheint hier',
+		targetFormat: 'Zielformat',
+		quality: 'Qualität',
+		convert: 'Konvertieren',
+		converting: 'Konvertiere…'
+	};
+
+	const en: typeof de = {
+		unsupported: 'Please upload a PNG, JPEG or WebP image.',
+		failed: 'Conversion failed. Please try a different image.',
+		dropzone: 'Drag an image here or click to upload',
+		original: 'Original',
+		converted: 'Converted',
+		originalAlt: 'Preview of the uploaded image',
+		convertedAlt: 'Preview of the converted image',
+		format: 'Format',
+		size: 'Size',
+		download: 'Download converted image',
+		convertedPlaceholder: 'The converted preview appears here',
+		targetFormat: 'Target format',
+		quality: 'Quality',
+		convert: 'Convert',
+		converting: 'Converting…'
+	};
+
+	const COPY = { de, en };
+
+	const i18n = useLocale();
+
+	let t = $derived(COPY[i18n.current]);
+	let tool = $derived(getLocalizedTool(i18n, 'image-converter'));
 
 	let sourceFile = $state<File | null>(null);
 	let sourcePreviewUrl = $state('');
@@ -17,12 +60,12 @@
 	let targetFormat = $state<SupportedMime>('image/jpeg');
 	let quality = $state(0.9);
 	let convertedBlob = $state<Blob | null>(null);
+	let convertedFormat = $state<SupportedMime | null>(null);
 	let convertedPreviewUrl = $state('');
 	let convertedFileName = $state('');
 	let isConverting = $state(false);
 	let isDragOver = $state(false);
-	let errorMessage = $state('');
-	let canvasElement = $state<HTMLCanvasElement | null>(null);
+	let errorMessage = $state<'unsupported' | 'failed' | null>(null);
 
 	let isQualityVisible = $derived(targetFormat === 'image/jpeg' || targetFormat === 'image/webp');
 	let canConvert = $derived(Boolean(sourceFile) && sourceFormat !== targetFormat && !isConverting);
@@ -53,8 +96,9 @@
 	}
 
 	function clearConverted() {
-		errorMessage = '';
+		errorMessage = null;
 		convertedBlob = null;
+		convertedFormat = null;
 		convertedFileName = '';
 		if (convertedPreviewUrl) {
 			URL.revokeObjectURL(convertedPreviewUrl);
@@ -63,12 +107,11 @@
 	}
 
 	function setSource(file: File) {
-		if (!formatOptions.some((option) => option.mime === file.type)) {
-			errorMessage = 'Bitte laden Sie ein PNG-, JPEG- oder WebP-Bild hoch.';
+		if (!FORMAT_OPTIONS.some((option) => option.mime === file.type)) {
+			errorMessage = 'unsupported';
 			return;
 		}
 
-		errorMessage = '';
 		clearConverted();
 
 		if (sourcePreviewUrl) {
@@ -80,7 +123,7 @@
 		sourceFormat = file.type as SupportedMime;
 
 		if (targetFormat === sourceFormat) {
-			const nextOption = formatOptions.find((option) => option.mime !== sourceFormat);
+			const nextOption = FORMAT_OPTIONS.find((option) => option.mime !== sourceFormat);
 			if (nextOption) {
 				targetFormat = nextOption.mime;
 			}
@@ -92,6 +135,8 @@
 		const file = input.files?.[0];
 		if (!file) return;
 		setSource(file);
+		// Allow selecting the same file again later.
+		input.value = '';
 	}
 
 	function handleDragOver(event: DragEvent) {
@@ -101,7 +146,11 @@
 
 	function handleDragLeave(event: DragEvent) {
 		event.preventDefault();
-		isDragOver = false;
+		// Moving over child elements also fires dragleave on the drop zone.
+		const target = event.currentTarget as HTMLElement;
+		if (!target.contains(event.relatedTarget as Node | null)) {
+			isDragOver = false;
+		}
 	}
 
 	function handleDrop(event: DragEvent) {
@@ -112,26 +161,29 @@
 		setSource(file);
 	}
 
+	function loadImage(url: string): Promise<HTMLImageElement> {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.onload = () => resolve(img);
+			img.onerror = () => reject(new Error('load-failed'));
+			img.src = url;
+		});
+	}
+
 	async function convertImage() {
-		if (!browser || !sourceFile || !canvasElement || sourceFormat === targetFormat) {
+		if (!sourceFile || sourceFormat === targetFormat) {
 			return;
 		}
 
-		const canvas = canvasElement;
-
+		const format = targetFormat;
 		isConverting = true;
-		errorMessage = '';
+		errorMessage = null;
 
 		const sourceObjectUrl = URL.createObjectURL(sourceFile);
 
 		try {
-			const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-				const img = new Image();
-				img.onload = () => resolve(img);
-				img.onerror = () => reject(new Error('load-failed'));
-				img.src = sourceObjectUrl;
-			});
-
+			const image = await loadImage(sourceObjectUrl);
+			const canvas = document.createElement('canvas');
 			canvas.width = image.naturalWidth;
 			canvas.height = image.naturalHeight;
 
@@ -140,39 +192,33 @@
 				throw new Error('context-failed');
 			}
 
-			context.clearRect(0, 0, canvas.width, canvas.height);
+			if (format === 'image/jpeg') {
+				// JPEG has no alpha channel; without a background, transparent pixels turn black.
+				context.fillStyle = '#ffffff';
+				context.fillRect(0, 0, canvas.width, canvas.height);
+			}
 			context.drawImage(image, 0, 0);
 
 			const blob = await new Promise<Blob>((resolve, reject) => {
-				const currentQuality = targetFormat === 'image/png' ? undefined : quality;
 				canvas.toBlob(
-					(result) => {
-						if (!result) {
-							reject(new Error('conversion-failed'));
-							return;
-						}
-						resolve(result);
-					},
-					targetFormat,
-					currentQuality
+					(result) => (result ? resolve(result) : reject(new Error('conversion-failed'))),
+					format,
+					format === 'image/png' ? undefined : quality
 				);
 			});
 
 			clearConverted();
 			convertedBlob = blob;
+			convertedFormat = format;
 			convertedPreviewUrl = URL.createObjectURL(blob);
 
 			const sourceName = sourceFile.name.replace(/\.[^.]+$/, '');
-			const targetOption = formatOptions.find((option) => option.mime === targetFormat);
+			const targetOption = FORMAT_OPTIONS.find((option) => option.mime === format);
 			convertedFileName = `${sourceName}.${targetOption?.extension ?? 'img'}`;
 
-			await fetch('/api/tools/usage', {
-				method: 'POST',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify({ toolId: 'image-converter' })
-			}).catch(() => null);
+			trackToolUsage('image-converter');
 		} catch {
-			errorMessage = 'Konvertierung fehlgeschlagen. Bitte versuchen Sie ein anderes Bild.';
+			errorMessage = 'failed';
 		} finally {
 			URL.revokeObjectURL(sourceObjectUrl);
 			isConverting = false;
@@ -180,7 +226,7 @@
 	}
 
 	function getFormatLabel(mime: SupportedMime) {
-		return formatOptions.find((option) => option.mime === mime)?.label ?? mime;
+		return FORMAT_OPTIONS.find((option) => option.mime === mime)?.label ?? mime;
 	}
 
 	let sourceSize = $derived(sourceFile ? formatBytes(sourceFile.size) : '');
@@ -189,15 +235,13 @@
 
 <section class="mx-auto w-full max-w-3xl">
 	<section class="rounded-lg border border-slate-200 bg-white p-6 sm:p-8">
-		<h1 class="text-3xl font-bold text-slate-900">{data.title}</h1>
-		<p class="mt-2 text-base text-slate-600">
-			Bilder zwischen PNG, JPG und WebP konvertieren — komplett im Browser.
-		</p>
+		<h1 class="text-3xl font-bold text-slate-900">{tool.name}</h1>
+		<p class="mt-2 text-base text-slate-600">{tool.description}</p>
 
 		<div class="mt-6 space-y-6">
 			<label
 				for="image-input"
-				class={`block rounded-lg border-2 border-dashed p-6 text-center transition-colors duration-200 ${
+				class={`block cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors duration-200 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-purple-500 ${
 					isDragOver
 						? 'border-purple-400 bg-purple-500/10'
 						: 'border-slate-200 bg-slate-50 hover:border-purple-400/60'
@@ -213,46 +257,49 @@
 					onchange={handleFileInput}
 					class="sr-only"
 				/>
-				<p class="text-sm text-slate-600">Bild hierher ziehen oder klicken zum Hochladen</p>
-				<p class="mt-1 font-mono text-xs tracking-wide text-slate-400 uppercase">PNG, JPEG, WebP</p>
+				<p class="text-sm text-slate-600">{t.dropzone}</p>
+				<p class="mt-1 font-mono text-xs tracking-wide text-slate-500 uppercase">PNG, JPEG, WebP</p>
 			</label>
 
 			{#if sourceFile}
 				<div class="grid gap-4 md:grid-cols-2">
 					<div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
-						<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Original</p>
+						<h2 class="font-mono text-xs tracking-wide text-slate-500 uppercase">{t.original}</h2>
 						<img
 							src={sourcePreviewUrl}
-							alt="Vorschau des Uploads"
+							alt={t.originalAlt}
 							class="mt-3 max-h-64 w-full rounded-lg border border-slate-200 object-contain"
 						/>
-						<p class="mt-3 text-sm text-slate-600">Format: {getFormatLabel(sourceFormat)}</p>
-						<p class="text-sm text-slate-600">Size: {sourceSize}</p>
+						<p class="mt-3 text-sm text-slate-600">{t.format}: {getFormatLabel(sourceFormat)}</p>
+						<p class="text-sm text-slate-600">{t.size}: {sourceSize}</p>
 					</div>
 
 					<div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
-						<p class="font-mono text-xs tracking-wide text-slate-400 uppercase">Konvertiert</p>
-						{#if convertedPreviewUrl}
+						<h2 class="font-mono text-xs tracking-wide text-slate-500 uppercase">{t.converted}</h2>
+						{#if convertedPreviewUrl && convertedFormat}
 							<img
 								src={convertedPreviewUrl}
-								alt="Vorschau der Konvertierung"
+								alt={t.convertedAlt}
 								class="mt-3 max-h-64 w-full rounded-lg border border-slate-200 object-contain"
 							/>
-							<p class="mt-3 text-sm text-slate-600">Format: {getFormatLabel(targetFormat)}</p>
-							<p class="text-sm text-slate-600">Size: {convertedSize}</p>
+							<p class="mt-3 text-sm text-slate-600">
+								{t.format}: {getFormatLabel(convertedFormat)}
+							</p>
+							<p class="text-sm text-slate-600">{t.size}: {convertedSize}</p>
+							<!-- eslint-disable svelte/no-navigation-without-resolve -- local blob: download link -->
 							<a
 								href={convertedPreviewUrl}
 								download={convertedFileName}
-								data-cursor="link"
 								class="mt-4 inline-flex rounded-md bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-purple-600"
 							>
-								Konvertiertes Bild herunterladen
+								{t.download}
 							</a>
+							<!-- eslint-enable svelte/no-navigation-without-resolve -->
 						{:else}
 							<div
-								class="mt-3 flex h-64 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-400"
+								class="mt-3 flex h-64 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-500"
 							>
-								Konvertierte Vorschau erscheint hier
+								{t.convertedPlaceholder}
 							</div>
 						{/if}
 					</div>
@@ -260,17 +307,21 @@
 
 				<div class="space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
 					<div>
-						<p class="text-sm text-slate-600">Zielformat</p>
-						<div class="mt-2 flex flex-wrap gap-2">
-							{#each formatOptions as option (option.mime)}
+						<p class="text-sm text-slate-600" id="target-format-label">{t.targetFormat}</p>
+						<div
+							class="mt-2 flex flex-wrap gap-2"
+							role="group"
+							aria-labelledby="target-format-label"
+						>
+							{#each FORMAT_OPTIONS as option (option.mime)}
 								<button
 									type="button"
 									onclick={() => (targetFormat = option.mime)}
 									disabled={sourceFormat === option.mime}
-									data-cursor="link"
+									aria-pressed={targetFormat === option.mime}
 									class={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
 										targetFormat === option.mime
-											? 'border-purple-400 bg-purple-500/20 text-purple-600'
+											? 'border-purple-400 bg-purple-500/20 text-purple-700'
 											: 'border-slate-200 bg-white text-slate-700 hover:border-purple-400/60'
 									} disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500`}
 								>
@@ -282,7 +333,7 @@
 
 					{#if isQualityVisible}
 						<label class="block space-y-2" for="quality-slider">
-							<span class="text-sm text-slate-600">Qualität: {quality.toFixed(1)}</span>
+							<span class="text-sm text-slate-600">{t.quality}: {quality.toFixed(1)}</span>
 							<input
 								id="quality-slider"
 								type="range"
@@ -290,7 +341,7 @@
 								max="1"
 								step="0.1"
 								bind:value={quality}
-								class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-purple-400"
+								class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-purple-500"
 							/>
 						</label>
 					{/if}
@@ -299,19 +350,16 @@
 						type="button"
 						onclick={convertImage}
 						disabled={!canConvert}
-						data-cursor="link"
 						class="inline-flex rounded-md bg-purple-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-purple-400/50"
 					>
-						{isConverting ? 'Konvertiere...' : 'Konvertieren'}
+						{isConverting ? t.converting : t.convert}
 					</button>
 				</div>
 			{/if}
 
 			{#if errorMessage}
-				<p role="alert" class="text-sm text-rose-600">{errorMessage}</p>
+				<p role="alert" class="text-sm text-rose-600">{t[errorMessage]}</p>
 			{/if}
 		</div>
-
-		<canvas bind:this={canvasElement} class="hidden" aria-hidden="true"></canvas>
 	</section>
 </section>

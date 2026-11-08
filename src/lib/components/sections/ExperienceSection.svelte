@@ -10,6 +10,9 @@
 	function formatPeriod(startDate: string, endDate?: string) {
 		const [startYear] = startDate.split('-');
 		const [endYear] = endDate?.split('-') ?? [];
+		if (endYear === startYear) {
+			return startYear;
+		}
 		return `${startYear} — ${endYear ?? i18n.t('present')}`;
 	}
 </script>
@@ -28,7 +31,7 @@
 							<a
 								href={entry.companyUrl}
 								target="_blank"
-								rel="noreferrer"
+								rel="external noreferrer"
 								class="text-sm text-purple-600 hover:text-purple-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 							>
 								{entry.company}

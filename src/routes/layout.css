@@ -21,3 +21,10 @@
 	--font-sans: 'Space Grotesk', sans-serif;
 	--font-mono: 'JetBrains Mono', monospace;
 }
+
+/* `scroll-smooth` on <html> also animates in-page jumps; respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+}

@@ -26,13 +26,18 @@
 					<a
 						href={project.url}
 						target="_blank"
-						rel="noreferrer"
-						aria-label={i18n.t('openPreview', { title: project.title })}
-						class="mt-4 block overflow-hidden rounded-lg border border-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+						rel="external noreferrer"
+						tabindex="-1"
+						aria-hidden="true"
+						class="mt-4 block overflow-hidden rounded-lg border border-slate-200"
 					>
 						<img
 							src={project.image}
-							alt={i18n.t('previewOf', { title: project.title })}
+							alt=""
+							width="1280"
+							height="793"
+							loading="lazy"
+							decoding="async"
 							class="aspect-[16/10] w-full object-cover object-top"
 						/>
 					</a>
@@ -49,7 +54,7 @@
 						<a
 							href={project.url}
 							target="_blank"
-							rel="noreferrer"
+							rel="external noreferrer"
 							aria-label={i18n.t('openPreview', { title: project.title })}
 							class="text-purple-600 hover:text-purple-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 						>
@@ -60,7 +65,7 @@
 						<a
 							href={project.github}
 							target="_blank"
-							rel="noreferrer"
+							rel="external noreferrer"
 							aria-label={i18n.t('openSourceCode', { title: project.title })}
 							class="text-purple-600 hover:text-purple-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
 						>

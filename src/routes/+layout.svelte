@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { Snippet } from 'svelte';
+	import { untrack } from 'svelte';
 	import '@fontsource/space-grotesk/latin-400.css';
 	import '@fontsource/space-grotesk/latin-600.css';
 	import '@fontsource/space-grotesk/latin-700.css';
@@ -10,52 +10,42 @@
 	import CommandPalette from '$lib/components/CommandPalette.svelte';
 	import ContactWidget from '$lib/components/ContactWidget.svelte';
 	import MobileHeader from '$lib/components/MobileHeader.svelte';
+	import { HOME_SECTIONS } from '$lib/data/sections';
 	import { siteConfig } from '$lib/data/site-config';
 	import { createLocaleStore, parseLocale } from '$lib/i18n/locale.svelte';
-	import type { Locale } from '$lib/i18n/messages';
+	import { jsonLdScript } from '$lib/utils/json-ld';
+	import type { LayoutProps } from './$types';
 
-	let {
-		children,
-		data
-	}: {
-		children: Snippet;
-		data: { isMobile?: boolean; locale?: Locale };
-	} = $props();
+	let { children, data }: LayoutProps = $props();
 
-	const i18n = createLocaleStore(parseLocale(data.locale));
+	// The store is created once; switching languages updates it directly and then
+	// re-runs the load functions, so `data.locale` never needs to be re-read here.
+	const i18n = createLocaleStore(untrack(() => parseLocale(data.locale)));
 
-	const siteUrl = 'https://merckel.dev';
 	const homeTitle = `${siteConfig.name} — merckel.dev`;
-	let siteDescription = $derived(i18n.t('jobTitle'));
-	let pageTitle = $derived.by(() => {
-		const title = (page.data as { title?: unknown })?.title;
-		return typeof title === 'string' && title.length > 0 ? `${title} — merckel.dev` : homeTitle;
-	});
-	let pageDescription = $derived.by(() => {
-		const description = (page.data as { description?: unknown })?.description;
-		return typeof description === 'string' && description.length > 0 ? description : siteDescription;
-	});
-	const ogImageUrl = `${siteUrl}/og.png`;
-	let jsonLdSchema = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'Person',
-		name: siteConfig.name,
-		jobTitle: i18n.t('jobTitle'),
-		description: siteDescription,
-		url: siteUrl,
-		email: siteConfig.email,
-		sameAs: siteConfig.socials.filter((s) => s.icon !== 'email').map((s) => s.url)
-	});
+	const ogImageUrl = `${siteConfig.url}/og.png`;
 
-	let sections = $derived([
-		{ id: 'tools', title: i18n.t('navTools') },
-		{ id: 'projects', title: i18n.t('navProjects') },
-		{ id: 'pentests', title: i18n.t('navPentests') },
-		{ id: 'experience', title: i18n.t('navExperience') },
-		{ id: 'opensource', title: i18n.t('navOpenSource') },
-		{ id: 'testimonials', title: i18n.t('navTestimonials') },
-		{ id: 'contact', title: i18n.t('navContact') }
-	]);
+	let siteDescription = $derived(i18n.t('jobTitle'));
+	let pageTitle = $derived(page.data.title ? `${page.data.title} — merckel.dev` : homeTitle);
+	let pageDescription = $derived(page.data.description || siteDescription);
+	let canonicalUrl = $derived(new URL(page.url.pathname, siteConfig.url).href);
+	let ogType = $derived(page.data.ogType ?? 'website');
+	let jsonLd = $derived(
+		jsonLdScript({
+			'@context': 'https://schema.org',
+			'@type': 'Person',
+			name: siteConfig.name,
+			jobTitle: i18n.t('jobTitle'),
+			description: siteDescription,
+			url: siteConfig.url,
+			email: siteConfig.email,
+			sameAs: siteConfig.socials.filter((s) => s.icon !== 'email').map((s) => s.url)
+		})
+	);
+
+	let sections = $derived(
+		HOME_SECTIONS.map(({ id, titleKey }) => ({ id, title: i18n.t(titleKey) }))
+	);
 
 	let isHome = $derived(page.url.pathname === '/');
 </script>
@@ -63,27 +53,30 @@
 <svelte:head>
 	<title>{pageTitle}</title>
 	<meta name="description" content={pageDescription} />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="theme-color" content="#ffffff" />
-	<link rel="canonical" href={siteUrl} />
+	<link rel="canonical" href={canonicalUrl} />
 
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content={siteUrl} />
+	<meta property="og:type" content={ogType} />
+	<meta property="og:site_name" content="merckel.dev" />
+	<meta property="og:locale" content={i18n.current === 'de' ? 'de_DE' : 'en_US'} />
+	<meta property="og:url" content={canonicalUrl} />
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={pageDescription} />
 	<meta property="og:image" content={ogImageUrl} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
+	{#if ogType === 'article' && page.data.publishedTime}
+		<meta property="article:published_time" content={page.data.publishedTime} />
+	{/if}
 
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content={siteUrl} />
+	<meta name="twitter:url" content={canonicalUrl} />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={pageDescription} />
 	<meta name="twitter:image" content={ogImageUrl} />
 
-	<script type="application/ld+json">
-		{JSON.stringify(jsonLdSchema)}
-	</script>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- jsonLdScript escapes "<" in the data -->
+	{@html jsonLd}
 
 	<link rel="icon" href={favicon} />
 </svelte:head>

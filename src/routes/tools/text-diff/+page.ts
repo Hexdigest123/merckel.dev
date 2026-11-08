@@ -1,1 +1,3 @@
-export const load = () => ({ title: 'Text Diff Checker' });
+import { createToolPageLoad } from '$lib/utils/tool-page';
+
+export const load = createToolPageLoad('text-diff');

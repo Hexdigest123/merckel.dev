@@ -1,21 +1,29 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import cronstrue from 'cronstrue';
+	import 'cronstrue/locales/de';
+	import { untrack } from 'svelte';
+	import ToolHeader from '$lib/components/tools/ToolHeader.svelte';
+	import { useLocale } from '$lib/i18n/locale.svelte';
+	import { CopyFeedback } from '$lib/utils/clipboard.svelte';
+	import { trackToolUsage } from '$lib/utils/tool-usage';
 
 	type FieldKey = 'minute' | 'hour' | 'dayOfMonth' | 'month' | 'dayOfWeek';
 	type FieldMode = 'every' | 'specific' | 'range' | 'interval';
+	type PresetId = 'everyMinute' | 'everyHour' | 'dailyMidnight' | 'weeklyMonday' | 'monthlyFirst';
+	type CronParts = [string, string, string, string, string];
 
 	interface FieldBounds {
 		min: number;
 		max: number;
 	}
 
+	/** `bind:value` on number inputs yields `null` while the field is empty. */
 	interface CronFieldState {
 		mode: FieldMode;
-		specific: string;
-		rangeStart: string;
-		rangeEnd: string;
-		interval: string;
+		specific: number | null;
+		rangeStart: number | null;
+		rangeEnd: number | null;
+		interval: number | null;
 	}
 
 	const FIELD_BOUNDS: Record<FieldKey, FieldBounds> = {
@@ -26,121 +34,151 @@
 		dayOfWeek: { min: 0, max: 6 }
 	};
 
-	const FIELD_CONFIG: Array<{ key: FieldKey; label: string }> = [
-		{ key: 'minute', label: 'Minute' },
-		{ key: 'hour', label: 'Stunde' },
-		{ key: 'dayOfMonth', label: 'Tag des Monats' },
-		{ key: 'month', label: 'Monat' },
-		{ key: 'dayOfWeek', label: 'Wochentag' }
-	];
-
 	const FIELD_ORDER: FieldKey[] = ['minute', 'hour', 'dayOfMonth', 'month', 'dayOfWeek'];
+	const MODES: FieldMode[] = ['every', 'specific', 'range', 'interval'];
 
-	const presets: Array<{ label: string; parts: [string, string, string, string, string] }> = [
-		{ label: 'Jede Minute', parts: ['*', '*', '*', '*', '*'] },
-		{ label: 'Jede Stunde', parts: ['0', '*', '*', '*', '*'] },
-		{ label: 'Täglich um Mitternacht', parts: ['0', '0', '*', '*', '*'] },
-		{ label: 'Wöchentlich am Montag', parts: ['0', '0', '*', '*', '1'] },
-		{ label: 'Monatlich am 1.', parts: ['0', '0', '1', '*', '*'] }
+	const PRESETS: Array<{ id: PresetId; parts: CronParts }> = [
+		{ id: 'everyMinute', parts: ['*', '*', '*', '*', '*'] },
+		{ id: 'everyHour', parts: ['0', '*', '*', '*', '*'] },
+		{ id: 'dailyMidnight', parts: ['0', '0', '*', '*', '*'] },
+		{ id: 'weeklyMonday', parts: ['0', '0', '*', '*', '1'] },
+		{ id: 'monthlyFirst', parts: ['0', '0', '1', '*', '*'] }
 	];
 
-	let fields = $state<Record<FieldKey, CronFieldState>>({
-		minute: { mode: 'every', specific: '0', rangeStart: '0', rangeEnd: '59', interval: '1' },
-		hour: { mode: 'every', specific: '0', rangeStart: '0', rangeEnd: '23', interval: '1' },
-		dayOfMonth: { mode: 'every', specific: '1', rangeStart: '1', rangeEnd: '31', interval: '1' },
-		month: { mode: 'every', specific: '1', rangeStart: '1', rangeEnd: '12', interval: '1' },
-		dayOfWeek: { mode: 'every', specific: '0', rangeStart: '0', rangeEnd: '6', interval: '1' }
-	});
+	const de = {
+		fields: {
+			minute: 'Minute',
+			hour: 'Stunde',
+			dayOfMonth: 'Tag des Monats',
+			month: 'Monat',
+			dayOfWeek: 'Wochentag (0 = Sonntag)'
+		} satisfies Record<FieldKey, string>,
+		modes: {
+			every: 'Jeder (*)',
+			specific: 'Bestimmter Wert',
+			range: 'Bereich',
+			interval: 'Intervall (*/n)'
+		} satisfies Record<FieldMode, string>,
+		value: 'Wert',
+		from: 'von',
+		to: 'bis',
+		every: 'alle',
+		wildcardHint: 'Verwendet Platzhalter für dieses Feld.',
+		expression: 'Cron-Ausdruck',
+		copyExpression: 'Ausdruck kopieren',
+		invalidExpression: 'Ungültiger Ausdruck',
+		presetsTitle: 'Schnellvorlagen',
+		presets: {
+			everyMinute: 'Jede Minute',
+			everyHour: 'Jede Stunde',
+			dailyMidnight: 'Täglich um Mitternacht',
+			weeklyMonday: 'Wöchentlich am Montag',
+			monthlyFirst: 'Monatlich am 1.'
+		} satisfies Record<PresetId, string>
+	};
 
-	let isCopied = $state(false);
-	let hasInitializedTracking = false;
-
-	function parseNumber(value: string, bounds: FieldBounds): number | null {
-		const parsed = Number.parseInt(value, 10);
-		if (Number.isNaN(parsed)) {
-			return null;
+	const en: typeof de = {
+		fields: {
+			minute: 'Minute',
+			hour: 'Hour',
+			dayOfMonth: 'Day of month',
+			month: 'Month',
+			dayOfWeek: 'Day of week (0 = Sunday)'
+		},
+		modes: {
+			every: 'Every (*)',
+			specific: 'Specific value',
+			range: 'Range',
+			interval: 'Interval (*/n)'
+		},
+		value: 'Value',
+		from: 'from',
+		to: 'to',
+		every: 'every',
+		wildcardHint: 'Uses a wildcard for this field.',
+		expression: 'Cron expression',
+		copyExpression: 'Copy expression',
+		invalidExpression: 'Invalid expression',
+		presetsTitle: 'Quick presets',
+		presets: {
+			everyMinute: 'Every minute',
+			everyHour: 'Every hour',
+			dailyMidnight: 'Daily at midnight',
+			weeklyMonday: 'Weekly on Monday',
+			monthlyFirst: 'Monthly on the 1st'
 		}
+	};
 
-		if (parsed < bounds.min || parsed > bounds.max) {
-			return null;
-		}
+	const COPY = { de, en };
 
-		return parsed;
-	}
+	const i18n = useLocale();
+	const clipboard = new CopyFeedback();
 
-	function buildFieldPart(state: CronFieldState, bounds: FieldBounds): string {
-		if (state.mode === 'every') {
-			return '*';
-		}
+	let t = $derived(COPY[i18n.current]);
 
-		if (state.mode === 'specific') {
-			const specificValue = parseNumber(state.specific, bounds);
-			return specificValue === null ? '*' : String(specificValue);
-		}
-
-		if (state.mode === 'range') {
-			const start = parseNumber(state.rangeStart, bounds);
-			const end = parseNumber(state.rangeEnd, bounds);
-			if (start === null || end === null) {
-				return '*';
-			}
-
-			const rangeStart = Math.min(start, end);
-			const rangeEnd = Math.max(start, end);
-			return `${rangeStart}-${rangeEnd}`;
-		}
-
-		const interval = Number.parseInt(state.interval, 10);
-		if (Number.isNaN(interval) || interval <= 0) {
-			return '*';
-		}
-
-		return `*/${interval}`;
-	}
-
-	function parseFieldPart(part: string, bounds: FieldBounds): CronFieldState {
-		if (part === '*') {
-			return {
-				mode: 'every',
-				specific: String(bounds.min),
-				rangeStart: String(bounds.min),
-				rangeEnd: String(bounds.max),
-				interval: '1'
-			};
-		}
-
-		if (part.startsWith('*/')) {
-			const interval = part.slice(2);
-			return {
-				mode: 'interval',
-				specific: String(bounds.min),
-				rangeStart: String(bounds.min),
-				rangeEnd: String(bounds.max),
-				interval
-			};
-		}
-
-		if (part.includes('-')) {
-			const [rangeStart, rangeEnd] = part.split('-');
-			return {
-				mode: 'range',
-				specific: String(bounds.min),
-				rangeStart,
-				rangeEnd,
-				interval: '1'
-			};
-		}
-
+	function defaultField(bounds: FieldBounds): CronFieldState {
 		return {
-			mode: 'specific',
-			specific: part,
-			rangeStart: String(bounds.min),
-			rangeEnd: String(bounds.max),
-			interval: '1'
+			mode: 'every',
+			specific: bounds.min,
+			rangeStart: bounds.min,
+			rangeEnd: bounds.max,
+			interval: 1
 		};
 	}
 
-	function applyPreset(parts: [string, string, string, string, string]) {
+	let fields = $state<Record<FieldKey, CronFieldState>>({
+		minute: defaultField(FIELD_BOUNDS.minute),
+		hour: defaultField(FIELD_BOUNDS.hour),
+		dayOfMonth: defaultField(FIELD_BOUNDS.dayOfMonth),
+		month: defaultField(FIELD_BOUNDS.month),
+		dayOfWeek: defaultField(FIELD_BOUNDS.dayOfWeek)
+	});
+	let copyFailed = $state(false);
+
+	/** Clamps a (possibly empty) number input into the field's range. */
+	function clampValue(value: number | null, min: number, max: number, fallback: number): number {
+		if (value === null || !Number.isFinite(value)) return fallback;
+		return Math.min(max, Math.max(min, Math.trunc(value)));
+	}
+
+	function buildFieldPart(state: CronFieldState, bounds: FieldBounds): string {
+		switch (state.mode) {
+			case 'every':
+				return '*';
+			case 'specific':
+				return String(clampValue(state.specific, bounds.min, bounds.max, bounds.min));
+			case 'range': {
+				const start = clampValue(state.rangeStart, bounds.min, bounds.max, bounds.min);
+				const end = clampValue(state.rangeEnd, bounds.min, bounds.max, bounds.max);
+				return `${Math.min(start, end)}-${Math.max(start, end)}`;
+			}
+			case 'interval': {
+				const span = bounds.max - bounds.min + 1;
+				return `*/${clampValue(state.interval, 1, span, 1)}`;
+			}
+		}
+	}
+
+	function parseFieldPart(part: string, bounds: FieldBounds): CronFieldState {
+		const state = defaultField(bounds);
+
+		if (part.startsWith('*/')) {
+			return { ...state, mode: 'interval', interval: Number(part.slice(2)) };
+		}
+
+		if (part.includes('-')) {
+			const [rangeStart, rangeEnd] = part.split('-').map(Number);
+			return { ...state, mode: 'range', rangeStart, rangeEnd };
+		}
+
+		if (part !== '*') {
+			return { ...state, mode: 'specific', specific: Number(part) };
+		}
+
+		return state;
+	}
+
+	function applyPreset(parts: CronParts) {
 		parts.forEach((part, index) => {
 			const key = FIELD_ORDER[index];
 			fields[key] = parseFieldPart(part, FIELD_BOUNDS[key]);
@@ -148,15 +186,7 @@
 	}
 
 	async function copyExpression() {
-		if (!browser) {
-			return;
-		}
-
-		await navigator.clipboard.writeText(expression);
-		isCopied = true;
-		setTimeout(() => {
-			isCopied = false;
-		}, 1800);
+		copyFailed = !(await clipboard.copy(expression));
 	}
 
 	const expression = $derived(
@@ -165,109 +195,89 @@
 
 	const description = $derived.by(() => {
 		try {
-			return cronstrue.toString(expression);
+			return cronstrue.toString(expression, { locale: i18n.current });
 		} catch {
-			return 'Ungültiger Ausdruck';
+			return t.invalidExpression;
 		}
 	});
 
+	const initialExpression = untrack(() => expression);
+
+	$effect(() => () => clipboard.dispose());
+
 	$effect(() => {
-		if (expression.length === 0) {
-			return;
+		if (expression !== initialExpression) {
+			trackToolUsage('cron-generator');
 		}
-
-		if (!browser) {
-			return;
-		}
-
-		if (!hasInitializedTracking) {
-			hasInitializedTracking = true;
-			return;
-		}
-
-		const timeout = setTimeout(() => {
-			void fetch('/api/tools/usage', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ toolId: 'cron-generator' })
-			}).catch(() => undefined);
-		}, 2000);
-
-		return () => {
-			clearTimeout(timeout);
-		};
 	});
 </script>
 
 <section class="mx-auto w-full max-w-2xl space-y-8">
-	<header class="space-y-3">
-		<h1 class="font-sans text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-			Cron-Ausdruck Generator
-		</h1>
-		<p class="text-slate-400">Cron-Zeitpläne visuell erstellen mit lesbarer Ausgabe.</p>
-	</header>
+	<ToolHeader toolId="cron-generator" />
 
 	<section class="rounded-lg border border-slate-200 bg-white p-5 sm:p-6">
 		<div class="grid gap-4">
-			{#each FIELD_CONFIG as field (field.key)}
+			{#each FIELD_ORDER as key (key)}
+				{@const bounds = FIELD_BOUNDS[key]}
+				{@const label = t.fields[key]}
 				<div class="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
-					<label class="text-sm font-medium text-slate-700" for={`mode-${field.key}`}>
-						{field.label}
+					<label class="text-sm font-medium text-slate-700" for={`mode-${key}`}>
+						{label}
 					</label>
-					<div class="grid gap-3 sm:grid-cols-[minmax(0,14rem),1fr]">
+					<div class="grid gap-3 sm:grid-cols-[minmax(0,14rem)_1fr]">
 						<select
-							id={`mode-${field.key}`}
-							bind:value={fields[field.key].mode}
+							id={`mode-${key}`}
+							bind:value={fields[key].mode}
 							class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 						>
-							<option value="every">Jeder (*)</option>
-							<option value="specific">Bestimmter Wert</option>
-							<option value="range">Bereich</option>
-							<option value="interval">Intervall (*/n)</option>
+							{#each MODES as mode (mode)}
+								<option value={mode}>{t.modes[mode]}</option>
+							{/each}
 						</select>
 
-						{#if fields[field.key].mode === 'specific'}
+						{#if fields[key].mode === 'specific'}
 							<input
 								type="number"
-								min={FIELD_BOUNDS[field.key].min}
-								max={FIELD_BOUNDS[field.key].max}
-								bind:value={fields[field.key].specific}
+								min={bounds.min}
+								max={bounds.max}
+								bind:value={fields[key].specific}
+								aria-label={`${label}: ${t.value}`}
 								class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 							/>
-						{:else if fields[field.key].mode === 'range'}
-							<div class="grid grid-cols-[1fr,auto,1fr] items-center gap-2">
+						{:else if fields[key].mode === 'range'}
+							<div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
 								<input
 									type="number"
-									min={FIELD_BOUNDS[field.key].min}
-									max={FIELD_BOUNDS[field.key].max}
-									bind:value={fields[field.key].rangeStart}
+									min={bounds.min}
+									max={bounds.max}
+									bind:value={fields[key].rangeStart}
+									aria-label={`${label}: ${t.from}`}
 									class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 								/>
-								<span class="text-center text-slate-500">bis</span>
+								<span class="text-center text-slate-500" aria-hidden="true">{t.to}</span>
 								<input
 									type="number"
-									min={FIELD_BOUNDS[field.key].min}
-									max={FIELD_BOUNDS[field.key].max}
-									bind:value={fields[field.key].rangeEnd}
+									min={bounds.min}
+									max={bounds.max}
+									bind:value={fields[key].rangeEnd}
+									aria-label={`${label}: ${t.to}`}
 									class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 								/>
 							</div>
-						{:else if fields[field.key].mode === 'interval'}
-							<div class="grid grid-cols-[auto,1fr] items-center gap-2">
-								<span class="font-mono text-sm text-slate-400">*/</span>
+						{:else if fields[key].mode === 'interval'}
+							<div class="grid grid-cols-[auto_1fr] items-center gap-2">
+								<span class="font-mono text-sm text-slate-500" aria-hidden="true">*/</span>
 								<input
 									type="number"
 									min="1"
-									bind:value={fields[field.key].interval}
+									max={bounds.max - bounds.min + 1}
+									bind:value={fields[key].interval}
+									aria-label={`${label}: ${t.every} n`}
 									class="w-full rounded-lg border border-slate-200 bg-white text-slate-700"
 								/>
 							</div>
 						{:else}
-							<p class="self-center text-sm text-slate-500">
-								Verwendet Platzhalter für dieses Feld.
-							</p>
+							<p class="self-center text-sm text-slate-500">{t.wildcardHint}</p>
 						{/if}
 					</div>
 				</div>
@@ -275,29 +285,34 @@
 		</div>
 
 		<div class="mt-6 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
-			<p class="text-xs tracking-[0.16em] text-slate-400 uppercase">Cron-Ausdruck</p>
-			<p class="font-mono text-lg text-purple-600">{expression}</p>
-			<p class="text-sm text-slate-400">{description}</p>
+			<h2 class="text-xs tracking-[0.16em] text-slate-500 uppercase">{t.expression}</h2>
+			<p class="font-mono text-lg text-purple-700">{expression}</p>
+			<p class="text-sm text-slate-600" aria-live="polite">{description}</p>
 			<button
 				type="button"
 				onclick={copyExpression}
 				class="inline-flex items-center rounded-lg bg-purple-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-600"
 			>
-				{isCopied ? 'Kopiert' : 'Ausdruck kopieren'}
+				{clipboard.isCopied() ? i18n.t('copied') : t.copyExpression}
 			</button>
+			{#if copyFailed}
+				<p role="alert" class="text-sm text-rose-600">{i18n.t('clipboardFailed')}</p>
+			{/if}
 		</div>
 	</section>
 
 	<section class="space-y-3">
-		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-600 uppercase">Schnellvorlagen</h2>
+		<h2 class="text-sm font-medium tracking-[0.14em] text-slate-600 uppercase">
+			{t.presetsTitle}
+		</h2>
 		<div class="flex flex-wrap gap-2">
-			{#each presets as preset (preset.label)}
+			{#each PRESETS as preset (preset.id)}
 				<button
 					type="button"
 					onclick={() => applyPreset(preset.parts)}
 					class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:border-purple-400 hover:text-purple-700"
 				>
-					{preset.label}
+					{t.presets[preset.id]}
 				</button>
 			{/each}
 		</div>

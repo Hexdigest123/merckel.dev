@@ -1,5 +1,6 @@
 <script lang="ts">
-	let { siteOrigin = '' }: { siteOrigin?: string } = $props();
+	import { page } from '$app/state';
+	import { useLocale } from '$lib/i18n/locale.svelte';
 
 	type LinkStatsResult = {
 		originalUrl: string;
@@ -17,23 +18,56 @@
 		createdAt?: string;
 	};
 
+	const de = {
+		title: 'Link-Statistiken',
+		inputLabel: 'Kurzcode oder Kurz-URL',
+		placeholder: 'Kurzcode oder URL einfügen',
+		lookup: 'Nachschlagen',
+		lookingUp: 'Wird gesucht...',
+		missingCode: 'Geben Sie einen Kurzcode oder eine Kurz-URL ein.',
+		notFound: 'Für diesen Kurzcode wurden keine Statistiken gefunden.',
+		failed: 'Statistiken für diesen Kurzcode konnten nicht geladen werden.',
+		originalUrl: 'Original-URL',
+		shortUrl: 'Kurz-URL',
+		clicks: 'Klicks',
+		created: 'Erstellt',
+		refresh: 'Aktualisieren'
+	};
+
+	const en: typeof de = {
+		title: 'Link statistics',
+		inputLabel: 'Short code or short URL',
+		placeholder: 'Paste a short code or URL',
+		lookup: 'Look up',
+		lookingUp: 'Looking up...',
+		missingCode: 'Enter a short code or a short URL.',
+		notFound: 'No statistics were found for this short code.',
+		failed: 'The statistics for this short code could not be loaded.',
+		originalUrl: 'Original URL',
+		shortUrl: 'Short URL',
+		clicks: 'Clicks',
+		created: 'Created',
+		refresh: 'Refresh'
+	};
+
+	const COPY = { de, en };
+
+	const i18n = useLocale();
+
+	let t = $derived(COPY[i18n.current]);
+
 	let inputValue = $state('');
 	let isLoading = $state(false);
 	let errorMessage = $state('');
 	let stats = $state<LinkStatsResult | null>(null);
 	let lastCode = $state('');
 
-	let normalizedOrigin = $derived(siteOrigin.trim().replace(/\/+$/, ''));
-	let displayShortUrl = $derived.by(() => {
-		if (!stats?.shortCode) return '';
-		const path = `/s/${stats.shortCode}`;
-		return normalizedOrigin ? `${normalizedOrigin}${path}` : path;
-	});
+	let displayShortUrl = $derived(stats?.shortCode ? `${page.url.origin}/s/${stats.shortCode}` : '');
 	let createdAtLabel = $derived.by(() => {
 		if (!stats?.createdAt) return '-';
 		const parsed = new Date(stats.createdAt);
 		if (Number.isNaN(parsed.getTime())) return '-';
-		return parsed.toLocaleString();
+		return parsed.toLocaleString(i18n.current === 'de' ? 'de-DE' : 'en-US');
 	});
 
 	function extractCode(rawValue: string): string {
@@ -58,12 +92,13 @@
 		}
 	}
 
-	async function lookupStats() {
+	async function lookupStats(event?: SubmitEvent) {
+		event?.preventDefault();
 		if (isLoading) return;
 
 		const code = extractCode(inputValue);
 		if (!code) {
-			errorMessage = 'Geben Sie einen Kurzcode oder eine Kurz-URL ein.';
+			errorMessage = t.missingCode;
 			stats = null;
 			return;
 		}
@@ -76,8 +111,7 @@
 			const body = (await response.json().catch(() => null)) as StatsResponse | null;
 
 			if (!response.ok || !body?.success || !body.shortCode || !body.originalUrl) {
-				errorMessage =
-					body?.error ?? 'Statistiken für diesen Kurzcode konnten nicht geladen werden.';
+				errorMessage = response.status === 404 ? t.notFound : t.failed;
 				stats = null;
 				return;
 			}
@@ -91,7 +125,7 @@
 			lastCode = body.shortCode;
 			inputValue = body.shortCode;
 		} catch {
-			errorMessage = 'Netzwerkproblem erkannt. Bitte versuchen Sie es erneut.';
+			errorMessage = i18n.t('networkError');
 			stats = null;
 		} finally {
 			isLoading = false;
@@ -105,25 +139,29 @@
 	}
 </script>
 
-<div class="rounded-lg border border-slate-200 bg-white p-5">
-	<p class="font-mono text-xs tracking-wide text-slate-500 uppercase">Link-Statistiken</p>
+<section class="rounded-lg border border-slate-200 bg-white p-5" aria-labelledby="link-stats-title">
+	<h2 id="link-stats-title" class="font-mono text-xs tracking-wide text-slate-500 uppercase">
+		{t.title}
+	</h2>
 
-	<div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+	<form class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center" onsubmit={lookupStats}>
 		<input
 			type="text"
 			bind:value={inputValue}
-			placeholder="Kurzcode oder URL einfügen"
+			placeholder={t.placeholder}
+			aria-label={t.inputLabel}
+			autocomplete="off"
+			spellcheck="false"
 			class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none"
 		/>
 		<button
-			type="button"
-			onclick={lookupStats}
+			type="submit"
 			disabled={isLoading}
 			class="inline-flex shrink-0 items-center justify-center rounded-md bg-purple-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-purple-600 disabled:cursor-not-allowed disabled:bg-purple-400"
 		>
-			{isLoading ? 'Wird gesucht...' : 'Nachschlagen'}
+			{isLoading ? t.lookingUp : t.lookup}
 		</button>
-	</div>
+	</form>
 
 	{#if errorMessage}
 		<p role="alert" class="mt-3 text-sm text-rose-600">{errorMessage}</p>
@@ -131,41 +169,45 @@
 
 	{#if stats}
 		<div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-			<div class="grid gap-4 sm:grid-cols-2">
+			<dl class="grid gap-4 sm:grid-cols-2">
 				<div class="space-y-1">
-					<p class="text-xs text-slate-500 uppercase">Original-URL</p>
-					<a
-						href={stats.originalUrl}
-						target="_blank"
-						rel="noreferrer"
-						class="font-mono text-sm break-all text-slate-900 underline decoration-slate-300 underline-offset-4 hover:text-purple-600"
-					>
-						{stats.originalUrl}
-					</a>
+					<dt class="text-xs text-slate-500 uppercase">{t.originalUrl}</dt>
+					<dd>
+						<a
+							href={stats.originalUrl}
+							target="_blank"
+							rel="external noreferrer"
+							class="font-mono text-sm break-all text-slate-900 underline decoration-slate-300 underline-offset-4 hover:text-purple-600"
+						>
+							{stats.originalUrl}
+						</a>
+					</dd>
 				</div>
 
 				<div class="space-y-1">
-					<p class="text-xs text-slate-500 uppercase">Kurz-URL</p>
-					<a
-						href={displayShortUrl}
-						target="_blank"
-						rel="noreferrer"
-						class="font-mono text-sm break-all text-slate-900 underline decoration-slate-300 underline-offset-4 hover:text-purple-600"
-					>
-						{displayShortUrl}
-					</a>
+					<dt class="text-xs text-slate-500 uppercase">{t.shortUrl}</dt>
+					<dd>
+						<a
+							href={displayShortUrl}
+							target="_blank"
+							rel="external noreferrer"
+							class="font-mono text-sm break-all text-slate-900 underline decoration-slate-300 underline-offset-4 hover:text-purple-600"
+						>
+							{displayShortUrl}
+						</a>
+					</dd>
 				</div>
 
 				<div class="space-y-1">
-					<p class="text-xs text-slate-500 uppercase">Klicks</p>
-					<p class="text-2xl font-semibold text-purple-600">{stats.clicks}</p>
+					<dt class="text-xs text-slate-500 uppercase">{t.clicks}</dt>
+					<dd class="text-2xl font-semibold text-purple-600">{stats.clicks}</dd>
 				</div>
 
 				<div class="space-y-1">
-					<p class="text-xs text-slate-500 uppercase">Erstellt</p>
-					<p class="text-sm text-slate-900">{createdAtLabel}</p>
+					<dt class="text-xs text-slate-500 uppercase">{t.created}</dt>
+					<dd class="text-sm text-slate-900">{createdAtLabel}</dd>
 				</div>
-			</div>
+			</dl>
 
 			<div class="mt-4">
 				<button
@@ -174,9 +216,9 @@
 					disabled={isLoading}
 					class="inline-flex items-center rounded-md border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 transition-colors duration-200 hover:border-purple-400 hover:text-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
 				>
-					Aktualisieren
+					{t.refresh}
 				</button>
 			</div>
 		</div>
 	{/if}
-</div>
+</section>

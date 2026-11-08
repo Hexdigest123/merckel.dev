@@ -2,23 +2,26 @@
 
 ## Project Overview
 
-**merckel.dev** is a creative, explorable developer portfolio built with SvelteKit, featuring:
+**merckel.dev** is a bilingual (English/German) developer portfolio built with SvelteKit, featuring:
 
-- Immersive 3D animated background (desktop only) using Threlte + Three.js
-- Single-page responsive layout with 8 content sections
-- Dark theme with purple accent color (#8b5cf6)
-- Interactive features: custom cursor, command palette
-- Full TDD test suite (Vitest + Playwright)
+- Single-page portfolio with 7 sections (tools, projects, pentests, experience, open source, references, contact)
+- Light theme with purple accent color (#8b5cf6)
+- Ten browser-based developer tools under `/tools` (URL shortener with click stats, QR codes, cron, diff, JSON, regex, Markdown, CSS gradients, colors, image conversion)
+- Pentest writeups rendered from Markdown in `src/content/pentesting/`
+- Command palette (Ctrl/Cmd+K), contact form widget, language switcher
+- PostgreSQL (Drizzle ORM) for short links, tool usage counters and the GitHub API cache
 
 **Tech Stack**:
 
-- **Framework**: SvelteKit 2.50+ with Svelte 5 runes
+- **Framework**: SvelteKit 2 with Svelte 5 runes
 - **Styling**: Tailwind CSS v4 (CSS-first `@theme` directive, no JS config)
-- **3D**: Threlte 8 + Three.js
-- **Animation**: GSAP 3.13+
-- **Testing**: Vitest (unit/component) + Playwright (E2E)
+- **Database**: PostgreSQL + Drizzle ORM (`postgres.js` driver)
+- **Testing**: Vitest (server tests in Node, component tests in jsdom)
 - **Package Manager**: Bun (exclusively)
-- **Deployment**: Node.js adapter (self-hosted VPS)
+- **Deployment**: Node.js adapter in Docker (self-hosted VPS)
+
+> `src/lib/components/3d/`, `CustomCursor.svelte`, `AnimateOnScroll.svelte`, `sections/AboutSection.svelte`
+> and `src/lib/utils/gsap.ts` belong to an earlier dark, 3D design and are currently not used by any route.
 
 ---
 
@@ -29,65 +32,33 @@
 ```
 src/
 ├── routes/
-│   ├── +layout.svelte          # Root layout with font imports
-│   ├── layout.css              # Tailwind v4 @theme tokens
-│   ├── +page.svelte            # Single-page portfolio (8 sections)
-│   └── +layout.server.ts       # Server-side data (isMobile detection)
+│   ├── +layout.svelte            # Root layout: <head>/SEO, locale store, command palette, contact widget
+│   ├── +layout.server.ts         # Locale from cookie / Accept-Language
+│   ├── layout.css                # Tailwind v4 @theme tokens
+│   ├── +page.svelte              # Home page (sections)
+│   ├── +page.server.ts           # GitHub data (memory + DB cache), top tools, writeups
+│   ├── +error.svelte             # Localized error page
+│   ├── sitemap.xml/+server.ts    # Generated sitemap
+│   ├── api/                      # contact, health, tools/shorten, tools/usage
+│   ├── s/[code]/+server.ts       # Short-link redirect
+│   ├── pentesting/               # Writeup list + [slug] detail pages
+│   └── tools/                    # Tools index + one folder per tool (+page.ts provides title/description)
 ├── lib/
-│   ├── components/
-│   │   ├── Navigation.svelte    # Sticky sidebar nav (desktop)
-│   │   ├── Section.svelte       # Section container component
-│   │   ├── Hero.svelte          # Hero section
-│   │   ├── About.svelte         # Who Am I section
-│   │   ├── Tools.svelte         # Tools grid
-│   │   ├── Projects.svelte      # Project cards
-│   │   ├── Experience.svelte    # Timeline entries
-│   │   ├── OpenSource.svelte    # GitHub stats
-│   │   ├── Testimonials.svelte  # Quote cards
-│   │   ├── Contact.svelte       # Contact form + socials
-│   │   └── __tests__/           # Component tests
-│   ├── components/3d/
-│   │   ├── Scene.svelte         # Main 3D background
-│   │   ├── FloatingShape.svelte # Individual 3D shape
-│   │   └── __tests__/           # 3D component tests
-│   ├── types/
-│   │   └── content.ts           # TypeScript interfaces (Project, Experience, etc.)
-│   ├── data/
-│   │   ├── projects.ts          # Placeholder project data
-│   │   ├── experience.ts        # Placeholder experience data
-│   │   ├── tools.ts             # Placeholder tools data
-│   │   ├── testimonials.ts      # Placeholder testimonials
-│   │   └── site-config.ts       # Site-wide config (name, title, bio, socials)
-│   ├── utils/
-│   │   ├── cursor.ts            # Custom cursor helpers
-│   │   └── scroll.ts            # Scroll utilities
-│   ├── stores/
-│   │   └── (Svelte 5 runes only — no legacy stores)
-│   ├── assets/
-│   │   └── favicon.svg
-│   └── __tests__/
-│       └── infrastructure.test.ts
-├── hooks.server.ts             # Server hooks (mobile detection)
-└── app.html                    # HTML shell
+│   ├── components/               # Shared components (Navigation, Section, CommandPalette, ...)
+│   │   ├── sections/             # Home page sections
+│   │   ├── tools/                # ToolHeader, LinkStats
+│   │   └── __tests__/            # Component tests
+│   ├── data/                     # Static content (projects, experience, web-tools, sections, site-config)
+│   ├── i18n/                     # messages.ts, locale helpers, LocaleStore (locale.svelte.ts)
+│   ├── server/                   # db/, services/ (rate limit, url shortener, usage, contact), content/
+│   ├── types/content.ts          # TypeScript interfaces
+│   └── utils/                    # Pure helpers (markdown, json highlight, diff, dates, clipboard, ...)
+├── content/pentesting/           # Markdown writeups (frontmatter: title, date, published, lang, ...)
+├── hooks.server.ts               # Locale detection + security headers
+└── app.html                      # HTML shell
 
-static/
-├── og.png                      # OpenGraph image
-├── sitemap.xml                 # SEO sitemap
-└── robots.txt                  # Robots directive
-
-e2e/
-├── foundation.test.ts          # Foundation E2E tests
-└── demo.test.ts                # Existing demo tests
-
-.sisyphus/
-├── plans/
-│   └── portfolio-threejs.md    # Master plan (READ-ONLY)
-└── notepads/
-    └── portfolio-threejs/
-        ├── learnings.md        # Patterns, conventions, successful approaches
-        ├── issues.md           # Problems, blockers, gotchas
-        ├── decisions.md        # Architectural choices
-        └── problems.md         # Unresolved issues, technical debt
+static/                           # og.png, robots.txt, project screenshots
+drizzle/                          # SQL migrations (run on container start)
 ```
 
 ---
@@ -145,9 +116,7 @@ export interface Project {
 
 // src/lib/data/projects.ts
 import type { Project } from '$lib/types/content';
-export const projects: Project[] = [
-	/* ... */
-];
+export const projects: Project[] = [/* ... */];
 
 // In components
 import { projects } from '$lib/data/projects';
@@ -229,43 +198,25 @@ import { projects } from '$lib/data/projects';
 
 ### Testing
 
-**Unit/Component Tests** (`src/lib/__tests__/*.test.ts`):
-
-- Use Vitest + `vitest-browser-svelte`
-- Test structure: `describe` → `it` → `expect`
-- Mock external APIs (GitHub, contact form)
+- `bun run test` runs Vitest once; `bun run test:unit` starts watch mode.
+- `*.test.ts` / `*.spec.ts` run in Node (server project); `*.svelte.test.ts` / `*.svelte.spec.ts`
+  run in jsdom (client project) and mount components with Svelte's `mount()`.
+- Mock external APIs (GitHub, SMTP, database) with `vi.mock` / `vi.stubGlobal`.
+- Components that call `useLocale()` need a locale context; see
+  `src/lib/components/__tests__/CommandPaletteLocaleWrapper.svelte`.
 
 **Example**:
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { render } from 'vitest-browser-svelte';
-import Hero from '$lib/components/Hero.svelte';
+import { render } from 'svelte/server';
+import Section from '$lib/components/Section.svelte';
 
-describe('Hero', () => {
-	it('renders name from props', () => {
-		const { getByText } = render(Hero, { props: { name: 'John' } });
-		expect(getByText('John')).toBeDefined();
+describe('Section', () => {
+	it('renders the title', () => {
+		const { body } = render(Section, { props: { id: 'tools', title: 'Tools' } });
+		expect(body).toContain('id="tools-heading"');
 	});
-});
-```
-
-**E2E Tests** (`e2e/*.test.ts`):
-
-- Use Playwright
-- Test user workflows (navigation, form submission, interactions)
-- Assert DOM state, screenshots, network requests
-
-**Example**:
-
-```typescript
-import { test, expect } from '@playwright/test';
-
-test('hero section displays correctly', async ({ page }) => {
-	await page.goto('http://localhost:5173');
-	const hero = page.locator('section#hero');
-	await expect(hero).toBeVisible();
-	await expect(hero.locator('h1')).toContainText('John Doe');
 });
 ```
 
@@ -339,17 +290,18 @@ document.addEventListener('mousemove', (e) => {
 
 **Palette** (defined in `src/routes/layout.css`):
 
-- **Base**: `slate-900` (#0f172a) — dark background
-- **Accent**: `purple-500` (#8b5cf6) — primary interactive color
-- **Text**: `slate-200` (primary), `slate-400` (secondary), `slate-500` (tertiary)
-- **Borders**: `slate-700` with transparency
+- **Base**: white background
+- **Accent**: `purple-500` (#8b5cf6) for buttons, `purple-600`/`purple-700` for text and links
+- **Text**: `slate-900` (headings), `slate-600`/`slate-700` (body), `slate-500` (secondary)
+- **Borders**: `slate-200`
+- Body text must keep at least 4.5:1 contrast on white, so avoid `slate-400` and the light
+  `*-200`/`*-300` shades for anything people need to read.
 
 **Usage**:
 
-```css
-/* In components */
-<div class="bg-slate-900 text-slate-200 border border-slate-700/50">
-  <button class="bg-purple-500 hover:bg-purple-600">Action</button>
+```html
+<div class="border border-slate-200 bg-white text-slate-700">
+	<button class="bg-purple-500 text-white hover:bg-purple-600">Action</button>
 </div>
 ```
 
@@ -429,6 +381,24 @@ bun run preview
 
 ---
 
+## Project Conventions & Gotchas
+
+- **i18n**: shared strings live in `src/lib/i18n/messages.ts` (both locales must have the same keys).
+  Tool pages keep their own `{ de, en }` dictionary and pick it with `COPY[i18n.current]`.
+  Server/universal loads localize with `createTranslator(locale)`.
+- **Links**: wrap internal hrefs in `resolve()` from `$app/paths`; external links get
+  `rel="external noreferrer"` (required by `svelte/no-navigation-without-resolve`).
+- **CSP**: `kit.csp` in `svelte.config.js` uses nonces, so inline `<script>`s and `on*=""`
+  attributes do not run. Inline `style` attributes are allowed.
+- **Tailwind v4 arbitrary values**: separate grid tracks with `_`, not `,`
+  (`grid-cols-[minmax(0,14rem)_1fr]`); commas are emitted verbatim and make the rule invalid.
+- **Tools**: record usage with `trackToolUsage(id)` (once per session) and copy with
+  `CopyFeedback` from `$lib/utils/clipboard.svelte`.
+- **Rate limiting** identifies clients via `X-Forwarded-For` using `XFF_DEPTH` trusted proxies.
+- **postgres.js `backoff`** must return seconds, not milliseconds.
+
+---
+
 ## Key Decisions & Rationale
 
 ### Why Tailwind v4 CSS-First?
@@ -490,10 +460,9 @@ bun run preview
 - **Tailwind v4**: https://tailwindcss.com/docs/v4
 - **Threlte**: https://threlte.xyz
 - **GSAP**: https://gsap.com
-- **Playwright**: https://playwright.dev
 - **Vitest**: https://vitest.dev
 
 ---
 
-**Last Updated**: 2026-02-13
+**Last Updated**: 2026-11-08
 **Maintained By**: Development Team

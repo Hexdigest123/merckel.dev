@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import Section from '$lib/components/Section.svelte';
 	import ToolCard from '$lib/components/ToolCard.svelte';
 	import { localizeTool } from '$lib/i18n/content';
@@ -16,7 +17,6 @@
 			<ToolCard
 				name={tool.name}
 				description={tool.description}
-				icon={tool.icon}
 				path={tool.path}
 				usageCount={tool.usageCount}
 			/>
@@ -26,7 +26,7 @@
 	{#if tools.length > 0}
 		<p class="mt-6">
 			<a
-				href="/tools"
+				href={resolve('/tools')}
 				data-sveltekit-preload-data
 				class="text-sm text-purple-600 hover:text-purple-700"
 			>

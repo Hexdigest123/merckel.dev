@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -55,6 +55,24 @@ describe('Infrastructure', () => {
 		const layoutCss = readFileSync(layoutCssPath, 'utf-8');
 		expect(layoutCss).toContain("--font-sans: 'Space Grotesk', sans-serif");
 		expect(layoutCss).toContain("--font-mono: 'JetBrains Mono', monospace");
+	});
+
+	it('uses underscores in arbitrary grid templates (Tailwind v4 emits commas verbatim)', () => {
+		const svelteFiles = readdirSync(resolve(projectRoot, 'src'), { recursive: true })
+			.map(String)
+			.filter((file) => file.endsWith('.svelte'));
+
+		// Commas inside functions such as minmax(0,1fr) are fine; top-level ones are not.
+		const hasTopLevelComma = (value: string) => value.replace(/\([^()]*\)/g, '').includes(',');
+		const offenders = svelteFiles.filter((file) =>
+			[
+				...readFileSync(resolve(projectRoot, 'src', file), 'utf-8').matchAll(
+					/grid-(?:cols|rows)-\[([^\]]*)\]/g
+				)
+			].some(([, value]) => hasTopLevelComma(value))
+		);
+
+		expect(offenders).toEqual([]);
 	});
 
 	it('should have all required lib directories created', () => {

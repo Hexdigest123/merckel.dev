@@ -1,5 +1,6 @@
+import { webTools } from '$lib/data/web-tools';
 import type { Experience, Project, WebTool } from '$lib/types/content';
-import type { LocaleStore } from './locale.svelte';
+import type { Translator } from './locale';
 import type { MessageKey } from './messages';
 
 const PROJECT_DESCRIPTION: Record<string, MessageKey> = {
@@ -53,7 +54,7 @@ const OSS_LABEL: Record<string, MessageKey> = {
 	'Verfolgte Repositories': 'ossTrackedRepos'
 };
 
-export function localizeProject(i18n: LocaleStore, project: Project): Project {
+export function localizeProject(i18n: Translator, project: Project): Project {
 	const descriptionKey = PROJECT_DESCRIPTION[project.id];
 	return {
 		...project,
@@ -65,7 +66,7 @@ export function localizeProject(i18n: LocaleStore, project: Project): Project {
 	};
 }
 
-export function localizeExperience(i18n: LocaleStore, entry: Experience): Experience {
+export function localizeExperience(i18n: Translator, entry: Experience): Experience {
 	const roleKey = EXPERIENCE_ROLE[entry.id];
 	const descriptionKey = EXPERIENCE_DESCRIPTION[entry.id];
 	return {
@@ -79,7 +80,7 @@ export function localizeExperience(i18n: LocaleStore, entry: Experience): Experi
 	};
 }
 
-export function localizeTool<T extends WebTool>(i18n: LocaleStore, tool: T): T {
+export function localizeTool<T extends WebTool>(i18n: Translator, tool: T): T {
 	const nameKey = TOOL_NAME[tool.id];
 	const descriptionKey = TOOL_DESCRIPTION[tool.id];
 	return {
@@ -89,12 +90,21 @@ export function localizeTool<T extends WebTool>(i18n: LocaleStore, tool: T): T {
 	};
 }
 
-export function localizeOssLabel(i18n: LocaleStore, label: string): string {
+/** Looks up a tool from `webTools` by id and localizes it. */
+export function getLocalizedTool(i18n: Translator, toolId: string): WebTool {
+	const tool = webTools.find((candidate) => candidate.id === toolId);
+	if (!tool) {
+		throw new Error(`Unknown tool "${toolId}"`);
+	}
+	return localizeTool(i18n, tool);
+}
+
+export function localizeOssLabel(i18n: Translator, label: string): string {
 	const key = OSS_LABEL[label];
 	return key ? i18n.t(key) : label;
 }
 
-export function localizeGithubProfileLabel(i18n: LocaleStore, label: string): string {
+export function localizeGithubProfileLabel(i18n: Translator, label: string): string {
 	if (label === 'GitHub-Profil besuchen') {
 		return i18n.t('openGithubProfile');
 	}
