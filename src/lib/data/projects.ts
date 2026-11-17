@@ -27,6 +27,7 @@ export const projects: Project[] = [
 		description:
 			'Bestellplattform für die Gastronomie: Online-Bestellung, Tischservice und Lieferung in einem Ablauf — mit eigenem Logo und eigener Adresse.',
 		tags: ['SvelteKit', 'Bestellung'],
+		image: '/images/projects/serveio-de.webp',
 		url: 'https://serveio.de',
 		featured: true
 	},
@@ -36,6 +37,7 @@ export const projects: Project[] = [
 		description:
 			'LogiQ IT: Websites, Hosting, WordPress, Shopify und individuelle Softwareentwicklung.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/logiqit-de.webp',
 		url: 'https://logiqit.de',
 		featured: false
 	},
@@ -45,6 +47,7 @@ export const projects: Project[] = [
 		description:
 			'Med Mobil / Gesundheitszentrum Landhaus Pantförder: mobiler Pflegedienst und Tagespflege in Recklinghausen.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/med-mobil-de.webp',
 		url: 'https://med-mobil.de',
 		featured: false
 	},
@@ -53,6 +56,7 @@ export const projects: Project[] = [
 		title: 'Bündnis Recklinghausen',
 		description: 'Website für das Bündnis Recklinghausen.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/buendnis-recklinghausen-de.webp',
 		url: 'https://buendnis-recklinghausen.de',
 		featured: false
 	},
@@ -71,6 +75,7 @@ export const projects: Project[] = [
 		description:
 			'Website für das Marler Bestattungshaus: Bestattungen, Tierbestattungen und Vorsorge mit Kostentransparenz.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/marler-bestattungen-de.webp',
 		url: 'https://marler-bestattungen.de',
 		featured: false
 	},
@@ -80,6 +85,7 @@ export const projects: Project[] = [
 		description:
 			'Website für die Tagespflege im Landhaus Pantförder: Warteliste, Anmeldeformular und Konzept.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/tagespflege-landhaus-de.webp',
 		url: 'https://tagespflege-landhaus.de',
 		featured: false
 	},
@@ -89,6 +95,7 @@ export const projects: Project[] = [
 		description:
 			'Website für Elektrotechnik André Finke: Elektroinstallationen, Photovoltaik, Smart Home und 24h-Notfalldienst.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/elektrotechnik-finke-de.webp',
 		url: 'https://elektrotechnik-finke.de',
 		featured: false
 	},
@@ -98,6 +105,7 @@ export const projects: Project[] = [
 		description:
 			'Website für Stark Werk: Resilienz- und Selbstbehauptungstrainings für Kinder, Jugendliche und Pädagogen im Ruhrgebiet.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/stark-werk-de.webp',
 		url: 'https://stark-werk.de',
 		featured: false
 	},
@@ -107,6 +115,7 @@ export const projects: Project[] = [
 		description:
 			'Meta Menü: digitale Speiseplanung für Sozialeinrichtungen mit Allergenverwaltung und Bestelllisten.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/meta-menue-de.webp',
 		url: 'https://meta-menue.de',
 		featured: false
 	},
@@ -116,6 +125,7 @@ export const projects: Project[] = [
 		description:
 			'Website für Bedachung Hellmich in Gladbeck: Dacharbeiten, Sanierung und Energieberatung.',
 		tags: ['SvelteKit'],
+		image: '/images/projects/bedachung-hellmich-de.webp',
 		url: 'https://bedachung-hellmich.de',
 		featured: false
 	}

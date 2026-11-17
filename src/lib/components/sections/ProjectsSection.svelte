@@ -80,9 +80,7 @@
 		class="flex snap-x snap-mandatory [scrollbar-width:none] gap-6 overflow-x-auto scroll-smooth pb-2 [&::-webkit-scrollbar]:hidden"
 	>
 		{#each localizedProjects as project (project.id)}
-			<article
-				class="w-full shrink-0 snap-start sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
-			>
+			<article class="w-full shrink-0 snap-start">
 				<h3 class="font-sans text-lg font-semibold text-slate-900">{project.title}</h3>
 				<p class="mt-2 text-sm leading-6 text-slate-600 sm:text-base">{project.description}</p>
 
