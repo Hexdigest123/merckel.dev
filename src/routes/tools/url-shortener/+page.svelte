@@ -7,23 +7,32 @@
 	const de = {
 		longUrl: 'Lange URL',
 		placeholder: 'https://example.com/ein/sehr/langer/pfad',
+		redirectToggle: 'Umleitung über merckel.dev',
+		redirectHint:
+			'Wenn deaktiviert, wird keine Kurz-URL erstellt — die eingegebene URL wird direkt verwendet.',
 		shorten: 'Kürzen',
 		shortening: 'Wird gekürzt...',
 		emptyUrl: 'Geben Sie eine URL zum Kürzen ein.',
 		failed: 'Diese URL kann derzeit nicht gekürzt werden.',
 		rateLimited: 'Zu viele Anfragen. Bitte warten Sie kurz und versuchen Sie es erneut.',
-		shortUrl: 'Kurze URL'
+		shortUrl: 'Kurze URL',
+		originalUrl: 'URL',
+		invalidUrl: 'Bitte eine gültige http(s)-URL eingeben.'
 	};
 
 	const en: typeof de = {
 		longUrl: 'Long URL',
 		placeholder: 'https://example.com/some/really/long/path',
+		redirectToggle: 'Redirect via merckel.dev',
+		redirectHint: 'When disabled, no short link is created — the entered URL is used directly.',
 		shorten: 'Shorten',
 		shortening: 'Shortening...',
 		emptyUrl: 'Enter a URL to shorten.',
 		failed: 'This URL cannot be shortened right now.',
 		rateLimited: 'Too many requests. Please wait a moment and try again.',
-		shortUrl: 'Short URL'
+		shortUrl: 'Short URL',
+		originalUrl: 'URL',
+		invalidUrl: 'Please enter a valid http(s) URL.'
 	};
 
 	const COPY = { de, en };
@@ -35,6 +44,8 @@
 	let tool = $derived(getLocalizedTool(i18n, 'url-shortener'));
 
 	let url = $state('');
+	let useMerckelRedirect = $state(true);
+	let isDirect = $state(false);
 	let errorMessage = $state('');
 	let shortUrl = $state('');
 	let isSubmitting = $state(false);
@@ -58,6 +69,23 @@
 		isSubmitting = true;
 
 		try {
+			if (!useMerckelRedirect) {
+				let parsed: URL | null = null;
+				try {
+					parsed = new URL(trimmedUrl);
+				} catch {
+					parsed = null;
+				}
+				if (!parsed || !['http:', 'https:'].includes(parsed.protocol)) {
+					errorMessage = t.invalidUrl;
+					return;
+				}
+				isDirect = true;
+				shortUrl = parsed.href;
+				return;
+			}
+
+			isDirect = false;
 			const response = await fetch('/api/tools/shorten', {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
@@ -119,6 +147,22 @@
 				/>
 			</label>
 
+			<label
+				class="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600"
+				for="url-redirect-toggle"
+			>
+				<input
+					id="url-redirect-toggle"
+					type="checkbox"
+					bind:checked={useMerckelRedirect}
+					class="mt-0.5 h-4 w-4 rounded border-slate-300 text-purple-500 focus:ring-purple-400/60"
+				/>
+				<span class="space-y-0.5">
+					<span class="block font-medium text-slate-700">{t.redirectToggle}</span>
+					<span class="block text-xs text-slate-500">{t.redirectHint}</span>
+				</span>
+			</label>
+
 			<div class="flex items-center gap-3">
 				<button
 					type="submit"
@@ -156,7 +200,9 @@
 
 		{#if shortUrl}
 			<div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4" role="status">
-				<p class="text-xs tracking-wide text-slate-500 uppercase">{t.shortUrl}</p>
+				<p class="text-xs tracking-wide text-slate-500 uppercase">
+					{isDirect ? t.originalUrl : t.shortUrl}
+				</p>
 				<div class="mt-2 flex flex-wrap items-center gap-3">
 					<a
 						href={shortUrl}

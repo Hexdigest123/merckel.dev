@@ -8,8 +8,8 @@
 	type OutputFormat = 'svg' | 'png';
 	type ErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H';
 	type SizeOption = 128 | 256 | 512;
-	/** tracked: short URL encoded · plain: text encoded · untracked: URL encoded without short link */
-	type EncodingStatus = 'tracked' | 'plain' | 'untracked';
+	/** tracked: short URL encoded · plain: text encoded · untracked: URL encoded without short link · direct: URL encoded directly, redirect disabled */
+	type EncodingStatus = 'tracked' | 'plain' | 'untracked' | 'direct';
 
 	interface ResolvedValue {
 		value: string;
@@ -44,7 +44,10 @@
 
 	const de = {
 		intro:
-			'QR-Codes für URLs oder Text generieren. URLs werden zuerst gekürzt, damit Scans nachverfolgt werden können.',
+			'QR-Codes für URLs oder Text generieren. URLs können zuerst gekürzt werden, damit Scans nachverfolgt werden.',
+		redirectToggle: 'URL über merckel.dev kürzen',
+		redirectHint:
+			'Wenn deaktiviert, wird die URL direkt im QR-Code kodiert und Scans werden nicht gezählt.',
 		input: 'Text oder URL',
 		placeholder: 'https://example.com oder beliebiger Text',
 		format: 'Format',
@@ -69,14 +72,17 @@
 			tracked: 'Nachverfolgbare Kurz-URL kodiert',
 			plain: 'Klartext — nicht nachverfolgbar',
 			untracked:
-				'URL direkt kodiert — es konnte kein Kurzlink erstellt werden, Scans werden nicht gezählt.'
+				'URL direkt kodiert — es konnte kein Kurzlink erstellt werden, Scans werden nicht gezählt.',
+			direct: 'URL direkt kodiert — Umleitung über merckel.dev deaktiviert'
 		} satisfies Record<EncodingStatus, string>,
 		generateFailed: 'QR-Code konnte nicht generiert werden.'
 	};
-
 	const en: typeof de = {
 		intro:
-			'Generate QR codes for URLs or text. URLs are shortened first so that scans can be tracked.',
+			'Generate QR codes for URLs or text. URLs can be shortened first so that scans can be tracked.',
+		redirectToggle: 'Shorten URL via merckel.dev',
+		redirectHint:
+			'When disabled, the URL is encoded directly in the QR code and scans are not counted.',
 		input: 'Text or URL',
 		placeholder: 'https://example.com or any text',
 		format: 'Format',
@@ -100,7 +106,8 @@
 		status: {
 			tracked: 'Trackable short URL encoded',
 			plain: 'Plain text — not trackable',
-			untracked: 'URL encoded directly — no short link could be created, so scans are not counted.'
+			untracked: 'URL encoded directly — no short link could be created, so scans are not counted.',
+			direct: 'URL encoded directly — merckel.dev redirect disabled'
 		},
 		generateFailed: 'The QR code could not be generated.'
 	};
@@ -114,6 +121,7 @@
 	let tool = $derived(getLocalizedTool(i18n, 'qr-generator'));
 
 	let text = $state('');
+	let useMerckelRedirect = $state(true);
 	let outputFormat = $state<OutputFormat>('svg');
 	let size = $state<SizeOption>(256);
 	let level = $state<ErrorCorrectionLevel>('M');
@@ -184,6 +192,7 @@
 	// Step 1: decide what to encode. Only text changes can trigger a (debounced) short link.
 	$effect(() => {
 		const currentText = trimmedText;
+		const redirectEnabled = useMerckelRedirect;
 
 		if (!currentText) {
 			resolved = null;
@@ -193,6 +202,12 @@
 
 		if (!isShortenableUrl(currentText)) {
 			resolved = { value: currentText, shortUrl: '', status: 'plain' };
+			isResolving = false;
+			return;
+		}
+
+		if (!redirectEnabled) {
+			resolved = { value: currentText, shortUrl: '', status: 'direct' };
 			isResolving = false;
 			return;
 		}
@@ -317,6 +332,22 @@
 						spellcheck="false"
 						class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:border-purple-400/80 focus:outline-none"
 					/>
+				</label>
+
+				<label
+					class="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600"
+					for="qr-redirect-toggle"
+				>
+					<input
+						id="qr-redirect-toggle"
+						type="checkbox"
+						bind:checked={useMerckelRedirect}
+						class="mt-0.5 h-4 w-4 rounded border-slate-300 text-purple-500 focus:ring-purple-400/60"
+					/>
+					<span class="space-y-0.5">
+						<span class="block font-medium text-slate-700">{t.redirectToggle}</span>
+						<span class="block text-xs text-slate-500">{t.redirectHint}</span>
+					</span>
 				</label>
 
 				<div class="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
