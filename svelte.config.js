@@ -13,13 +13,14 @@ const config = {
 				'default-src': ['self'],
 				'script-src': ['self'],
 				'style-src': ['self', 'unsafe-inline'],
-				'img-src': ['self', 'data:', 'blob:', 'https:'],
+				'img-src': ['self', 'data:', 'blob:'],
 				'font-src': ['self', 'data:'],
 				'connect-src': ['self'],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self'],
-				'object-src': ['none']
+				'object-src': ['none'],
+				'upgrade-insecure-requests': true
 			}
 		}
 	}

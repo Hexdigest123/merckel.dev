@@ -7,7 +7,9 @@ const SECURITY_HEADERS: Record<string, string> = {
 	'x-frame-options': 'DENY',
 	'x-content-type-options': 'nosniff',
 	'referrer-policy': 'strict-origin-when-cross-origin',
-	'permissions-policy': 'camera=(), microphone=(), geolocation=()'
+	'permissions-policy': 'camera=(), microphone=(), geolocation=()',
+	'cross-origin-opener-policy': 'same-origin',
+	'cross-origin-resource-policy': 'same-origin'
 };
 
 export const handle: Handle = async ({ event, resolve }) => {

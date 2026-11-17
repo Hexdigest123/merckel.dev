@@ -3,6 +3,9 @@ import nodemailer from 'nodemailer';
 import { siteConfig } from '$lib/data/site-config';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Control characters would allow header injection via the mail subject. */
+// eslint-disable-next-line no-control-regex -- control characters must be rejected (mail header injection)
+const CONTROL_CHARS = /[\x00-\x1f\x7f]/;
 const MAX_NAME_LENGTH = 100;
 const MAX_MAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 4000;
@@ -24,6 +27,8 @@ export function validateContactInput(input: ContactInput): ContactValidationErro
 
 	if (!input.name) {
 		errors.push({ field: 'name', error: 'name is required' });
+	} else if (CONTROL_CHARS.test(input.name)) {
+		errors.push({ field: 'name', error: 'name contains invalid characters' });
 	} else if (input.name.length > MAX_NAME_LENGTH) {
 		errors.push({ field: 'name', error: 'name is too long' });
 	}

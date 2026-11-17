@@ -16,6 +16,15 @@ describe('validateContactInput', () => {
 		]);
 	});
 
+	it('rejects control characters in the name (mail header injection)', () => {
+		const errors = validateContactInput({
+			name: 'Ada\r\nBcc: attacker@example.com',
+			mail: 'ada@example.com',
+			message: 'Hello!'
+		});
+		expect(errors).toEqual([{ field: 'name', error: 'name contains invalid characters' }]);
+	});
+
 	it('rejects invalid or overlong values', () => {
 		const errors = validateContactInput({
 			name: 'x'.repeat(101),
