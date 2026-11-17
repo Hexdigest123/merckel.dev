@@ -25,7 +25,7 @@ export const experience: Experience[] = [
 	},
 	{
 		id: 'exp-0',
-		role: 'Gesellschafter und Softwareentwickler',
+		role: 'Geschäftsführer',
 		company: 'S&B Digital UG',
 		companyUrl: 'https://sb-digital.de',
 		startDate: '2026',

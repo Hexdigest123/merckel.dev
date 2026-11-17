@@ -6,20 +6,84 @@
 
 	const i18n = useLocale();
 	let localizedProjects = $derived(projects.map((project) => localizeProject(i18n, project)));
+
+	let scroller = $state<HTMLElement | undefined>(undefined);
+	let canScrollPrev = $state(false);
+	let canScrollNext = $state(false);
+
+	function updateScrollState() {
+		if (!scroller) return;
+		canScrollPrev = scroller.scrollLeft > 1;
+		canScrollNext = scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 1;
+	}
+
+	$effect(() => {
+		updateScrollState();
+		if (!scroller) return;
+		const observer = new ResizeObserver(updateScrollState);
+		observer.observe(scroller);
+		return () => observer.disconnect();
+	});
+
+	function scrollByPage(direction: 1 | -1) {
+		if (!scroller) return;
+		scroller.scrollBy({ left: direction * scroller.clientWidth, behavior: 'smooth' });
+	}
 </script>
 
 <Section id="projects" title={i18n.t('navProjects')}>
-	<div class="space-y-10" data-testid="projects-list">
+	{#if localizedProjects.length > 1}
+		<div class="mb-4 flex items-center justify-end gap-2">
+			<button
+				type="button"
+				onclick={() => scrollByPage(-1)}
+				disabled={!canScrollPrev}
+				aria-label={i18n.t('carouselPrevious')}
+				class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-40"
+			>
+				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path
+						d="M15 5l-7 7 7 7"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</button>
+			<button
+				type="button"
+				onclick={() => scrollByPage(1)}
+				disabled={!canScrollNext}
+				aria-label={i18n.t('carouselNext')}
+				class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors duration-200 hover:border-purple-400/60 hover:text-purple-700 disabled:cursor-not-allowed disabled:opacity-40"
+			>
+				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path
+						d="M9 5l7 7-7 7"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</button>
+		</div>
+	{/if}
+
+	<div
+		bind:this={scroller}
+		onscroll={updateScrollState}
+		role="region"
+		aria-label={i18n.t('navProjects')}
+		data-testid="projects-carousel"
+		class="flex snap-x snap-mandatory [scrollbar-width:none] gap-6 overflow-x-auto scroll-smooth pb-2 [&::-webkit-scrollbar]:hidden"
+	>
 		{#each localizedProjects as project (project.id)}
-			<article>
-				<div class="flex flex-wrap items-baseline justify-between gap-2">
-					<h3 class="font-sans text-lg font-semibold text-slate-900">{project.title}</h3>
-					{#if project.featured}
-						<span class="font-mono text-xs tracking-wide text-purple-600 uppercase">
-							{i18n.t('featured')}
-						</span>
-					{/if}
-				</div>
+			<article
+				class="w-full shrink-0 snap-start sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
+			>
+				<h3 class="font-sans text-lg font-semibold text-slate-900">{project.title}</h3>
 				<p class="mt-2 text-sm leading-6 text-slate-600 sm:text-base">{project.description}</p>
 
 				{#if project.image && project.url}
@@ -42,12 +106,6 @@
 						/>
 					</a>
 				{/if}
-
-				<ul class="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
-					{#each project.tags as tag (tag)}
-						<li>{tag}</li>
-					{/each}
-				</ul>
 
 				<div class="mt-3 flex flex-wrap gap-4 text-sm">
 					{#if project.url}

@@ -13,19 +13,12 @@
 		<div class="space-y-8">
 			{#each entries as entry (entry.slug)}
 				<a href={resolve('/pentesting/[slug]', { slug: entry.slug })} class="group block">
-					<div class="flex flex-wrap items-baseline justify-between gap-2">
-						<h3
-							lang={entry.lang}
-							class="font-sans text-lg font-semibold text-slate-900 group-hover:text-purple-600"
-						>
-							{entry.title}
-						</h3>
-						{#if entry.featured}
-							<span class="font-mono text-xs tracking-wide text-purple-600 uppercase">
-								{i18n.t('featured')}
-							</span>
-						{/if}
-					</div>
+					<h3
+						lang={entry.lang}
+						class="font-sans text-lg font-semibold text-slate-900 group-hover:text-purple-600"
+					>
+						{entry.title}
+					</h3>
 
 					<p lang={entry.lang} class="mt-2 text-sm leading-6 text-slate-600 sm:text-base">
 						{entry.description}

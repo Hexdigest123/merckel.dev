@@ -5,7 +5,18 @@ import type { MessageKey } from './messages';
 
 const PROJECT_DESCRIPTION: Record<string, MessageKey> = {
 	'project-1': 'projectSarayli',
-	'project-2': 'projectAdoptierlieber'
+	'project-2': 'projectAdoptierlieber',
+	'project-3': 'projectServeio',
+	'project-4': 'projectLogiqit',
+	'project-5': 'projectMedMobil',
+	'project-6': 'projectBuendnis',
+	'project-7': 'projectStimberg',
+	'project-8': 'projectMarler',
+	'project-9': 'projectTagespflege',
+	'project-10': 'projectFinke',
+	'project-11': 'projectStarkWerk',
+	'project-12': 'projectMetaMenue',
+	'project-13': 'projectHellmich'
 };
 
 const PROJECT_TAG: Record<string, MessageKey> = {
@@ -13,7 +24,7 @@ const PROJECT_TAG: Record<string, MessageKey> = {
 };
 
 const EXPERIENCE_ROLE: Record<string, MessageKey> = {
-	'exp-0': 'expRoleShareholder',
+	'exp-0': 'expRoleCeo',
 	'exp-1': 'expRoleFounder',
 	'exp-2': 'expRoleFounder',
 	'exp-3': 'expRoleStudent'

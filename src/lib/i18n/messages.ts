@@ -19,7 +19,6 @@ export const messages = {
 		navClose: 'Navigation schließen',
 		skipToContent: 'Zum Hauptinhalt springen',
 		home: 'Startseite',
-		featured: 'Highlight',
 		present: 'Heute',
 		livePreview: 'Webseite besuchen',
 		sourceCode: 'Quellcode',
@@ -86,11 +85,35 @@ export const messages = {
 		networkError: 'Netzwerkproblem. Bitte erneut versuchen.',
 		testimonialLabel: 'Referenz {current} von {total}',
 		projectSarayli:
-			'Website für Saraylı Döner in Gladbeck: Speisekarte, Bestellung, Galerie und Standort.',
-		projectAdoptierlieber: 'Webseite unter adoptierlieber.de.',
+			'Website für Saraylı Döner in Gladbeck: Online-Bestellung mit Abhol- und Lieferzeiten, Speisekarte, Bewertungen und Standort.',
+		projectAdoptierlieber:
+			'Adoptierlieber verbindet Tierschutzvereine mit Tierliebhabern: Tiere ansehen, anschreiben, adoptieren.',
+		projectServeio:
+			'Bestellplattform für die Gastronomie: Online-Bestellung, Tischservice und Lieferung in einem Ablauf — mit eigenem Logo und eigener Adresse.',
+		projectLogiqit:
+			'LogiQ IT: Websites, Hosting, WordPress, Shopify und individuelle Softwareentwicklung.',
+		projectMedMobil:
+			'Med Mobil / Gesundheitszentrum Landhaus Pantförder: mobiler Pflegedienst und Tagespflege in Recklinghausen.',
+		projectBuendnis: 'Website für das Bündnis Recklinghausen.',
+		projectStimberg:
+			'Website für die Physiotherapie-Praxis Stimberg Physio in Oer-Erkenschwick: Leistungen, Team und Kontakt.',
+		projectMarler:
+			'Website für das Marler Bestattungshaus: Bestattungen, Tierbestattungen und Vorsorge mit Kostentransparenz.',
+		projectTagespflege:
+			'Website für die Tagespflege im Landhaus Pantförder: Warteliste, Anmeldeformular und Konzept.',
+		projectFinke:
+			'Website für Elektrotechnik André Finke: Elektroinstallationen, Photovoltaik, Smart Home und 24h-Notfalldienst.',
+		projectStarkWerk:
+			'Website für Stark Werk: Resilienz- und Selbstbehauptungstrainings für Kinder, Jugendliche und Pädagogen im Ruhrgebiet.',
+		projectMetaMenue:
+			'Meta Menü: digitale Speiseplanung für Sozialeinrichtungen mit Allergenverwaltung und Bestelllisten.',
+		projectHellmich:
+			'Website für Bedachung Hellmich in Gladbeck: Dacharbeiten, Sanierung und Energieberatung.',
 		tagOrdering: 'Bestellung',
+		carouselPrevious: 'Zurück',
+		carouselNext: 'Weiter',
 		expRoleFounder: 'Geschäftsführer und Softwareentwickler',
-		expRoleShareholder: 'Gesellschafter und Softwareentwickler',
+		expRoleCeo: 'Geschäftsführer',
 		expRoleStudent: 'Werkstudent Full-Stack Developer',
 		expSbDigital:
 			'In meiner Funktion bei S&B Digital unterstütze ich die Entwicklung und Bereitstellung von Gastro-Systemen, die Restaurants in ihren Arbeitsablauf integrieren, um Prozesse zu vereinfachen.',
@@ -131,7 +154,6 @@ export const messages = {
 		navClose: 'Close navigation',
 		skipToContent: 'Skip to main content',
 		home: 'Home',
-		featured: 'Featured',
 		present: 'Present',
 		livePreview: 'Visit Website',
 		sourceCode: 'Source code',
@@ -196,11 +218,36 @@ export const messages = {
 		clipboardFailed: 'Could not access the clipboard. Please copy manually.',
 		networkError: 'Network problem. Please try again.',
 		testimonialLabel: 'Reference {current} of {total}',
-		projectSarayli: 'Website for Saraylı Döner in Gladbeck: menu, ordering, gallery, and location.',
-		projectAdoptierlieber: 'Website at adoptierlieber.de.',
+		projectSarayli:
+			'Website for Saraylı Döner in Gladbeck: online ordering with pickup and delivery times, menu, reviews, and location.',
+		projectAdoptierlieber:
+			'Adoptierlieber connects animal welfare associations with animal lovers: browse, enquire, adopt.',
+		projectServeio:
+			'Ordering platform for restaurants: online ordering, table service and delivery in one flow — with your own logo and address.',
+		projectLogiqit:
+			'LogiQ IT: websites, hosting, WordPress, Shopify and custom software development.',
+		projectMedMobil:
+			'Med Mobil / Landhaus Pantförder health center: mobile care and day care in Recklinghausen.',
+		projectBuendnis: 'Website for Bündnis Recklinghausen.',
+		projectStimberg:
+			'Website for the Stimberg Physio physiotherapy practice in Oer-Erkenschwick: services, team, and contact.',
+		projectMarler:
+			'Website for the Marl funeral home: funerals, pet cremations, and pre-planning with transparent pricing.',
+		projectTagespflege:
+			'Website for the Landhaus Pantförder day care: waiting list, registration form, and concept.',
+		projectFinke:
+			'Website for André Finke electrical services: installations, photovoltaics, smart home, and 24h emergency service.',
+		projectStarkWerk:
+			'Website for Stark Werk: resilience and self-assertion training for children, teenagers, and educators in the Ruhr area.',
+		projectMetaMenue:
+			'Meta Menue: digital meal planning for social institutions with allergen management and order lists.',
+		projectHellmich:
+			'Website for Bedachung Hellmich in Gladbeck: roofing, renovation, and energy consulting.',
 		tagOrdering: 'Ordering',
+		carouselPrevious: 'Previous',
+		carouselNext: 'Next',
 		expRoleFounder: 'Managing Director and Software Developer',
-		expRoleShareholder: 'Shareholder and Software Developer',
+		expRoleCeo: 'Managing Director',
 		expRoleStudent: 'Working Student Full-Stack Developer',
 		expSbDigital:
 			'In my role at S&B Digital, I help develop and deploy restaurant systems that integrate into restaurants’ workflows to simplify processes.',
